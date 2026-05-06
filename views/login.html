@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تسجيل الدخول — لوحة التقارير</title>
+<title>تسجيل الدخول — خبراء التسويق</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="alternate icon" href="/favicon.ico">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -44,12 +46,14 @@ body {
   gap: 10px;
 }
 .login-logo .icon {
-  width: 48px; height: 48px;
-  background: var(--navy);
+  width: 56px; height: 56px;
+  background: #fff;
   border-radius: 14px;
   display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(29,47,95,0.12);
 }
-.login-logo .icon svg { width: 26px; height: 26px; fill: none; stroke: #fff; stroke-width: 2; }
+.login-logo .icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .login-logo h1 {
   font-size: 20px;
   font-weight: 900;
@@ -134,6 +138,24 @@ body {
   align-items: center;
   gap: 8px;
 }
+.remember-row { margin-bottom: 8px; }
+.remember-label {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray);
+  user-select: none;
+  margin-bottom: 0 !important;
+}
+.remember-label input[type="checkbox"] {
+  width: 16px; height: 16px;
+  accent-color: var(--orange);
+  cursor: pointer;
+  margin: 0;
+}
 .footer-note {
   text-align: center;
   font-size: 12px;
@@ -148,11 +170,11 @@ body {
   <div class="login-logo">
     <div class="brand">
       <div class="icon">
-        <svg viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        <img src="/img/logo.jpg" alt="خبراء التسويق">
       </div>
       <div>
-        <h1>لوحة التقارير</h1>
-        <p>خبراء التسويق</p>
+        <h1>خبراء التسويق</h1>
+        <p>منصة التقارير الداخلية</p>
       </div>
     </div>
   </div>
@@ -169,17 +191,23 @@ body {
     <form method="POST" action="/login">
       <div class="form-group">
         <label>البريد الإلكتروني</label>
-        <input type="email" name="email" placeholder="example@reports.com" required autocomplete="email">
+        <input type="email" name="email" placeholder="example@marketingexperts.com.sa" required autocomplete="email">
       </div>
       <div class="form-group">
         <label>كلمة المرور</label>
         <input type="password" name="password" placeholder="••••••••" required autocomplete="current-password">
       </div>
+      <div class="form-group remember-row">
+        <label class="remember-label">
+          <input type="checkbox" name="remember" value="1" checked>
+          <span>تذكرني</span>
+        </label>
+      </div>
       <button type="submit" class="btn-login">دخول ←</button>
     </form>
   </div>
 
-  <p class="footer-note">مدعوم بـ <span>خبراء التسويق</span> © 2024</p>
+  <p class="footer-note">مدعوم بـ <span>خبراء التسويق</span> © 2026</p>
 </div>
 
 <script>

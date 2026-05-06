@@ -249,6 +249,180 @@ window.bindCharCounter = function (inputEl, counterEl, max) {
   update();
 };
 
+// ══════════════════════════════════════════════════════════════════════════════
+// Account Settings Modal — يفتح من زر الإعدادات في الـ topbar
+// ══════════════════════════════════════════════════════════════════════════════
+(function () {
+  const STYLE_ID = 'acctSettingsStyles';
+  const MODAL_ID = 'acctSettingsModal';
+
+  function injectStyles() {
+    if (document.getElementById(STYLE_ID)) return;
+    const css = `
+      #${MODAL_ID}{position:fixed;inset:0;background:rgba(15,23,42,.55);backdrop-filter:blur(8px);
+        -webkit-backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;
+        z-index:9999;padding:20px;font-family:'Cairo',sans-serif;direction:rtl}
+      #${MODAL_ID}.open{display:flex}
+      #${MODAL_ID} .as-card{background:#fff;width:100%;max-width:480px;border-radius:16px;
+        box-shadow:0 20px 60px rgba(0,0,0,.25);overflow:hidden;border-top:4px solid #FF6B2B;
+        max-height:90vh;display:flex;flex-direction:column}
+      #${MODAL_ID} .as-head{padding:18px 22px;border-bottom:1px solid #E5E7EB;display:flex;
+        align-items:center;justify-content:space-between}
+      #${MODAL_ID} .as-head h3{font-size:17px;font-weight:800;color:#1D2F5F;margin:0}
+      #${MODAL_ID} .as-x{width:32px;height:32px;border-radius:8px;background:#F4F6FA;border:1px solid #E5E7EB;
+        cursor:pointer;font-size:16px;color:#4B5563;display:flex;align-items:center;justify-content:center}
+      #${MODAL_ID} .as-x:hover{background:#fee2e2;border-color:#dc2626;color:#dc2626}
+      #${MODAL_ID} .as-body{padding:20px 22px;overflow-y:auto}
+      #${MODAL_ID} .as-section-label{font-size:12px;font-weight:800;color:#9CA3AF;
+        text-transform:uppercase;letter-spacing:.5px;margin:14px 0 10px}
+      #${MODAL_ID} .as-section-label:first-child{margin-top:0}
+      #${MODAL_ID} .as-field{margin-bottom:14px}
+      #${MODAL_ID} .as-field label{display:block;font-size:13px;font-weight:700;color:#1D2F5F;margin-bottom:6px}
+      #${MODAL_ID} .as-field input{width:100%;padding:10px 13px;border:1.5px solid #E5E7EB;border-radius:10px;
+        font-family:'Cairo',sans-serif;font-size:14px;color:#4B5563;background:#F4F6FA;outline:none;direction:ltr;text-align:right}
+      #${MODAL_ID} .as-field input:focus{border-color:#1D2F5F;background:#fff}
+      #${MODAL_ID} .as-hint{font-size:12px;color:#9CA3AF;margin-top:4px}
+      #${MODAL_ID} .as-msg{padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;
+        margin-bottom:14px;display:none}
+      #${MODAL_ID} .as-msg.err{background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;display:block}
+      #${MODAL_ID} .as-msg.ok{background:#dcfce7;color:#15803d;border:1px solid #86efac;display:block}
+      #${MODAL_ID} .as-foot{padding:14px 22px;border-top:1px solid #E5E7EB;display:flex;gap:10px;
+        justify-content:flex-start;background:#F4F6FA}
+      #${MODAL_ID} .as-btn{padding:10px 18px;border-radius:10px;font-family:'Cairo',sans-serif;
+        font-size:14px;font-weight:700;cursor:pointer;border:none;transition:background .2s}
+      #${MODAL_ID} .as-btn-save{background:#1D2F5F;color:#fff}
+      #${MODAL_ID} .as-btn-save:hover{background:#263a75}
+      #${MODAL_ID} .as-btn-save:disabled{opacity:.6;cursor:not-allowed}
+      #${MODAL_ID} .as-btn-cancel{background:#fff;color:#4B5563;border:1px solid #E5E7EB}
+      #${MODAL_ID} .as-btn-cancel:hover{background:#F4F6FA}
+      html[data-theme="dark"] #${MODAL_ID} .as-card{background:#1f2937;color:#e5e7eb}
+      html[data-theme="dark"] #${MODAL_ID} .as-head h3{color:#f9fafb}
+      html[data-theme="dark"] #${MODAL_ID} .as-field label{color:#f9fafb}
+      html[data-theme="dark"] #${MODAL_ID} .as-field input{background:#111827;border-color:#374151;color:#e5e7eb}
+      html[data-theme="dark"] #${MODAL_ID} .as-foot{background:#111827;border-color:#374151}
+      html[data-theme="dark"] #${MODAL_ID} .as-btn-cancel{background:#1f2937;color:#e5e7eb;border-color:#374151}
+    `;
+    const tag = document.createElement('style');
+    tag.id = STYLE_ID;
+    tag.textContent = css;
+    document.head.appendChild(tag);
+  }
+
+  function buildModal() {
+    if (document.getElementById(MODAL_ID)) return document.getElementById(MODAL_ID);
+    const wrap = document.createElement('div');
+    wrap.id = MODAL_ID;
+    wrap.innerHTML = `
+      <div class="as-card" role="dialog" aria-modal="true" aria-labelledby="asTitle">
+        <div class="as-head">
+          <h3 id="asTitle">إعدادات الحساب</h3>
+          <button type="button" class="as-x" aria-label="إغلاق">✕</button>
+        </div>
+        <div class="as-body">
+          <div class="as-msg" id="asMsg"></div>
+          <div class="as-section-label">البيانات الأساسية</div>
+          <div class="as-field">
+            <label for="asName">الاسم</label>
+            <input type="text" id="asName" autocomplete="name" />
+          </div>
+          <div class="as-field">
+            <label for="asEmail">البريد الإلكتروني</label>
+            <input type="email" id="asEmail" autocomplete="email" />
+          </div>
+          <div class="as-section-label">تغيير كلمة المرور (اختياري)</div>
+          <div class="as-field">
+            <label for="asCurPass">كلمة المرور الحالية</label>
+            <input type="password" id="asCurPass" autocomplete="current-password" />
+          </div>
+          <div class="as-field">
+            <label for="asNewPass">كلمة المرور الجديدة</label>
+            <input type="password" id="asNewPass" autocomplete="new-password" />
+            <div class="as-hint">اتركها فارغة لو مش عايز تغيّر كلمة المرور.</div>
+          </div>
+        </div>
+        <div class="as-foot">
+          <button type="button" class="as-btn as-btn-save" id="asSaveBtn">حفظ التعديلات</button>
+          <button type="button" class="as-btn as-btn-cancel" id="asCancelBtn">إلغاء</button>
+        </div>
+      </div>`;
+    document.body.appendChild(wrap);
+
+    const close = () => wrap.classList.remove('open');
+    wrap.querySelector('.as-x').onclick = close;
+    wrap.querySelector('#asCancelBtn').onclick = close;
+    wrap.addEventListener('click', e => { if (e.target === wrap) close(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && wrap.classList.contains('open')) close(); });
+
+    wrap.querySelector('#asSaveBtn').onclick = saveProfile;
+    return wrap;
+  }
+
+  function setMsg(kind, text) {
+    const m = document.getElementById('asMsg');
+    if (!m) return;
+    m.className = 'as-msg' + (kind ? ' ' + kind : '');
+    m.textContent = text || '';
+    if (!text) m.style.display = 'none';
+  }
+
+  async function saveProfile() {
+    const btn = document.getElementById('asSaveBtn');
+    const name    = document.getElementById('asName').value.trim();
+    const email   = document.getElementById('asEmail').value.trim();
+    const curPass = document.getElementById('asCurPass').value;
+    const newPass = document.getElementById('asNewPass').value;
+
+    if (!name)  return setMsg('err', 'الاسم مطلوب');
+    if (!email) return setMsg('err', 'الإيميل مطلوب');
+    if (newPass && !curPass) return setMsg('err', 'لازم تدخل كلمة المرور الحالية لتغييرها');
+    if (newPass && newPass.length < 6) return setMsg('err', 'كلمة المرور الجديدة قصيرة جدًا (6 حروف على الأقل)');
+
+    setMsg('', '');
+    btn.disabled = true;
+    const original = btn.textContent;
+    btn.textContent = 'جاري الحفظ...';
+    try {
+      const r = await fetch('/api/me/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, current_password: curPass, new_password: newPass })
+      });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok || data.error) {
+        setMsg('err', data.error || 'حصلت مشكلة، حاول تاني');
+      } else {
+        setMsg('ok', 'تم الحفظ بنجاح ✓');
+        document.getElementById('asCurPass').value = '';
+        document.getElementById('asNewPass').value = '';
+        if (window.Toast) Toast.success('تم تحديث بياناتك');
+      }
+    } catch (e) {
+      setMsg('err', 'تعذّر الاتصال بالخادم');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = original;
+    }
+  }
+
+  window.openAccountSettings = async function () {
+    injectStyles();
+    const wrap = buildModal();
+    setMsg('', '');
+    document.getElementById('asCurPass').value = '';
+    document.getElementById('asNewPass').value = '';
+    document.getElementById('asName').value = '';
+    document.getElementById('asEmail').value = '';
+    wrap.classList.add('open');
+    try {
+      const s = await fetch('/api/session').then(r => r.json());
+      if (s) {
+        document.getElementById('asName').value  = s.name  || '';
+        document.getElementById('asEmail').value = s.email || '';
+      }
+    } catch (e) { /* ignore */ }
+  };
+})();
+
 // ── Auto-fire deadline reminder (Friday) ──────────────────────────────────────
 // لو فيه إذن notifications + اليوم الجمعة + ما رفعش تقرير، أظهر تذكير
 window.checkDeadlineReminder = async function () {
