@@ -1,100 +1,136 @@
-# 📋 لوحة تحكم التقارير الأسبوعية
+# 📋 ME-CRM — لوحة تحكم التقارير الأسبوعية
 
-## متطلبات التشغيل
-- Node.js v18 أو أحدث
-- npm
+نظام إدارة وتسليم تقارير أسبوعية للفِرق، مبنى على Node.js + Express + lowdb.
 
 ---
 
-## تشغيل المشروع محلياً
+## 🚀 تشغيل سريع محلياً
 
 ```bash
-# 1. ادخل على مجلد المشروع
-cd reports-dashboard
-
-# 2. تثبيت المكتبات
+git clone https://github.com/Amir0Adel/ME-CRM.git
+cd ME-CRM
 npm install
-
-# 3. تشغيل السيرفر
+cp .env.example .env       # عدّل القيم بعد الـ copy
 npm start
 ```
 
-ثم افتح المتصفح على: **http://localhost:3000**
+افتح المتصفح على: **http://localhost:3000**
+
+> أول دخول، الحساب الافتراضى للـ admin محدد فى `server/index.js` — **غيّره فوراً بعد أول تسجيل دخول.**
 
 ---
 
-## بيانات الدخول الافتراضية
+## ⚙️ المتطلبات
 
-### المدير
-- **إيميل:** admin@reports.com
-- **كلمة المرور:** admin123
-
-### الموظفين (كلهم)
-- **كلمة المرور:** pass123
-- فاطمة: fatima@reports.com
-- فريق المبيعات: sales@reports.com
-- فريق النمو: growth@reports.com
-- فريق المالية: finance@reports.com
-- فريق HR: hr@reports.com
-- فريق SEO: seo@reports.com
-- فريق الويب: web@reports.com
-- فريق الأكاديمية: academy@reports.com
-- فريق Account: account@reports.com
-- Pod 1: pod1@reports.com
-- Pod 2: pod2@reports.com
-- أحمد عبدالرؤوف: ahmed@reports.com
-- نرمين: narmin@reports.com
+- **Node.js** 18 أو 20
+- **npm** 9+
+- نظام تشغيل: Windows / Linux / macOS
 
 ---
 
-## هيكل المشروع
+## 📁 هيكل المشروع
 
 ```
-reports-dashboard/
+ME-CRM/
+├── app.js                 # Entry point (Passenger / cPanel)
 ├── server/
-│   └── index.js          # السيرفر الرئيسي
-├── views/
-│   ├── login.html         # صفحة تسجيل الدخول
-│   ├── admin.html         # لوحة تحكم المدير
-│   └── employee.html      # صفحة الموظف
+│   └── index.js           # Express server + كل الـ routes
+├── views/                 # صفحات HTML (admin / employee / login)
 ├── public/
-│   └── reports/           # ملفات HTML للتقارير
-│       └── submitted/     # التقارير المرفوعة (تتعمل تلقائياً)
-├── data/                  # قاعدة البيانات SQLite (تتعمل تلقائياً)
-├── package.json
-└── README.md
+│   ├── css/               # Stylesheets
+│   ├── js/                # Client-side JS
+│   └── reports/           # قوالب التقارير + المرفوع (submitted/)
+├── data/                  # lowdb JSON + sessions SQLite (gitignored)
+├── doc/                   # نسخ مرجعية من التقارير
+├── .env.example           # نموذج متغيرات البيئة
+└── DEPLOY.md              # دليل الرفع على cPanel
 ```
 
 ---
 
-## المميزات
+## 🔐 متغيرات البيئة
 
-### المدير يقدر:
-- ✅ يشوف كل التقارير المستلمة
-- ✅ يضيف / يعدل / يحذف موظفين
-- ✅ ينسخ رابط تسجيل الدخول لكل موظف
-- ✅ يشوف إشعارات التقارير الجديدة
-- ✅ يعاين قوالب التقارير
+انسخ `.env.example` لـ `.env` وعبّى القيم:
 
-### الموظف يقدر:
-- ✅ يفتح قالب تقريره
-- ✅ يرفع ملف HTML بعد ما يكمله
-- ✅ يحفظ التقرير مباشرة عن طريق paste HTML
-- ✅ يشوف تاريخ تقاريره السابقة
+| المتغير | الوصف | القيمة الافتراضية |
+|---|---|---|
+| `NODE_ENV` | بيئة التشغيل | `development` محلياً، `production` على السيرفر |
+| `PORT` | بورت الـ HTTP | `3000` |
+| `SESSION_SECRET` | مفتاح تشفير الـ sessions — **لازم يتغير** | — |
+| `COOKIE_SECURE` | كوكيز HTTPS-only | `true` على production |
+
+**لتوليد `SESSION_SECRET` قوى:**
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+---
+
+## ✨ المميزات
+
+### المدير (Admin)
+- إدارة الموظفين والفِرق (إضافة / تعديل / حذف)
+- استعراض كل التقارير المستلمة + تصفيتها
+- نسخ روابط دخول مباشرة لكل موظف
+- تعديل قوالب التقارير من المتصفح
+- إحصائيات + إشعارات تقارير جديدة
+
+### الموظف
+- فتح قالب التقرير الخاص بفريقه
+- رفع HTML أو لصقه مباشرة
+- استعراض تاريخ تقاريره السابقة
 
 ---
 
-## الرفع على الاستضافة
+## 🛠️ Scripts
 
-### على Render.com (مجاناً)
-1. ارفع المشروع على GitHub
-2. اعمل Web Service على render.com
-3. Start Command: `npm start`
-4. Environment: `NODE_ENV=production`
-
-### على Railway.app
-1. ارفع على GitHub
-2. اعمل مشروع جديد من GitHub
-3. هو هيشتغل تلقائياً
+```bash
+npm start        # تشغيل الإنتاج
+npm run dev      # تشغيل مع nodemon (auto-reload)
+```
 
 ---
+
+## 📦 الـ Dependencies الرئيسية
+
+- **express** — web framework
+- **express-session** + **connect-sqlite3** — جلسات مخزنة فى SQLite
+- **lowdb** — قاعدة بيانات JSON خفيفة
+- **bcryptjs** — تشفير كلمات السر
+- **multer** — رفع الملفات
+- **puppeteer** *(optional)* — تصدير PDF (مش بيشتغل على shared hosting)
+
+---
+
+## 🌐 النشر (Deployment)
+
+دليل الرفع الكامل على cPanel موجود فى **[DEPLOY.md](DEPLOY.md)**.
+
+البدائل السريعة:
+- **Render.com** — Build: `npm install` / Start: `npm start`
+- **Railway.app** — auto-detect
+
+---
+
+## 💾 النسخ الاحتياطى
+
+كل البيانات فى:
+- `data/db.json` — الموظفين، التقارير، القوالب
+- `public/reports/submitted/` — ملفات التقارير المرفوعة
+
+اعمل backup أسبوعى عبر cron أو يدوياً.
+
+---
+
+## 🔒 الأمان
+
+- متشاركش `.env` أو `SESSION_SECRET` فى أى مكان عام.
+- غيّر الحسابات الافتراضية بعد أول تسجيل دخول.
+- فعّل HTTPS على الإنتاج.
+- البيانات الحساسة (`db.json`, `sessions.sqlite`, `submitted/`) مستثناة من git.
+
+---
+
+## 📝 License
+
+Private — جميع الحقوق محفوظة.
