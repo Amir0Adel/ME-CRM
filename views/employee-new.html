@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تقرير جديد</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/components.css">
+<link rel="stylesheet" href="/css/dark-mode.css">
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="/js/app-shell.js"></script>
+<style>
+:root {
+  --navy: #1D2F5F; --navy-light: #263a75;
+  --orange: #FF6B2B; --orange-soft: #FFF0EA;
+  --bg: #F4F6FA; --white: #FFFFFF;
+  --gray: #4B5563; --gray-light: #9CA3AF; --border: #E5E7EB;
+  --green: #16a34a; --green-soft: #dcfce7;
+  --shadow: 0 2px 8px rgba(29,47,95,0.09);
+  --shadow-md: 0 4px 20px rgba(29,47,95,0.14);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--gray); direction: rtl; min-height: 100vh; }
+
+/* Header */
+.header { background: var(--white); border-bottom: 3px solid var(--orange); box-shadow: var(--shadow-md); position: sticky; top: 0; z-index: 100; }
+.header-inner { max-width: 820px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; gap: 14px; }
+.back-btn { display: flex; align-items: center; gap: 7px; padding: 8px 14px; background: var(--bg); border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 700; color: var(--navy); cursor: pointer; text-decoration: none; white-space: nowrap; }
+.back-btn:hover { background: var(--orange-soft); border-color: var(--orange); }
+.hcenter { display: flex; align-items: center; gap: 12px; flex: 1; justify-content: center; min-width: 0; }
+.htitle { font-size: 15px; font-weight: 900; color: var(--navy); white-space: nowrap; }
+.save-status { font-size: 12px; color: var(--gray-light); white-space: nowrap; }
+.save-status.saving { color: var(--orange); }
+.save-status.saved { color: var(--green); }
+.action-btns { display: flex; gap: 8px; white-space: nowrap; }
+.btn { padding: 9px 18px; border-radius: 10px; border: none; font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: all .15s; }
+.btn:hover { opacity: 0.87; }
+.btn-save { background: var(--bg); color: var(--navy); border: 1.5px solid var(--navy); }
+.btn-send { background: var(--orange); color: #fff; }
+
+/* Body */
+.body { max-width: 820px; margin: 24px auto 80px; padding: 0 24px; }
+
+/* Meta */
+.meta-card { background: var(--white); border-radius: 14px; border: 1.5px solid var(--border); box-shadow: var(--shadow); padding: 18px 22px; margin-bottom: 16px; }
+.meta-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.fg label { display: block; font-size: 12px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.fg input { width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 13px; color: var(--gray); background: var(--bg); outline: none; transition: border-color .2s; }
+.fg input:focus { border-color: var(--navy); background: #fff; }
+
+/* Section cards */
+.section-card { background: var(--white); border-radius: 14px; border: 1.5px solid var(--border); box-shadow: var(--shadow); margin-bottom: 12px; overflow: hidden; transition: box-shadow .2s; }
+.section-card:hover { box-shadow: var(--shadow-md); }
+.section-head { display: flex; align-items: center; gap: 10px; padding: 11px 16px; background: var(--bg); border-bottom: 1.5px solid var(--border); }
+.type-badge { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 10px; background: var(--navy); color: #fff; white-space: nowrap; flex-shrink: 0; }
+.section-title-in { flex: 1; border: none; background: transparent; font-family: 'Cairo', sans-serif; font-size: 14px; font-weight: 800; color: var(--navy); outline: none; min-width: 0; }
+.section-title-in::placeholder { color: var(--gray-light); font-weight: 400; }
+.section-acts { display: flex; gap: 4px; flex-shrink: 0; }
+.ic-btn { width: 28px; height: 28px; border: 1px solid var(--border); border-radius: 6px; background: var(--white); color: var(--gray); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+.ic-btn:hover { background: var(--orange-soft); border-color: var(--orange); color: var(--orange); }
+.ic-btn.del:hover { background: #fee2e2; border-color: #dc2626; color: #dc2626; }
+
+.section-body { padding: 16px; }
+
+/* Text */
+.tx-area { width: 100%; min-height: 90px; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 13px; color: var(--gray); background: var(--bg); outline: none; resize: vertical; direction: rtl; line-height: 1.8; transition: border-color .2s; }
+.tx-area:focus { border-color: var(--navy); background: #fff; }
+
+/* List */
+.list-items { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+.list-row { display: flex; align-items: center; gap: 8px; }
+.list-dot { color: var(--orange); font-size: 18px; font-weight: 900; flex-shrink: 0; line-height: 1; }
+.list-in { flex: 1; padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 13px; color: var(--gray); background: var(--bg); outline: none; transition: border-color .2s; }
+.list-in:focus { border-color: var(--navy); background: #fff; }
+
+/* Metrics */
+.metrics-editor { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; margin-bottom: 10px; }
+.metric-ec { background: var(--bg); border: 1.5px solid var(--border); border-radius: 10px; padding: 12px 12px 12px; position: relative; }
+.metric-ec label { display: block; font-size: 10px; font-weight: 700; color: var(--navy); margin-bottom: 3px; }
+.metric-ec input { width: 100%; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; font-family: 'Cairo', sans-serif; font-size: 12px; background: #fff; outline: none; margin-bottom: 7px; }
+.metric-ec input:last-of-type { margin-bottom: 0; }
+.del-mc { position: absolute; top: 6px; left: 6px; width: 20px; height: 20px; border: 1px solid #dc2626; border-radius: 4px; background: #fff; color: #dc2626; cursor: pointer; font-size: 11px; display: flex; align-items: center; justify-content: center; }
+
+/* Table */
+.tbl-wrap { overflow-x: auto; margin-bottom: 10px; }
+.tbl-wrap table { width: 100%; border-collapse: collapse; }
+.tbl-wrap thead th { padding: 4px; }
+.tbl-wrap tbody td { padding: 4px; }
+.tbl-in-h { font-weight: 800; width: 100%; border: 1.5px solid var(--navy); border-radius: 6px; padding: 6px 8px; font-family: 'Cairo', sans-serif; font-size: 12px; background: #e8ecf4; outline: none; }
+.tbl-in { width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; font-family: 'Cairo', sans-serif; font-size: 12px; outline: none; background: var(--bg); }
+
+/* Scorecard */
+.scorecard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 8px; }
+.score-cell { background: var(--bg); border-radius: 10px; padding: 12px; border: 1.5px solid var(--border); position: relative; }
+.score-cell .sc-label-in { width: 100%; border: none; background: transparent; font-family: 'Cairo', sans-serif; font-size: 11px; color: var(--navy); font-weight: 700; outline: none; margin-bottom: 8px; }
+.score-cell .sc-label-text { font-size: 11px; color: var(--navy); font-weight: 700; margin-bottom: 8px; }
+.score-toggle { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+.sc-btn { font-family: 'Cairo', sans-serif; font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 7px; border: 1.5px solid var(--border); background: var(--white); cursor: pointer; transition: all .15s; }
+.sc-btn.yes.active { background: var(--green-soft); border-color: var(--green); color: var(--green); }
+.sc-btn.no.active { background: #fee2e2; border-color: #dc2626; color: #dc2626; }
+.sc-btn.green.active { background: var(--green-soft); border-color: var(--green); color: var(--green); }
+.sc-btn.yellow.active { background: #fef3c7; border-color: #d97706; color: #d97706; }
+.sc-btn.red.active { background: #fee2e2; border-color: #dc2626; color: #dc2626; }
+.sc-mode-tab { font-size: 10px; padding: 2px 6px; border-radius: 4px; background: var(--white); border: 1px solid var(--border); cursor: pointer; }
+.sc-mode-tab.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+.del-sc { position: absolute; top: 6px; left: 6px; width: 18px; height: 18px; border: 1px solid #dc2626; border-radius: 4px; background: #fff; color: #dc2626; cursor: pointer; font-size: 10px; display: flex; align-items: center; justify-content: center; }
+
+/* Checklist */
+.cl-items { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+.cl-row { display: flex; gap: 8px; align-items: stretch; }
+.cl-row .field-text { flex: 1; padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 13px; color: var(--gray); background: var(--bg); outline: none; transition: border-color .2s; }
+.cl-row .field-text:focus { border-color: var(--navy); background: #fff; }
+.cl-row .status-sel { padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 12px; background: #fff; outline: none; cursor: pointer; min-width: 130px; }
+.cl-options-edit { background: var(--bg); border: 1px dashed var(--border); border-radius: 8px; padding: 8px 10px; margin-bottom: 8px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.cl-options-edit label { font-size: 11px; color: var(--gray-light); font-weight: 700; }
+.cl-options-edit input { flex: 1; min-width: 120px; padding: 5px 8px; border: 1px solid var(--border); border-radius: 5px; font-family: 'Cairo', sans-serif; font-size: 11px; background: #fff; outline: none; }
+
+/* Status (single) */
+.status-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.status-btn { flex: 1; min-width: 90px; padding: 10px 8px; border-radius: 10px; border: 2px solid var(--border); background: var(--white); font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: all .18s; text-align: center; }
+.status-btn.active.green { background: var(--green-soft); border-color: var(--green); color: var(--green); }
+.status-btn.active.yellow { background: #fef3c7; border-color: #d97706; color: #d97706; }
+.status-btn.active.red { background: #fee2e2; border-color: #dc2626; color: #dc2626; }
+
+/* Add buttons */
+.add-btn { display: flex; align-items: center; gap: 6px; padding: 7px 12px; border: 1.5px dashed var(--border); border-radius: 8px; background: transparent; font-family: 'Cairo', sans-serif; font-size: 12px; font-weight: 700; color: var(--gray-light); cursor: pointer; transition: all .15s; }
+.add-btn:hover { border-color: var(--navy); color: var(--navy); }
+.btns-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* Add section */
+.add-section-wrap { text-align: center; margin-top: 6px; }
+.add-section-btn { padding: 12px 32px; border: 2px dashed var(--border); border-radius: 12px; background: transparent; font-family: 'Cairo', sans-serif; font-size: 14px; font-weight: 700; color: var(--gray-light); cursor: pointer; transition: all .2s; }
+.add-section-btn:hover { border-color: var(--navy); color: var(--navy); background: var(--white); }
+
+/* Modal */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 999; display: none; align-items: center; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--white); border-radius: 16px; padding: 24px; width: 420px; max-width: 95vw; box-shadow: var(--shadow-md); border-top: 4px solid var(--orange); }
+.modal h3 { font-size: 16px; font-weight: 900; color: var(--navy); margin-bottom: 16px; }
+.type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.type-opt { padding: 16px; border: 2px solid var(--border); border-radius: 12px; text-align: center; cursor: pointer; transition: all .15s; }
+.type-opt:hover { border-color: var(--navy); background: var(--orange-soft); }
+.type-opt .ico { font-size: 28px; margin-bottom: 8px; }
+.type-opt .nm { font-size: 13px; font-weight: 800; color: var(--navy); }
+.type-opt .ds { font-size: 11px; color: var(--gray-light); margin-top: 3px; }
+
+/* Toast */
+.toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); padding: 13px 28px; border-radius: 12px; font-size: 14px; font-weight: 700; z-index: 9999; display: none; box-shadow: 0 4px 20px rgba(0,0,0,0.2); color: #fff; }
+.toast.show { display: block; animation: slideUp .3s ease; }
+.toast.success { background: var(--green); }
+.toast.error { background: #dc2626; }
+@keyframes slideUp { from { opacity:0; transform:translateX(-50%) translateY(10px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
+</style>
+</head>
+<body>
+
+<header class="global-topbar">
+  <div class="brand-block">
+    <a href="/employee"><img src="/img/logo.jpg" alt="Marketing Experts" class="brand-logo"></a>
+  </div>
+  <a href="/employee" class="tb-ic-btn" title="رجوع" style="text-decoration:none;width:auto;padding:0 12px;gap:6px;font-size:12px;font-weight:700">
+    <span data-icon="arrow-right"></span> رجوع
+  </a>
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:10px;min-width:0">
+    <span class="htitle" id="pageTitle" style="font-size:14px;font-weight:800;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">تقرير جديد</span>
+    <span id="fillModeTag" style="display:none;font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px;background:var(--orange-soft);color:var(--orange)">📋 نموذج محدد</span>
+    <span class="save-status" id="saveStatus" style="font-size:11px;color:var(--gray-light);white-space:nowrap"></span>
+  </div>
+  <div class="topbar-actions">
+    <button class="tb-ic-btn theme-toggle" onclick="toggleTheme()" title="الوضع الليلي" id="themeToggleBtn">🌙</button>
+    <button class="btn btn-save" id="empSaveBtn" onclick="saveReport()" style="padding:8px 14px;font-size:12px;font-weight:700;border-radius:9px;background:var(--bg);color:var(--navy);border:1px solid var(--navy);font-family:'Cairo',sans-serif;cursor:pointer">💾 حفظ</button>
+    <button class="btn btn-send" id="empSendBtn" onclick="sendReport()" style="padding:8px 14px;font-size:12px;font-weight:700;border-radius:9px;background:var(--orange);color:#fff;border:none;font-family:'Cairo',sans-serif;cursor:pointer">إرسال للمدير ←</button>
+  </div>
+</header>
+
+<!-- Wizard Layout (يُفعّل لما canEditStructure=false) -->
+<div class="wiz-layout" id="wizLayout" style="display:none">
+  <aside class="wiz-stepper" id="wizStepper"></aside>
+  <main class="wiz-content">
+    <div class="wiz-progress-top"><div id="wizProgressBar" style="width:0%"></div></div>
+
+    <div id="wizMetaCard"></div>
+
+    <div class="wiz-step-header" id="wizStepHeader"></div>
+    <div class="wiz-section-card" id="wizSectionBody"></div>
+
+    <button class="ai-helper" id="aiHelper" type="button" onclick="askAI()">
+      <div class="ai-icon">✨</div>
+      <div class="ai-text" id="aiText">عايز <strong>اقتراحات</strong> سريعة لإكمال هذا القسم؟</div>
+      <span class="ai-arrow">←</span>
+    </button>
+
+    <!-- Leader Merge Option (يظهر فقط لو is_team_leader) -->
+    <div id="mergeOption" style="display:none;background:var(--orange-soft);border:1px solid var(--orange);border-radius:10px;padding:14px;margin:14px 0">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <input type="checkbox" id="mergeWithTeam" checked style="width:16px;height:16px;accent-color:var(--orange);cursor:pointer">
+        <label for="mergeWithTeam" style="font-weight:700;color:var(--navy);cursor:pointer">دمج تقاريري مع تقارير الفريق</label>
+      </div>
+      <div style="font-size:11px;color:var(--gray);margin-bottom:8px">اختر الأعضاء اللي تريد دمج تقاريرهم:</div>
+      <div id="memberSelect" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+    </div>
+
+    <div class="wiz-nav">
+      <button class="wiz-prev" onclick="prevStep()" id="wizPrevBtn">← السابق</button>
+      <button class="wiz-next" onclick="nextStep()" id="wizNextBtn">التالي ←</button>
+    </div>
+  </main>
+</div>
+
+<!-- Classic Layout (للأدمن أو الموظف اللي عنده صلاحية) -->
+<div class="body" id="classicBody">
+
+  <div class="meta-card" id="classicMetaCard">
+    <div class="meta-row">
+      <div class="fg">
+        <label>عنوان التقرير</label>
+        <input type="text" id="reportTitle" placeholder="مثال: تقرير المبيعات — الأسبوع 18" oninput="persist()" autocomplete="off">
+      </div>
+      <div class="fg">
+        <label>الأسبوع</label>
+        <input type="text" id="reportWeek" oninput="persist()" autocomplete="off">
+      </div>
+    </div>
+  </div>
+
+  <div id="sectionsContainer"></div>
+
+  <div class="add-section-wrap">
+    <button class="add-section-btn" onclick="openModal()">
+      + إضافة قسم جديد
+    </button>
+  </div>
+
+</div>
+
+<!-- AI Helper Modal -->
+<div class="modal-overlay" id="aiModal" onclick="if(event.target===this)closeAI()">
+  <div class="modal" style="width:520px;max-width:95vw">
+    <h3 style="margin-bottom:14px">✨ اقتراحات سريعة</h3>
+    <div id="aiSuggestions" style="display:flex;flex-direction:column;gap:8px">
+      <div style="text-align:center;color:var(--gray-light);padding:20px">جاري التحضير...</div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;margin-top:14px">
+      <button onclick="closeAI()" style="padding:8px 18px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--gray);font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal اختيار النوع -->
+<div class="modal-overlay" id="addModal" onclick="if(event.target===this)closeModal()">
+  <div class="modal" style="width:560px">
+    <h3>اختار نوع القسم</h3>
+    <div class="type-grid" style="grid-template-columns:repeat(3,1fr)">
+      <div class="type-opt" onclick="addSection('text')">
+        <div class="ico">📝</div>
+        <div class="nm">فقرة نصية</div>
+        <div class="ds">ملاحظات، وصف</div>
+      </div>
+      <div class="type-opt" onclick="addSection('list')">
+        <div class="ico">📋</div>
+        <div class="nm">قائمة</div>
+        <div class="ds">نقاط بسيطة</div>
+      </div>
+      <div class="type-opt" onclick="addSection('metrics')">
+        <div class="ico">📊</div>
+        <div class="nm">أرقام</div>
+        <div class="ds">KPIs، إحصائيات</div>
+      </div>
+      <div class="type-opt" onclick="addSection('scorecard')">
+        <div class="ico">✅</div>
+        <div class="nm">Scorecard</div>
+        <div class="ds">أسئلة تقييم</div>
+      </div>
+      <div class="type-opt" onclick="addSection('checklist')">
+        <div class="ico">🗂️</div>
+        <div class="nm">قائمة بحالة</div>
+        <div class="ds">عناصر + الحالة</div>
+      </div>
+      <div class="type-opt" onclick="addSection('status')">
+        <div class="ico">🚦</div>
+        <div class="nm">حالة فريق</div>
+        <div class="ds">أخضر/أصفر/أحمر</div>
+      </div>
+      <div class="type-opt" onclick="addSection('table')">
+        <div class="ico">📑</div>
+        <div class="nm">جدول</div>
+        <div class="ds">بيانات منظمة</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── State ─────────────────────────────────────────────────────────────────────
+let sections = [];
+let currentDraftId = null;
+let sessionData = null;
+let canEditStructure = true; // false = fill-in mode (locked structure)
+let wizardMode = false;       // true = step-by-step wizard
+let currentStep = 0;          // active step in wizard
+let lastSavedAt = null;       // for save status display
+let saveStatusTimer = null;
+let templateTheme = 'standard';
+const LS_KEY = 'rpt_session_draft';
+
+const TYPE_ICONS = {
+  text: '📝', list: '📋', metrics: '📊', table: '📑',
+  scorecard: '✅', checklist: '🗂️', status: '🚦'
+};
+
+const TYPE_LABELS = { text: '📝 نص', list: '📋 قائمة', metrics: '📊 أرقام', table: '📑 جدول', scorecard: '✅ Scorecard', checklist: '🗂️ قائمة بحالة', status: '🚦 حالة' };
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+async function init() {
+  const session = await fetch('/api/session').then(r => r.json());
+  if (!session) return location.href = '/login';
+  sessionData = session;
+
+  // Team Leader: load merge option
+  if (session.is_team_leader) loadTeamMembersForMerge();
+
+  const now = new Date();
+  const wn  = Math.ceil(((now - new Date(now.getFullYear(),0,1)) / 86400000 + new Date(now.getFullYear(),0,1).getDay()+1) / 7);
+  document.getElementById('reportWeek').value = `الأسبوع ${wn} - ${now.getFullYear()}`;
+  document.getElementById('reportTitle').placeholder = `تقرير ${session.name} — الأسبوع ${wn}`;
+
+  // جلب إعدادات القالب الخاص بالموظف
+  const tplRes = await fetch('/api/employee/template').then(r => r.json());
+  canEditStructure = tplRes.can_edit !== false; // true إذا لا يوجد قالب أو لديه صلاحية
+  if (tplRes.template && tplRes.template.visual_theme) templateTheme = tplRes.template.visual_theme;
+
+  if (!canEditStructure) {
+    // wizard mode للموظف العادي
+    wizardMode = true;
+    document.getElementById('classicBody').style.display = 'none';
+    document.getElementById('wizLayout').style.display = 'grid';
+    document.getElementById('fillModeTag').style.display = 'inline';
+
+    // انقل meta-card لداخل الـ wizard layout
+    const metaCard = document.getElementById('classicMetaCard');
+    document.getElementById('wizMetaCard').appendChild(metaCard);
+    metaCard.style.background = 'var(--white)';
+    metaCard.style.borderRadius = '14px';
+    metaCard.style.border = '1.5px solid var(--border)';
+    metaCard.style.boxShadow = 'var(--shadow)';
+    metaCard.style.padding = '18px 22px';
+    metaCard.style.marginBottom = '16px';
+  }
+
+  const draftId = new URLSearchParams(location.search).get('draft');
+  if (draftId) {
+    await loadDraft(parseInt(draftId));
+  } else {
+    // إذا يوجد قالب مخصص، استخدم أقسامه
+    if (tplRes.template && tplRes.template.sections && tplRes.template.sections.length) {
+      sections = (tplRes.template.sections || []).filter(s => s && typeof s === 'object' && s.type).map(s => {
+        const base = { ...s, id: uid() };
+        if (s.type === 'text')      { base.content = ''; }
+        if (s.type === 'list')      { base.items = (s.items || ['']).map(() => ''); }
+        if (s.type === 'metrics')   { base.items = (s.items || []).map(it => ({ label: it.label || '', value: '', unit: it.unit || '' })); }
+        if (s.type === 'table')     { base.headers = s.headers || []; base.rows = (s.rows || [['']]).map(r => r.map(() => '')); }
+        if (s.type === 'scorecard') { base.items = (s.items || []).map(it => ({ label: it.label || '', mode: it.mode || 'yesno', value: '' })); }
+        if (s.type === 'status')    { base.options = s.options || []; base.value = ''; base.note = ''; }
+        if (s.type === 'checklist') { base.status_options = s.status_options || []; base.items = (s.items || [{ text: '', status: '' }]).map(it => ({ text: typeof it === 'object' ? it.text || '' : '', status: '' })); }
+        return base;
+      });
+      render();
+    } else {
+      // اقترح استمرار مسودة محلية
+      const saved = localStorage.getItem(LS_KEY);
+      if (saved) {
+        try {
+          const d = JSON.parse(saved);
+          if (d.sections && d.sections.length && confirm('عندك مسودة غير محفوظة — تكملها؟')) {
+            if (d.title) document.getElementById('reportTitle').value = d.title;
+            if (d.week)  document.getElementById('reportWeek').value  = d.week;
+            sections = d.sections;
+            render(); return;
+          }
+        } catch(e) { localStorage.removeItem(LS_KEY); }
+      }
+      sections = defaultSections();
+      render();
+    }
+  }
+
+  setInterval(() => { if (currentDraftId) autoSave(); }, 120000);
+  // wizard mode auto-save heartbeat كل 30 ثانية
+  if (wizardMode) setInterval(autoSaveSilent, 30000);
+}
+
+async function loadDraft(id) {
+  const data = await fetch('/api/employee/me').then(r => r.json());
+  const draft = (data.drafts || []).find(d => d.id === id);
+  if (!draft) { sections = defaultSections(); render(); return; }
+
+  currentDraftId = draft.id;
+  document.getElementById('reportTitle').value = draft.title || '';
+  document.getElementById('reportWeek').value  = draft.week  || '';
+  document.getElementById('pageTitle').textContent = 'تكملة التقرير';
+
+  // استخرج الأقسام من الـ HTML المحفوظ
+  try {
+    const res  = await fetch(`/reports/view/${encodeURIComponent(draft.filename)}`);
+    const html = await res.text();
+    const m    = html.match(/<script type="application\/json" id="__rpt__">([\s\S]*?)<\/script>/);
+    if (m) { sections = JSON.parse(m[1]); render(); return; }
+  } catch(e) {}
+
+  sections = defaultSections();
+  render();
+}
+
+function defaultSections() {
+  return [
+    { id: uid(), type: 'text',    title: 'ملخص الأسبوع',        content: '' },
+    { id: uid(), type: 'list',    title: 'أبرز الإنجازات',       items: [''] },
+    { id: uid(), type: 'metrics', title: 'الأرقام والمؤشرات',    items: [{ label: '', value: '', unit: '' }] },
+    { id: uid(), type: 'list',    title: 'التحديات',             items: [''] },
+    { id: uid(), type: 'text',    title: 'خطة الأسبوع القادم',  content: '' },
+  ];
+}
+
+function uid() { return Math.random().toString(36).slice(2, 9); }
+
+// ── Render ─────────────────────────────────────────────────────────────────────
+function render() {
+  if (wizardMode) {
+    renderWizard();
+  } else {
+    document.getElementById('sectionsContainer').innerHTML =
+      sections.map((s, i) => renderCard(s, i)).join('');
+  }
+}
+
+function renderWizard() {
+  if (!sections.length) return;
+  if (currentStep >= sections.length) currentStep = sections.length - 1;
+  if (currentStep < 0) currentStep = 0;
+
+  const sec = sections[currentStep];
+
+  // Stepper
+  const stepperHTML = sections.map((s, i) => {
+    let cls = 'wiz-step';
+    if (i < currentStep) cls += ' done';
+    if (i === currentStep) cls += ' current';
+    const content = i < currentStep ? '✓' : (i + 1);
+    const lineCls = i < currentStep ? 'wiz-step-line done' : 'wiz-step-line';
+    const line = i < sections.length - 1 ? `<div class="${lineCls}"></div>` : '';
+    return `<button class="${cls}" onclick="goToStep(${i})" title="${esc(s.title || '')}"><span class="num">${content}</span></button>${line}`;
+  }).join('');
+  document.getElementById('wizStepper').innerHTML = stepperHTML;
+
+  // Progress bar
+  const pct = ((currentStep + 1) / sections.length) * 100;
+  document.getElementById('wizProgressBar').style.width = pct + '%';
+
+  // Section header
+  document.getElementById('wizStepHeader').innerHTML = `
+    <div class="wiz-step-icon">${TYPE_ICONS[sec.type] || '📄'}</div>
+    <div>
+      <h2>${esc(sec.title || '')}</h2>
+      <div class="wiz-step-meta">القسم ${currentStep + 1} من ${sections.length}</div>
+    </div>`;
+
+  // Section body
+  document.getElementById('wizSectionBody').innerHTML = renderBody(sec);
+
+  // Nav buttons
+  const prevBtn = document.getElementById('wizPrevBtn');
+  const nextBtn = document.getElementById('wizNextBtn');
+  prevBtn.disabled = currentStep === 0;
+  if (currentStep === sections.length - 1) {
+    nextBtn.textContent = '✓ إرسال للمدير';
+    nextBtn.classList.add('final');
+  } else {
+    nextBtn.textContent = 'التالي ←';
+    nextBtn.classList.remove('final');
+  }
+
+  // AI helper hint based on type
+  const aiHints = {
+    text: 'عايز <strong>اقتراحات</strong> لصياغة الفقرة؟',
+    list: 'محتاج أمثلة <strong>للنقاط</strong> اللي ممكن تضيفها؟',
+    metrics: 'مش متأكد من <strong>الأرقام</strong> الافتراضية؟',
+    scorecard: 'تحتار في <strong>التقييم</strong>؟',
+    checklist: 'محتاج <strong>تنظيم</strong> القرارات؟',
+    status: 'مش متأكد من الحالة المناسبة؟',
+    table: 'تحتاج تنسيق <strong>للبيانات</strong>؟'
+  };
+  document.getElementById('aiText').innerHTML = aiHints[sec.type] || aiHints.text;
+}
+
+function goToStep(i) {
+  if (i < 0 || i >= sections.length) return;
+  currentStep = i;
+  render();
+  autoSaveSilent();
+  scrollToTop();
+}
+
+function nextStep() {
+  if (currentStep < sections.length - 1) {
+    currentStep++;
+    render();
+    autoSaveSilent();
+    scrollToTop();
+  } else {
+    // Final step → send
+    sendReport();
+  }
+}
+
+function prevStep() {
+  if (currentStep > 0) {
+    currentStep--;
+    render();
+    scrollToTop();
+  }
+}
+
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderCard(s, i) {
+  const titleEl = canEditStructure
+    ? `<input class="section-title-in" value="${esc(s.title)}" placeholder="عنوان القسم" oninput="onTitleChange('${s.id}', this.value)">`
+    : `<span class="section-title-in" style="font-weight:800;color:var(--navy)">${esc(s.title)}</span>`;
+
+  let acts = '';
+  if (canEditStructure) {
+    const upBtn   = i > 0 ? `<button class="ic-btn" onclick="moveSection('${s.id}',-1)" title="لأعلى">↑</button>` : '';
+    const downBtn = i < sections.length-1 ? `<button class="ic-btn" onclick="moveSection('${s.id}',1)" title="لأسفل">↓</button>` : '';
+    acts = `<div class="section-acts">${upBtn}${downBtn}<button class="ic-btn del" onclick="deleteSection('${s.id}')" title="حذف">✕</button></div>`;
+  }
+
+  return `
+    <div class="section-card" id="sc_${s.id}">
+      <div class="section-head">
+        <span class="type-badge">${TYPE_LABELS[s.type] || s.type}</span>
+        ${titleEl}
+        ${acts}
+      </div>
+      <div class="section-body">${renderBody(s)}</div>
+    </div>`;
+}
+
+function renderBody(s) {
+  if (!s || typeof s !== 'object') return '<div style="color:var(--gray-light);padding:14px;text-align:center">⚠️ قسم غير صالح</div>';
+  if (s.type === 'text') {
+    return `<textarea class="tx-area" placeholder="اكتب هنا..." oninput="onTextChange('${s.id}', this.value)">${esc(s.content || '')}</textarea>`;
+  }
+
+  if (s.type === 'list') {
+    const rows = (s.items || []).map((item, i) => `
+      <div class="list-row">
+        <span class="list-dot">•</span>
+        <input class="list-in" value="${esc(item)}" placeholder="عنصر القائمة..."
+          oninput="onItemChange('${s.id}', ${i}, this.value)">
+        <button class="ic-btn del" onclick="removeItem('${s.id}', ${i})">✕</button>
+      </div>`).join('');
+    return `<div class="list-items">${rows}</div>
+      <button class="add-btn" onclick="addItem('${s.id}')">+ عنصر جديد</button>`;
+  }
+
+  if (s.type === 'metrics') {
+    const cards = (s.items || []).map((m, i) => `
+      <div class="metric-ec">
+        ${canEditStructure ? `<button class="del-mc" onclick="removeMetric('${s.id}', ${i})">✕</button>` : ''}
+        <label>${esc(m.label || 'البيان')}</label>
+        ${canEditStructure ? `<input value="${esc(m.label||'')}" placeholder="مثال: إجمالي المبيعات" oninput="onMetricChange('${s.id}', ${i}, 'label', this.value)">` : ''}
+        <label>القيمة</label>
+        <input value="${esc(m.value||'')}" placeholder="أدخل القيمة..."
+          oninput="onMetricChange('${s.id}', ${i}, 'value', this.value)">
+        ${canEditStructure ? `<label>الوحدة (اختياري)</label><input value="${esc(m.unit||'')}" placeholder="مثال: جنيه، %" oninput="onMetricChange('${s.id}', ${i}, 'unit', this.value)">` : ''}
+      </div>`).join('');
+    return `<div class="metrics-editor">${cards}</div>
+      ${canEditStructure ? `<button class="add-btn" onclick="addMetric('${s.id}')">+ إضافة مؤشر</button>` : ''}`;
+  }
+
+  if (s.type === 'scorecard') {
+    const cells = (s.items || []).map((c, i) => {
+      const mode = c.mode || 'yesno';
+      let buttons;
+      if (mode === 'yesno') {
+        buttons = `
+          <button class="sc-btn yes ${c.value==='yes'?'active':''}" onclick="setScCellValue('${s.id}', ${i}, 'yes')">✅ نعم</button>
+          <button class="sc-btn no ${c.value==='no'?'active':''}" onclick="setScCellValue('${s.id}', ${i}, 'no')">❌ لا</button>`;
+      } else {
+        buttons = `
+          <button class="sc-btn green ${c.value==='green'?'active':''}" onclick="setScCellValue('${s.id}', ${i}, 'green')">🟢</button>
+          <button class="sc-btn yellow ${c.value==='yellow'?'active':''}" onclick="setScCellValue('${s.id}', ${i}, 'yellow')">🟡</button>
+          <button class="sc-btn red ${c.value==='red'?'active':''}" onclick="setScCellValue('${s.id}', ${i}, 'red')">🔴</button>`;
+      }
+      const labelEl = canEditStructure
+        ? `<input class="sc-label-in" value="${esc(c.label||'')}" placeholder="السؤال..." oninput="onScCellLabel('${s.id}', ${i}, this.value)">`
+        : `<div class="sc-label-text">${esc(c.label||'')}</div>`;
+      const modeTabs = canEditStructure ? `
+        <div style="display:flex;gap:4px;margin-bottom:8px">
+          <button class="sc-mode-tab ${mode==='yesno'?'active':''}" onclick="setScCellMode('${s.id}', ${i}, 'yesno')">نعم/لا</button>
+          <button class="sc-mode-tab ${mode==='traffic'?'active':''}" onclick="setScCellMode('${s.id}', ${i}, 'traffic')">🚦 ألوان</button>
+        </div>` : '';
+      const delBtn = canEditStructure ? `<button class="del-sc" onclick="removeScCell('${s.id}', ${i})">✕</button>` : '';
+      return `<div class="score-cell">${delBtn}${labelEl}${modeTabs}<div class="score-toggle">${buttons}</div></div>`;
+    }).join('');
+    return `<div class="scorecard-grid">${cells}</div>
+      ${canEditStructure ? `<button class="add-btn" onclick="addScCell('${s.id}')">+ إضافة سؤال</button>` : ''}`;
+  }
+
+  if (s.type === 'status') {
+    const opts = s.options || [{ value: 'green', label: '🟢 ممتاز' }, { value: 'yellow', label: '🟡 متوسط' }, { value: 'red', label: '🔴 يحتاج تدخل' }];
+    const buttons = opts.map(o => `
+      <button class="status-btn ${o.value} ${s.value===o.value?'active':''}" onclick="setStatusValue('${s.id}', '${o.value}')">${esc(o.label)}</button>`).join('');
+    return `<div class="status-row">${buttons}</div>
+      <textarea class="tx-area" style="margin-top:10px" placeholder="ملاحظات إضافية..." oninput="onStatusNote('${s.id}', this.value)">${esc(s.note||'')}</textarea>`;
+  }
+
+  if (s.type === 'checklist') {
+    const opts = s.status_options || ['🟢 منتظمة', '🟡 تحتاج متابعة', '🔴 مشكلة'];
+    const optsEditor = canEditStructure ? `
+      <div class="cl-options-edit">
+        <label>الخيارات:</label>
+        ${opts.map((o, oi) => `<input value="${esc(o)}" oninput="onClOptionChange('${s.id}', ${oi}, this.value)">`).join('')}
+      </div>` : '';
+    const rows = (s.items || []).map((it, i) => {
+      const item = (typeof it === 'object' && it !== null) ? it : { text: String(it||''), status: '' };
+      const sel = `<select class="status-sel" onchange="onClStatusChange('${s.id}', ${i}, this.value)">
+        <option value="">— اختر —</option>
+        ${opts.map(o => `<option ${item.status===o?'selected':''}>${esc(o)}</option>`).join('')}
+      </select>`;
+      return `<div class="cl-row">
+        <input class="field-text" value="${esc(item.text||'')}" placeholder="${esc(s.placeholder||'العنصر...')}" oninput="onClTextChange('${s.id}', ${i}, this.value)">
+        ${sel}
+        <button class="ic-btn del" onclick="removeClItem('${s.id}', ${i})">✕</button>
+      </div>`;
+    }).join('');
+    return `${optsEditor}<div class="cl-items">${rows}</div>
+      <button class="add-btn" onclick="addClItem('${s.id}')">+ عنصر جديد</button>`;
+  }
+
+  if (s.type === 'table') {
+    const headers = s.headers || ['العمود 1', 'العمود 2'];
+    const rows    = s.rows    || [['', '']];
+    const hCells  = headers.map((h, ci) =>
+      canEditStructure
+        ? `<th style="padding:4px"><input class="tbl-in-h" value="${esc(h)}" oninput="onHeaderChange('${s.id}', ${ci}, this.value)"></th>`
+        : `<th style="padding:8px 10px;background:var(--navy);color:#fff;font-size:12px">${esc(h)}</th>`
+    ).join('');
+    const dRows = rows.map((row, ri) => {
+      const cells = row.map((cell, ci) =>
+        `<td style="padding:4px"><input class="tbl-in" value="${esc(cell)}"
+          oninput="onCellChange('${s.id}', ${ri}, ${ci}, this.value)"></td>`).join('');
+      const delCell = `<td style="padding:4px"><button class="ic-btn del" onclick="removeRow('${s.id}', ${ri})">✕</button></td>`;
+      return `<tr>${cells}${delCell}</tr>`;
+    }).join('');
+    return `
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr>${hCells}<th></th></tr></thead>
+          <tbody>${dRows}</tbody>
+        </table>
+      </div>
+      <div class="btns-row">
+        <button class="add-btn" onclick="addRow('${s.id}')">+ صف جديد</button>
+        ${canEditStructure ? `<button class="add-btn" onclick="addCol('${s.id}')">+ عمود جديد</button>` : ''}
+      </div>`;
+  }
+
+  return `<p style="color:var(--gray-light);font-size:13px">نوع غير معروف</p>`;
+}
+
+// ── Data mutations ─────────────────────────────────────────────────────────────
+// بدون re-render (لتغييرات النص)
+function onTitleChange(id, v) { getS(id).title = v; persist(); }
+function onTextChange(id, v)  { getS(id).content = v; persist(); }
+function onItemChange(id, i, v) { getS(id).items[i] = v; persist(); }
+function onMetricChange(id, i, f, v) { getS(id).items[i][f] = v; persist(); }
+function onHeaderChange(id, i, v) { getS(id).headers[i] = v; persist(); }
+function onCellChange(id, ri, ci, v) { getS(id).rows[ri][ci] = v; persist(); }
+
+// مع re-render (للتغييرات الهيكلية)
+function addItem(id) { getS(id).items.push(''); render(); persist(); }
+function removeItem(id, i) { const s = getS(id); if (s.items.length > 1) { s.items.splice(i, 1); render(); persist(); } }
+function addMetric(id) { getS(id).items.push({ label: '', value: '', unit: '' }); render(); persist(); }
+function removeMetric(id, i) { const s = getS(id); if (s.items.length > 1) { s.items.splice(i, 1); render(); persist(); } }
+function addRow(id) { const s = getS(id); s.rows.push(s.headers.map(() => '')); render(); persist(); }
+function removeRow(id, i) { const s = getS(id); if (s.rows.length > 1) { s.rows.splice(i, 1); render(); persist(); } }
+function addCol(id) { const s = getS(id); s.headers.push('عمود جديد'); s.rows.forEach(r => r.push('')); render(); persist(); }
+
+// scorecard
+function setScCellValue(id, i, v) { getS(id).items[i].value = v; render(); persist(); }
+function setScCellMode(id, i, m)  { const c = getS(id).items[i]; c.mode = m; c.value = ''; render(); persist(); }
+function onScCellLabel(id, i, v)  { getS(id).items[i].label = v; persist(); }
+function addScCell(id)            { getS(id).items.push({ label: '', mode: 'yesno', value: '' }); render(); persist(); }
+function removeScCell(id, i)      { const s = getS(id); if (s.items.length > 1) { s.items.splice(i, 1); render(); persist(); } }
+
+// status (single)
+function setStatusValue(id, v) { getS(id).value = v; render(); persist(); }
+function onStatusNote(id, v)   { getS(id).note = v; persist(); }
+
+// checklist
+function onClTextChange(id, i, v)   { const it = getS(id).items[i]; if (typeof it === 'object' && it !== null) it.text = v; else getS(id).items[i] = { text: v, status: '' }; persist(); }
+function onClStatusChange(id, i, v) { const it = getS(id).items[i]; if (typeof it === 'object' && it !== null) it.status = v; else getS(id).items[i] = { text: String(it||''), status: v }; persist(); }
+function onClOptionChange(id, oi, v){ getS(id).status_options[oi] = v; persist(); }
+function addClItem(id)              { getS(id).items.push({ text: '', status: '' }); render(); persist(); }
+function removeClItem(id, i)        { const s = getS(id); if (s.items.length > 1) { s.items.splice(i, 1); render(); persist(); } }
+
+function moveSection(id, dir) {
+  const i = sections.findIndex(s => s.id === id);
+  if (i + dir < 0 || i + dir >= sections.length) return;
+  [sections[i], sections[i+dir]] = [sections[i+dir], sections[i]];
+  render(); persist();
+}
+
+function deleteSection(id) {
+  if (sections.length <= 1) { showToast('لازم يكون في قسم واحد على الأقل', 'error'); return; }
+  if (!confirm('تحذف القسم ده؟')) return;
+  sections = sections.filter(s => s.id !== id);
+  render(); persist();
+}
+
+function addSection(type) {
+  const defs = {
+    text:      { content: '' },
+    list:      { items: [''] },
+    metrics:   { items: [{ label: '', value: '', unit: '' }] },
+    table:     { headers: ['العمود 1', 'العمود 2'], rows: [['', '']] },
+    scorecard: { items: [{ label: '', mode: 'yesno', value: '' }] },
+    checklist: { status_options: ['🟢 منتظمة', '🟡 تحتاج متابعة', '🔴 مشكلة'], items: [{ text: '', status: '' }] },
+    status:    { options: [{ value: 'green', label: '🟢 ممتاز' }, { value: 'yellow', label: '🟡 متوسط' }, { value: 'red', label: '🔴 يحتاج تدخل' }], value: '', note: '' },
+  };
+  const names = { text: 'قسم جديد', list: 'قائمة جديدة', metrics: 'مؤشرات جديدة', table: 'جدول جديد', scorecard: 'Scorecard الأسبوع', checklist: 'قائمة بحالة', status: 'حالة الفريق' };
+  sections.push({ id: uid(), type, title: names[type], ...defs[type] });
+  render(); persist();
+  closeModal();
+  setTimeout(() => { const last = document.querySelector('.section-card:last-child'); if (last) last.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 80);
+}
+
+function getS(id) { return sections.find(s => s.id === id); }
+
+// ── AI Helper (Imp 10 — local suggestions) ────────────────────────────────────
+const AI_SUGGESTIONS = {
+  text: [
+    'ابدأ بأهم 3 نقاط ثم اشرح التفاصيل',
+    'استخدم bullet points للوضوح',
+    'اذكر السبب وراء كل قرار',
+    'حدد الإجراء المطلوب من المدير في النهاية'
+  ],
+  list: [
+    'ابدأ بالأكثر إلحاحاً',
+    'كل عنصر سطر مختصر (لا يزيد عن 12 كلمة)',
+    'استخدم أفعال إجرائية: "أنجز", "راجع", "اقترح"',
+    'تجنب التكرار — كل نقطة فريدة'
+  ],
+  metrics: [
+    'تأكد من أن الأرقام عن نفس الفترة الزمنية',
+    'استخدم نفس وحدة القياس عبر الأسابيع',
+    'سجّل الأرقام حتى لو كانت 0 (مهم للمقارنة)',
+    'أضف ملاحظة لو في رقم غير اعتيادي'
+  ],
+  scorecard: [
+    'كن صريحاً — لا داعي للمجاملة',
+    'لو شك بين 🟢 و 🟡، اختر 🟡',
+    'اعكس الواقع الفعلي للأسبوع، مش المتوسط',
+    'اشرح "لا" دائماً في قسم الملاحظات'
+  ],
+  checklist: [
+    'رتّب القرارات حسب الإلحاح: عاجل → الأسبوع → القادم',
+    'كل قرار له صاحب قرار واضح',
+    'حدد المدة الزمنية المتوقعة',
+    'اربط كل قرار بنتيجة محددة'
+  ],
+  status: [
+    '🟢 أخضر = كل شيء على ما يرام، لا تدخل مطلوب',
+    '🟡 أصفر = يحتاج متابعة، لكن السيطرة مازالت',
+    '🔴 أحمر = يحتاج تدخل عاجل من المدير',
+    'استخدم خانة الملاحظات لتوضيح الـ context'
+  ],
+  table: [
+    'الصف الأول للأعلى أولوية',
+    'استخدم نفس وحدة القياس في كل عمود',
+    'اترك خلية فارغة لو البيانات غير متاحة (لا تكتب 0)',
+    'حافظ على تنسيق ثابت عبر الأسابيع'
+  ]
+};
+
+function askAI() {
+  const sec = wizardMode ? sections[currentStep] : null;
+  const type = sec?.type || 'text';
+  const list = AI_SUGGESTIONS[type] || AI_SUGGESTIONS.text;
+  const html = list.map((tip, i) => `
+    <div style="background:var(--bg);border-radius:10px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start">
+      <div style="width:28px;height:28px;background:var(--orange-soft);color:var(--orange);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">💡</div>
+      <div style="flex:1;font-size:13px;line-height:1.7;color:var(--gray)">${tip}</div>
+    </div>`).join('');
+  document.getElementById('aiSuggestions').innerHTML = html;
+  document.getElementById('aiModal').classList.add('open');
+}
+function closeAI() { document.getElementById('aiModal').classList.remove('open'); }
+
+// ── Modal ──────────────────────────────────────────────────────────────────────
+function openModal()  { document.getElementById('addModal').classList.add('open'); }
+function closeModal() { document.getElementById('addModal').classList.remove('open'); }
+
+// ── LocalStorage + Auto-save ──────────────────────────────────────────────────
+function persist() {
+  localStorage.setItem(LS_KEY, JSON.stringify({
+    title: document.getElementById('reportTitle').value,
+    week:  document.getElementById('reportWeek').value,
+    sections
+  }));
+  scheduleSilentSave();
+}
+
+let autoSaveTimer = null;
+function scheduleSilentSave() {
+  if (!wizardMode) return;
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer = setTimeout(autoSaveSilent, 2500);
+}
+
+async function autoSaveSilent() {
+  if (!sessionData) return;
+  setSaveStatus('saving', '● جاري الحفظ...');
+  try {
+    const title = document.getElementById('reportTitle').value.trim() || `تقرير ${sessionData.name}`;
+    const week  = document.getElementById('reportWeek').value.trim();
+    const content = generateHTML();
+    const body = { title, week, content };
+    if (currentDraftId) body.draft_id = currentDraftId;
+    const res = await fetch('/api/employee/draft', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (data.draft_id) currentDraftId = data.draft_id;
+    lastSavedAt = Date.now();
+    updateSavedDisplay();
+  } catch (e) {
+    setSaveStatus('error', '● فشل الحفظ');
+  }
+}
+
+function setSaveStatus(cls, text) {
+  const el = document.getElementById('saveStatus');
+  if (!el) return;
+  el.className = 'save-status ' + cls;
+  el.textContent = text;
+}
+
+function updateSavedDisplay() {
+  if (!lastSavedAt) return;
+  clearInterval(saveStatusTimer);
+  const tick = () => {
+    const sec = Math.floor((Date.now() - lastSavedAt) / 1000);
+    let text;
+    if (sec < 5) text = '● تم الحفظ الآن';
+    else if (sec < 60) text = `● تم الحفظ منذ ${sec} ثانية`;
+    else text = `● تم الحفظ منذ ${Math.floor(sec/60)} دقيقة`;
+    setSaveStatus('saved', text);
+  };
+  tick();
+  saveStatusTimer = setInterval(tick, 5000);
+}
+
+// ── Generate HTML ──────────────────────────────────────────────────────────────
+function generateHTML() {
+  const title = document.getElementById('reportTitle').value.trim();
+  const week  = document.getElementById('reportWeek').value.trim();
+  const name  = sessionData?.name || '';
+
+  const body = sections.map(s => {
+    if (s.type === 'text') {
+      const content = esc(s.content || '').replace(/\n/g, '<br>');
+      return `<section class="rs"><h2>${esc(s.title)}</h2><p>${content}</p></section>`;
+    }
+    if (s.type === 'list') {
+      const filtered = (s.items || []).filter(Boolean);
+      if (!filtered.length) return '';
+      return `<section class="rs"><h2>${esc(s.title)}</h2><ul>${filtered.map(i => `<li>${esc(i)}</li>`).join('')}</ul></section>`;
+    }
+    if (s.type === 'metrics') {
+      const cards = (s.items || []).filter(m => m.label || m.value).map(m => `
+        <div class="mc"><div class="mv">${esc(m.value)}</div><div class="mu">${esc(m.unit)}</div><div class="ml">${esc(m.label)}</div></div>`).join('');
+      if (!cards) return '';
+      return `<section class="rs"><h2>${esc(s.title)}</h2><div class="mr">${cards}</div></section>`;
+    }
+    if (s.type === 'table') {
+      const thead = `<tr>${(s.headers||[]).map(h=>`<th>${esc(h)}</th>`).join('')}</tr>`;
+      const tbody = (s.rows||[]).map(row=>`<tr>${row.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join('');
+      return `<section class="rs"><h2>${esc(s.title)}</h2><div class="tw"><table><thead>${thead}</thead><tbody>${tbody}</tbody></table></div></section>`;
+    }
+    if (s.type === 'scorecard') {
+      const VAL = { yes: '✅ نعم', no: '❌ لا', green: '🟢 أخضر', yellow: '🟡 أصفر', red: '🔴 أحمر' };
+      const cells = (s.items || []).filter(c => c.label).map(c => {
+        const v = c.value ? VAL[c.value] || c.value : '— لم يُحدد —';
+        const cls = c.value === 'yes' || c.value === 'green' ? 'sc-good' : c.value === 'no' || c.value === 'red' ? 'sc-bad' : c.value === 'yellow' ? 'sc-warn' : 'sc-none';
+        return `<div class="sc"><div class="scl">${esc(c.label)}</div><div class="scv ${cls}">${esc(v)}</div></div>`;
+      }).join('');
+      if (!cells) return '';
+      return `<section class="rs"><h2>${esc(s.title)}</h2><div class="scg">${cells}</div></section>`;
+    }
+    if (s.type === 'status') {
+      const opt = (s.options || []).find(o => o.value === s.value);
+      if (!opt && !s.note) return '';
+      const cls = s.value === 'green' ? 'sc-good' : s.value === 'red' ? 'sc-bad' : s.value === 'yellow' ? 'sc-warn' : 'sc-none';
+      const note = s.note ? `<p style="margin-top:10px">${esc(s.note).replace(/\n/g,'<br>')}</p>` : '';
+      return `<section class="rs"><h2>${esc(s.title)}</h2><div class="st ${cls}">${esc(opt ? opt.label : '— لم يُحدد —')}</div>${note}</section>`;
+    }
+    if (s.type === 'checklist') {
+      const items = (s.items || []).filter(it => (typeof it === 'object' && it.text) || (typeof it === 'string' && it));
+      if (!items.length) return '';
+      const rows = items.map(it => {
+        const text = typeof it === 'object' ? it.text : it;
+        const status = typeof it === 'object' ? it.status : '';
+        return `<tr><td>${esc(text)}</td><td style="text-align:center;font-weight:700">${esc(status||'—')}</td></tr>`;
+      }).join('');
+      return `<section class="rs"><h2>${esc(s.title)}</h2><div class="tw"><table><thead><tr><th>العنصر</th><th style="text-align:center">الحالة</th></tr></thead><tbody>${rows}</tbody></table></div></section>`;
+    }
+    return '';
+  }).join('');
+
+  const styles = `
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Cairo',sans-serif;padding:28px 16px;direction:rtl;color:var(--report-fg, #4B5563);background:var(--report-bg, #F4F6FA)}
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap');
+.rpt{max-width:780px;margin:0 auto;background:#fff;border-radius:16px;border:1.5px solid #E5E7EB;overflow:hidden;box-shadow:0 4px 20px rgba(29,47,95,.1)}
+.rh{background:var(--report-primary, #1D2F5F);padding:26px 30px;color:#fff}
+.rh h1{font-size:22px;font-weight:900;margin-bottom:12px}
+.rm{display:flex;gap:10px;flex-wrap:wrap}
+.rm span{background:rgba(255,255,255,.15);padding:4px 14px;border-radius:20px;font-size:12px;font-weight:600}
+.rs{padding:22px 30px;border-bottom:1.5px solid #E5E7EB}
+.rs:last-child{border-bottom:none}
+h2{font-size:14px;font-weight:900;color:var(--report-primary, #1D2F5F);margin-bottom:14px;padding-bottom:7px;border-bottom:2.5px solid var(--report-accent, #FF6B2B);display:inline-block}
+p{font-size:13px;line-height:1.9}
+ul{padding-right:18px}
+ul li{font-size:13px;line-height:1.9;margin-bottom:4px}
+.mr{display:flex;flex-wrap:wrap;gap:12px}
+.mc{background:#F4F6FA;border:1.5px solid #E5E7EB;border-radius:12px;padding:16px 18px;min-width:130px;text-align:center;flex:1}
+.mv{font-size:26px;font-weight:900;color:var(--report-primary, #1D2F5F);line-height:1.1}
+.mu{font-size:11px;color:#9CA3AF;margin:3px 0}
+.ml{font-size:12px;font-weight:700;color:#4B5563}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{background:var(--report-primary, #1D2F5F);color:#fff;padding:9px 14px;text-align:right;font-size:12px;font-weight:700}
+td{padding:9px 14px;border-bottom:1px solid #E5E7EB;font-size:13px}
+tr:hover td{background:#FFF0EA}
+.scg{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.sc{background:#F4F6FA;border:1.5px solid #E5E7EB;border-radius:10px;padding:12px;text-align:center}
+.scl{font-size:11px;color:#1D2F5F;font-weight:700;margin-bottom:8px}
+.scv{font-size:13px;font-weight:800;padding:6px 12px;border-radius:7px;display:inline-block}
+.sc-good{background:#dcfce7;color:#16a34a}
+.sc-bad{background:#fee2e2;color:#dc2626}
+.sc-warn{background:#fef3c7;color:#d97706}
+.sc-none{background:#fff;color:#9CA3AF;border:1px solid #E5E7EB}
+.st{display:inline-block;padding:8px 18px;border-radius:10px;font-size:14px;font-weight:800}
+@media print{body{padding:0;background:#fff}.rpt{border:none;border-radius:0;box-shadow:none}}`;
+
+  return `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><title>${esc(title)}</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link href="/css/themes.css" rel="stylesheet">
+<style>${styles}</style>
+</head>
+<body class="theme-${templateTheme}">
+<div class="rpt">
+  <div class="rh">
+    <h1>${esc(title)}</h1>
+    <div class="rm">
+      <span>📅 ${esc(week)}</span>
+      <span>👤 ${esc(name)}</span>
+      <span>🕐 ${new Date().toLocaleDateString('ar-EG',{year:'numeric',month:'long',day:'numeric'})}</span>
+    </div>
+  </div>
+  ${body}
+</div>
+<script type="application/json" id="__rpt__">${JSON.stringify(sections).replace(/<\//g,'<\\/')}<\/script>
+<script type="application/json" id="__theme__">${JSON.stringify(templateTheme)}<\/script>
+</body>
+</html>`;
+}
+
+// ── Save & Send ────────────────────────────────────────────────────────────────
+async function saveReport() {
+  const title = document.getElementById('reportTitle').value.trim();
+  if (!title) return Toast.warning('اكتب عنوان التقرير');
+  const btn = document.getElementById('empSaveBtn');
+  btnLoading(btn);
+  setStatus('saving', '⟳ جاري الحفظ...');
+  const ok = await doSave();
+  if (ok) {
+    btnSuccess(btn);
+    localStorage.removeItem(LS_KEY);
+    sessionStorage.setItem('reportMsg', '💾 تم حفظ المسودة. يمكنك إكمالها لاحقاً.');
+    setTimeout(() => location.href = '/employee', 700);
+  } else { btnReset(btn); setStatus('', ''); }
+}
+
+async function autoSave() {
+  if (!document.getElementById('reportTitle').value.trim()) return;
+  setStatus('saving', '⟳ حفظ تلقائي...');
+  const ok = await doSave();
+  if (ok) { setStatus('saved', '✓ حُفظ تلقائياً'); setTimeout(() => setStatus('',''), 3000); }
+}
+
+async function doSave() {
+  const title   = document.getElementById('reportTitle').value.trim();
+  const week    = document.getElementById('reportWeek').value.trim();
+  const content = generateHTML();
+  const sectionsClean = sections.map(({ id, ...rest }) => rest);
+  const body    = { title, week, content, sections: sectionsClean };
+  if (currentDraftId) body.draft_id = currentDraftId;
+  try {
+    const res  = await fetch('/api/employee/draft', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    const data = await res.json();
+    if (data.error) { showToast(data.error, 'error'); return false; }
+    currentDraftId = data.draft_id;
+    return true;
+  } catch(e) { showToast('خطأ في الاتصال', 'error'); return false; }
+}
+
+async function sendReport() {
+  const title = document.getElementById('reportTitle').value.trim();
+  if (!title) return Toast.warning('اكتب عنوان التقرير');
+
+  const hasContent = sections.some(s =>
+    s.content?.trim() ||
+    s.items?.some(i => typeof i === 'string' ? i.trim() : (i.label || i.value)) ||
+    s.rows?.some(r => r.some(Boolean))
+  );
+  if (!hasContent) return Toast.warning('أضف محتوى لأي قسم أولاً');
+
+  if (!confirm(`إرسال التقرير "${title}" للمدير؟`)) return;
+
+  const btn = document.getElementById('empSendBtn');
+  btnLoading(btn);
+
+  const ok = await doSave();
+  if (!ok) { btnReset(btn); return; }
+
+  const title2  = document.getElementById('reportTitle').value.trim();
+  const week    = document.getElementById('reportWeek').value.trim();
+  const content = generateHTML();
+
+  try {
+    // لو القائد مفعّل خيار الدمج، استخدم endpoint الدمج
+    const mergeChk = document.getElementById('mergeWithTeam');
+    const isLeader = sessionData?.is_team_leader && mergeChk && mergeChk.checked;
+
+    const sectionsClean = sections.map(({ id, ...rest }) => rest);
+
+    if (isLeader) {
+      const memberIds = Array.from(document.querySelectorAll('.merge-member:checked')).map(c => parseInt(c.value));
+      const res = await fetch('/api/leader/submit-merged/' + currentDraftId, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ include_member_ids: memberIds, title: title2, week, content, sections: sectionsClean })
+      });
+      const data = await res.json();
+      if (data.error) { btnReset(btn); return Toast.error(data.error); }
+      btnSuccess(btn);
+      localStorage.removeItem(LS_KEY);
+      sessionStorage.setItem('reportMsg', `✅ تم إرسال تقرير مدمج مع ${data.child_count} تقرير من الفريق!`);
+      setTimeout(() => location.href = '/employee', 700);
+      return;
+    }
+
+    const res  = await fetch('/api/employee/send/' + currentDraftId, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ title: title2, week, content, sections: sectionsClean }) });
+    const data = await res.json();
+    if (data.error) { btnReset(btn); return Toast.error(data.error); }
+    btnSuccess(btn);
+    localStorage.removeItem(LS_KEY);
+    sessionStorage.setItem('reportMsg', '✅ تم إرسال التقرير للمدير بنجاح!');
+    setTimeout(() => location.href = '/employee', 700);
+  } catch (e) {
+    btnReset(btn);
+    Toast.error('فشل الإرسال');
+  }
+}
+
+async function loadTeamMembersForMerge() {
+  try {
+    const data = await fetch('/api/leader/team-reports').then(r => r.json());
+    if (data.error) return;
+
+    const mergeOption = document.getElementById('mergeOption');
+    if (!mergeOption) return;
+    mergeOption.style.display = 'block';
+
+    const others = (data.team.members || []).filter(m => m.id !== sessionData.id);
+    if (!others.length) {
+      document.getElementById('memberSelect').innerHTML =
+        '<div style="color:var(--gray-light);font-size:11px">الفريق ما عندهوش أعضاء آخرون</div>';
+      return;
+    }
+    document.getElementById('memberSelect').innerHTML = others.map(m => `
+      <label style="display:inline-flex;align-items:center;gap:5px;padding:5px 10px;background:white;border:1px solid var(--border);border-radius:6px;cursor:pointer;font-size:11px;font-weight:600">
+        <input type="checkbox" value="${m.id}" checked class="merge-member" style="width:13px;height:13px;accent-color:var(--orange)">
+        <span>${esc(m.name)}</span>
+      </label>
+    `).join('');
+  } catch (e) { /* ignore */ }
+}
+
+// ── Helpers ────────────────────────────────────────────────────────────────────
+function esc(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function setStatus(type, text) {
+  const el = document.getElementById('saveStatus');
+  el.textContent = text;
+  el.className = 'save-status ' + (type || '');
+}
+function showToast(msg, type = 'success') {
+  if (window.Toast) return Toast.show(msg, type === 'success' ? 'success' : type === 'error' ? 'error' : 'info');
+  const t = document.getElementById('toast');
+  if (t) { t.textContent = msg; t.className = `toast ${type} show`; setTimeout(() => t.classList.remove('show'), 3500); }
+}
+
+init();
+</script>
+</body>
+</html>

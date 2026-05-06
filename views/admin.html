@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة تحكم المدير — التقارير</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/components.css">
+<link rel="stylesheet" href="/css/dark-mode.css">
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="/js/app-shell.js"></script>
+<style>
+:root {
+  --navy: #1D2F5F;
+  --navy-light: #263a75;
+  --orange: #FF6B2B;
+  --orange-soft: #FFF0EA;
+  --bg: #F4F6FA;
+  --white: #FFFFFF;
+  --gray: #4B5563;
+  --gray-light: #9CA3AF;
+  --border: #E5E7EB;
+  --green: #16a34a;
+  --green-soft: #dcfce7;
+  --yellow: #d97706;
+  --yellow-soft: #fef3c7;
+  --red: #dc2626;
+  --red-soft: #fee2e2;
+  --shadow: 0 2px 8px rgba(29,47,95,0.09);
+  --shadow-md: 0 4px 20px rgba(29,47,95,0.14);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--gray); direction: rtl; min-height: 100vh; font-size: 14px; }
+
+/* Old layout removed — using global-topbar + side-nav from components.css */
+
+/* Panels */
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* Tables */
+.table-card {
+  background: var(--white); border-radius: 14px;
+  border: 1.5px solid var(--border); box-shadow: var(--shadow); overflow: hidden;
+  margin-bottom: 20px;
+}
+.table-header {
+  padding: 16px 20px; border-bottom: 1.5px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.table-header h3 { font-size: 15px; font-weight: 800; color: var(--navy); }
+table { width: 100%; border-collapse: collapse; }
+th {
+  background: var(--bg); color: var(--navy); font-weight: 700;
+  padding: 12px 16px; text-align: right; font-size: 12px;
+  border-bottom: 1.5px solid var(--border);
+}
+td { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 13px; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--orange-soft); }
+
+/* Badges */
+.badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+.badge-green { background: var(--green-soft); color: var(--green); }
+.badge-yellow { background: var(--yellow-soft); color: var(--yellow); }
+.badge-navy { background: #e8ecf4; color: var(--navy); }
+.badge-red { background: var(--red-soft); color: var(--red); }
+.badge-orange { background: var(--orange-soft); color: var(--orange); }
+
+/* Buttons */
+.btn { padding: 7px 14px; border-radius: 8px; border: none; font-family: 'Cairo', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; transition: opacity .15s; }
+.btn:hover { opacity: 0.85; }
+.btn-primary { background: var(--navy); color: #fff; }
+.btn-orange { background: var(--orange); color: #fff; }
+.btn-danger { background: var(--red-soft); color: var(--red); }
+.btn-ghost { background: var(--bg); color: var(--gray); border: 1px solid var(--border); }
+.btn-sm { padding: 5px 10px; font-size: 11px; }
+.btn-full { width: 100%; display: block; text-align: center; padding: 12px; }
+
+/* Modal */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+  z-index: 999; display: none; align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--white); border-radius: 16px; width: 480px;
+  max-width: 95vw; box-shadow: var(--shadow-md);
+  border-top: 4px solid var(--orange);
+}
+.modal-head {
+  padding: 20px 24px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1.5px solid var(--border);
+}
+.modal-head h3 { font-size: 16px; font-weight: 800; color: var(--navy); }
+.modal-body { padding: 20px 24px; }
+.modal-foot { padding: 16px 24px; border-top: 1.5px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.form-group input, .form-group select {
+  width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px;
+  font-family: 'Cairo', sans-serif; font-size: 13px; color: var(--gray);
+  background: var(--bg); outline: none; transition: border-color .2s; direction: rtl;
+}
+.form-group input:focus, .form-group select:focus { border-color: var(--navy); background: #fff; }
+.form-hint { font-size: 11px; color: var(--gray-light); margin-top: 4px; }
+
+/* Link box */
+.link-box {
+  background: var(--bg); border: 1.5px solid var(--border); border-radius: 8px;
+  padding: 12px 14px; font-size: 12px; color: var(--gray);
+  word-break: break-all; direction: ltr; text-align: left;
+  font-family: monospace; margin: 12px 0;
+}
+
+/* Notifications panel */
+.notif-list { max-height: 300px; overflow-y: auto; }
+.notif-item {
+  padding: 12px 16px; border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.notif-item:last-child { border-bottom: none; }
+.notif-item.unread { background: var(--orange-soft); }
+.notif-item .time { font-size: 11px; color: var(--gray-light); margin-top: 3px; }
+
+/* Search */
+.search-bar { position: relative; }
+.search-bar input {
+  padding: 9px 14px 9px 36px; border: 1.5px solid var(--border); border-radius: 10px;
+  font-family: 'Cairo', sans-serif; font-size: 13px; background: var(--white);
+  outline: none; width: 220px;
+}
+.search-bar input:focus { border-color: var(--navy); }
+.search-bar svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--gray-light); }
+
+.empty-state { text-align: center; padding: 40px; color: var(--gray-light); font-size: 14px; }
+.empty-state .icon { font-size: 36px; margin-bottom: 10px; }
+
+.tag { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; background: var(--bg); color: var(--gray); border: 1px solid var(--border); }
+
+/* ── Recent Reports List (rich cards) ─────────────────────────── */
+.recent-reports-list { display: flex; flex-direction: column; gap: 10px; padding: 14px; }
+.report-card-rich { display: grid; grid-template-columns: 44px 1fr auto auto; gap: 14px; align-items: center; padding: 12px 14px; background: var(--white); border: 1.5px solid var(--border); border-radius: 12px; transition: all 0.18s; }
+.report-card-rich:hover { border-color: var(--orange); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(29,47,95,0.08); }
+.rc-avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #1D2F5F 0%, #FF6B2B 100%); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; flex-shrink: 0; }
+.rc-info { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.rc-name { font-size: 14px; font-weight: 800; color: var(--navy); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.rc-name .rc-week { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 6px; background: var(--bg); color: var(--gray); border: 1px solid var(--border); }
+.rc-meta { display: flex; gap: 12px; flex-wrap: wrap; font-size: 11px; color: var(--gray-light); }
+.rc-meta-item { display: inline-flex; align-items: center; gap: 4px; }
+.rc-meta-item strong { color: var(--gray); font-weight: 700; }
+.rc-meta-item.no-team { color: var(--gray-light); font-style: italic; }
+.rc-completion { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 80px; }
+.rc-completion-bar { width: 80px; height: 6px; background: var(--bg); border-radius: 3px; overflow: hidden; }
+.rc-completion-bar > div { height: 100%; transition: width 0.6s ease; border-radius: 3px; }
+.rc-completion-pct { font-size: 12px; font-weight: 800; }
+.rc-completion-pct.high { color: var(--green); }
+.rc-completion-pct.mid { color: var(--orange); }
+.rc-completion-pct.low { color: var(--red); }
+.rc-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.rc-actions .btn { padding: 6px 10px; font-size: 11px; }
+.rc-time { font-size: 10px; color: var(--gray-light); margin-top: 2px; }
+.report-card-rich.is-master { border-color: var(--orange); background: linear-gradient(to left, rgba(255,107,43,0.04), var(--white)); border-width: 2px; }
+.report-card-rich.is-master .rc-avatar { background: linear-gradient(135deg, #FF6B2B 0%, #FFA500 100%); box-shadow: 0 0 0 3px rgba(255,107,43,0.15); }
+.rc-master-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; background: linear-gradient(135deg, #FF6B2B, #FFA500); color: #fff; box-shadow: 0 2px 6px rgba(255,107,43,0.3); }
+@media (max-width: 768px) {
+  .report-card-rich { grid-template-columns: 40px 1fr; gap: 10px; }
+  .rc-completion, .rc-actions { grid-column: 1 / -1; }
+}
+</style>
+</head>
+<body>
+
+<!-- Global Topbar -->
+<header class="global-topbar">
+  <div class="brand-block">
+    <a href="/admin"><img src="/img/logo.jpg" alt="Marketing Experts" class="brand-logo"></a>
+  </div>
+  <div class="search-global-tb">
+    <input type="text" id="globalSearch" placeholder="ابحث عن موظف، تقرير، تعليق..." autocomplete="off">
+    <span class="search-icon-tb" data-icon="search"></span>
+    <div class="search-results" id="searchResults"></div>
+  </div>
+  <div class="topbar-actions">
+    <button class="tb-ic-btn" id="notifBtn" title="الإشعارات" onclick="switchPanel('notifications', null)">
+      <span data-icon="bell"></span>
+      <span class="ic-dot" id="notifDot" style="display:none"></span>
+    </button>
+    <button class="tb-ic-btn theme-toggle" onclick="toggleTheme()" title="الوضع الليلي" id="themeToggleBtn">🌙</button>
+    <button class="tb-ic-btn" title="الإعدادات"><span data-icon="settings"></span></button>
+    <div class="user-avatar-tb" id="userAvatar">م</div>
+  </div>
+</header>
+
+<div class="layout-main">
+  <aside class="side-nav">
+    <div class="nav-section-label">القائمة</div>
+    <button class="nav-link active" onclick="switchPanel('dashboard', this)">
+      <span data-icon="layout-dashboard"></span>
+      الرئيسية
+    </button>
+    <button class="nav-link" onclick="switchPanel('reports', this)">
+      <span data-icon="clipboard-list"></span>
+      التقارير
+      <span class="nav-badge" id="reportsCountBadge" style="display:none">0</span>
+    </button>
+    <button class="nav-link" onclick="switchPanel('users', this)">
+      <span data-icon="users"></span>
+      الموظفون
+    </button>
+    <button class="nav-link" onclick="switchPanel('teams', this)">
+      <span data-icon="users-2"></span>
+      الفرق
+    </button>
+    <button class="nav-link" onclick="switchPanel('templates', this)">
+      <span data-icon="file-text"></span>
+      القوالب
+    </button>
+    <a href="/admin/stats" class="nav-link">
+      <span data-icon="bar-chart-3"></span>
+      الإحصائيات
+    </a>
+    <a href="/admin/org" class="nav-link">
+      <span data-icon="git-branch"></span>
+      الهيكل الإداري
+    </a>
+
+    <div class="nav-section-label" style="margin-top:14px">المزيد</div>
+    <a href="/admin/templates/marketplace" class="nav-link">
+      <span data-icon="shopping-bag"></span>
+      متجر القوالب
+    </a>
+    <button class="nav-link" onclick="switchPanel('notifications', this)">
+      <span data-icon="bell"></span>
+      الإشعارات
+      <span class="nav-badge" id="notifBadgeSide" style="background:var(--red);display:none">0</span>
+    </button>
+
+    <div class="nav-footer">
+      <button class="nav-link" onclick="location.href='/logout'">
+        <span data-icon="log-out"></span>
+        خروج
+      </button>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <!-- Greeting Bar -->
+    <div class="greeting-bar">
+      <div>
+        <h1 class="greet-title"><span id="greetingPrefix">مرحباً</span>، <span id="adminFirstName">المدير</span> 👋</h1>
+        <p class="greet-sub" id="greetSub">جاري التحميل...</p>
+      </div>
+      <div class="week-pill" id="weekPill">—</div>
+    </div>
+
+    <input type="hidden" id="adminName">
+    <h1 id="panelTitle" style="display:none">الرئيسية</h1>
+
+    <!-- Dashboard Panel -->
+    <div class="panel active" id="panel-dashboard">
+      <div class="kpi-grid-new stagger-in">
+        <div class="kpi-card">
+          <div class="kpi-bar bar-navy"></div>
+          <div class="kpi-label">إجمالي التقارير</div>
+          <div class="kpi-num" id="stat-reports">—</div>
+          <div class="kpi-trend trend-up" id="trend-reports">▲ —</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-bar bar-green"></div>
+          <div class="kpi-label">معدل التسليم</div>
+          <div class="kpi-num" id="stat-rate">—</div>
+          <div class="kpi-trend trend-up" id="trend-rate">▲ هذا الأسبوع</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-bar bar-orange"></div>
+          <div class="kpi-label">جديدة هذا الأسبوع</div>
+          <div class="kpi-num" id="stat-week">—</div>
+          <div class="kpi-trend trend-up" id="trend-week">▲ نشاط جيد</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-bar bar-yellow"></div>
+          <div class="kpi-label">متأخرون</div>
+          <div class="kpi-num" id="stat-late">—</div>
+          <div class="kpi-trend trend-down" id="trend-late">▼ متابعة عاجلة</div>
+        </div>
+      </div>
+
+      <!-- AI Alerts -->
+      <div class="table-card" id="alertsCard" style="margin-bottom:18px;display:none">
+        <div class="table-header">
+          <h3><span data-icon="sparkles"></span> تنبيهات ذكية</h3>
+        </div>
+        <div id="alertsList" style="padding:12px"></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:16px;margin-bottom:18px" class="dash-row">
+        <div class="table-card">
+          <div class="table-header">
+            <h3><span data-icon="activity"></span> آخر النشاطات</h3>
+            <button class="btn btn-ghost btn-sm" onclick="switchPanel('reports', document.querySelector('[onclick*=\"reports\"]'))">عرض الكل ←</button>
+          </div>
+          <div id="activityTimeline" style="padding:8px 0">
+            <div class="empty-state">جاري التحميل...</div>
+          </div>
+        </div>
+        <div class="table-card">
+          <div class="table-header">
+            <h3><span data-icon="target"></span> معدل التسليم لكل فريق</h3>
+          </div>
+          <div class="status-list" id="teamProgress">
+            <div class="empty-state">جاري التحميل...</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-header">
+          <h3>آخر التقارير المستلمة</h3>
+          <button class="btn btn-ghost btn-sm" onclick="switchPanel('reports', document.querySelector('[onclick*=\"reports\"]'))">عرض الكل</button>
+        </div>
+        <div id="dashReportsList" class="recent-reports-list">
+          <div class="empty-state">جاري التحميل...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reports Panel -->
+    <div class="panel" id="panel-reports">
+      <div class="table-card">
+        <div class="table-header">
+          <h3>التقارير المستلمة</h3>
+          <span id="reportsTotal" class="badge badge-navy">0 تقرير</span>
+        </div>
+        <table>
+          <thead><tr>
+            <th>الموظف</th>
+            <th>الفريق</th>
+            <th>القائد</th>
+            <th>عنوان التقرير</th>
+            <th>الأسبوع</th>
+            <th>الإكمال</th>
+            <th>تاريخ الرفع</th>
+            <th>إجراءات</th>
+          </tr></thead>
+          <tbody id="allReportsBody">
+            <tr><td colspan="8" class="empty-state">جاري التحميل...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Users Panel -->
+    <div class="panel" id="panel-users">
+      <div class="table-card">
+        <div class="table-header">
+          <h3>الموظفون</h3>
+          <button class="btn btn-orange btn-sm" onclick="openModal('addUserModal')">+ موظف جديد</button>
+        </div>
+        <table>
+          <thead><tr><th>الاسم</th><th>الإيميل</th><th>القالب</th><th>صلاحية التعديل</th><th>إجراءات</th></tr></thead>
+          <tbody id="usersBody">
+            <tr><td colspan="5" class="empty-state">جاري التحميل...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Templates Panel -->
+    <div class="panel" id="panel-templates">
+      <div class="table-card">
+        <div class="table-header">
+          <h3>قوالب التقارير</h3>
+          <a href="/admin/template-editor" class="btn btn-orange btn-sm">+ قالب جديد</a>
+        </div>
+        <table>
+          <thead><tr><th>اسم القالب</th><th>الوصف</th><th>الموظفون</th><th>إجراءات</th></tr></thead>
+          <tbody id="templatesBody">
+            <tr><td colspan="4" class="empty-state">جاري التحميل...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Teams Panel -->
+    <div class="panel" id="panel-teams">
+      <div class="table-card">
+        <div class="table-header">
+          <h3>🤝 الفرق</h3>
+          <button class="btn btn-orange btn-sm" onclick="openTeamModal()">+ فريق جديد</button>
+        </div>
+        <table>
+          <thead><tr><th>الفريق</th><th>القائد</th><th>الأعضاء</th><th>القالب</th><th>إجراءات</th></tr></thead>
+          <tbody id="teamsBody"><tr><td colspan="5" class="empty-state">جاري التحميل...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Notifications Panel -->
+    <div class="panel" id="panel-notifications">
+      <div class="table-card">
+        <div class="table-header">
+          <h3>الإشعارات</h3>
+          <button class="btn btn-ghost btn-sm" onclick="markAllRead()">تعليم الكل كمقروء</button>
+        </div>
+        <div class="notif-list" id="notifList">
+          <div class="empty-state"><div class="icon">🔔</div>لا يوجد إشعارات</div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Add/Edit User Modal -->
+<div class="modal-overlay" id="addUserModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="userModalTitle">إضافة موظف جديد</h3>
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('addUserModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editUserId">
+      <div class="form-group">
+        <label>الاسم</label>
+        <input type="text" id="userName" placeholder="اسم الموظف">
+      </div>
+      <div class="form-group">
+        <label>الإيميل</label>
+        <input type="email" id="userEmail" placeholder="email@company.com" dir="ltr">
+      </div>
+      <div class="form-group">
+        <label>كلمة المرور</label>
+        <input type="password" id="userPassword" placeholder="••••••••">
+        <div class="form-hint" id="passHint">اتركها فارغة عشان ما تتغيرش</div>
+      </div>
+      <div class="form-group">
+        <label>قالب التقرير</label>
+        <select id="userTemplate">
+          <option value="">بدون قالب محدد</option>
+        </select>
+      </div>
+      <div class="form-group" style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <input type="checkbox" id="userCanEdit" style="width:auto;accent-color:var(--orange);width:16px;height:16px;cursor:pointer">
+        <label for="userCanEdit" style="margin-bottom:0;cursor:pointer">صلاحية تعديل هيكل القالب</label>
+        <span class="form-hint" style="margin-top:0">(الموظف يقدر يضيف/يحذف أقسام)</span>
+      </div>
+      <div class="form-group" style="display:flex;align-items:center;gap:10px;margin-bottom:0">
+        <input type="checkbox" id="userCanCompare" style="width:auto;accent-color:var(--orange);width:16px;height:16px;cursor:pointer">
+        <label for="userCanCompare" style="margin-bottom:0;cursor:pointer">صلاحية مقارنة تقارير الفريق</label>
+        <span class="form-hint" style="margin-top:0">(لقادة الفِرق فقط — يقارن أعضاء الفريق أو أسبوعين)</span>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('addUserModal')">إلغاء</button>
+      <button class="btn btn-primary" onclick="saveUser()">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<!-- Team Modal -->
+<div class="modal-overlay" id="teamModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="teamModalTitle">إضافة فريق</h3>
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('teamModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editTeamId">
+      <div class="form-group">
+        <label>اسم الفريق</label>
+        <input type="text" id="teamName" placeholder="مثال: فريق المبيعات">
+      </div>
+      <div class="form-group">
+        <label>الوصف</label>
+        <input type="text" id="teamDesc" placeholder="وصف مختصر">
+      </div>
+      <div class="form-group">
+        <label>قائد الفريق</label>
+        <select id="teamLeader"><option value="">اختر القائد</option></select>
+      </div>
+      <div class="form-group">
+        <label>الأعضاء</label>
+        <div id="teamMembers" style="border:1px solid var(--border);border-radius:8px;padding:10px;background:var(--bg);max-height:180px;overflow-y:auto;font-size:12px">جاري التحميل...</div>
+      </div>
+      <div class="form-group">
+        <label>القالب الأساسي للفريق</label>
+        <select id="teamTemplate"><option value="">بدون قالب</option></select>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('teamModal')">إلغاء</button>
+      <button class="btn btn-primary" onclick="saveTeam()">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<!-- Send Link Modal -->
+<div class="modal-overlay" id="linkModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>رابط تسجيل الدخول</h3>
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('linkModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--gray);margin-bottom:8px">ابعت الرابط ده للموظف عشان يدخل ويرفع تقريره:</p>
+      <div class="link-box" id="generatedLink">—</div>
+      <p style="font-size:11px;color:var(--gray-light)">💡 الموظف هيدخل بالإيميل وكلمة المرور بتاعته</p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-primary" onclick="copyGeneratedLink()">نسخ الرابط</button>
+      <button class="btn btn-ghost" onclick="closeModal('linkModal')">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const panelTitles = { dashboard: 'الرئيسية', reports: 'التقارير المستلمة', users: 'إدارة الموظفين', templates: 'قوالب التقارير', notifications: 'الإشعارات' };
+let allReports = [], allUsers = [], allTemplates = [];
+
+async function init() {
+  const session = await fetch('/api/session').then(r => r.json());
+  if (session) document.getElementById('adminName').value = session.name;
+
+  // Theme toggle icon initial
+  const cur = document.documentElement.getAttribute('data-theme') || 'light';
+  const tb = document.getElementById('themeToggleBtn');
+  if (tb) tb.textContent = cur === 'dark' ? '☀️' : '🌙';
+
+  loadGreeting(session);
+  loadStats();
+  loadReports();
+  await loadTemplates();
+  loadUsers();
+  loadTeams();
+  loadNotifications();
+  loadActivities();
+  loadTeamProgress();
+  loadAlerts();
+}
+
+// ── Teams CRUD UI ────────────────────────────────────────────────────────────
+let allTeams = [];
+
+async function loadTeams() {
+  allTeams = await fetch('/api/admin/teams').then(r => r.json());
+  renderTeams(allTeams);
+}
+
+function renderTeams(teams) {
+  const html = teams.map(t => `
+    <tr>
+      <td>
+        <strong>${t.name}</strong>
+        ${t.description ? `<br><small style="color:var(--gray-light)">${t.description}</small>` : ''}
+      </td>
+      <td><span class="badge badge-orange">${t.leader_name || '—'}</span></td>
+      <td>${t.members?.length || 0} عضو</td>
+      <td><span class="tag">${t.template_name || '—'}</span></td>
+      <td style="display:flex;gap:6px">
+        <button class="btn btn-ghost btn-sm" onclick="editTeam(${t.id})">تعديل</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteTeam(${t.id})">حذف</button>
+      </td>
+    </tr>
+  `).join('') || '<tr><td colspan="5" class="empty-state">لا توجد فرق — أضف فريق جديد</td></tr>';
+  document.getElementById('teamsBody').innerHTML = html;
+}
+
+function openTeamModal(team = null) {
+  document.getElementById('editTeamId').value = team?.id || '';
+  document.getElementById('teamName').value = team?.name || '';
+  document.getElementById('teamDesc').value = team?.description || '';
+  document.getElementById('teamModalTitle').textContent = team ? 'تعديل فريق' : 'إضافة فريق';
+
+  const leaderSel = document.getElementById('teamLeader');
+  leaderSel.innerHTML = '<option value="">اختر القائد</option>' +
+    allUsers.map(u => `<option value="${u.id}" ${team?.leader_id === u.id ? 'selected' : ''}>${u.name}</option>`).join('');
+
+  const memberIds = team?.members?.map(m => m.id) || team?.member_ids || [];
+  document.getElementById('teamMembers').innerHTML = allUsers.map(u => `
+    <label style="display:flex;align-items:center;gap:8px;padding:6px 8px;cursor:pointer;border-radius:6px;font-size:12px">
+      <input type="checkbox" value="${u.id}" ${memberIds.includes(u.id) ? 'checked' : ''} style="width:14px;height:14px;accent-color:var(--orange)">
+      <span style="color:var(--navy);font-weight:600">${u.name}</span>
+      <span style="color:var(--gray-light);font-size:11px" dir="ltr">${u.email}</span>
+    </label>`).join('') || '<div style="color:var(--gray-light)">لا يوجد موظفون</div>';
+
+  const tmplSel = document.getElementById('teamTemplate');
+  tmplSel.innerHTML = '<option value="">بدون قالب</option>' +
+    allTemplates.map(t => `<option value="${t.id}" ${team?.template_id === t.id ? 'selected' : ''}>${t.name}</option>`).join('');
+
+  document.getElementById('teamModal').classList.add('open');
+}
+
+function editTeam(id) {
+  const team = allTeams.find(t => t.id === id);
+  openTeamModal(team);
+}
+
+async function saveTeam() {
+  const id = document.getElementById('editTeamId').value;
+  const memberIds = Array.from(document.querySelectorAll('#teamMembers input:checked')).map(c => parseInt(c.value));
+  const body = {
+    name: document.getElementById('teamName').value.trim(),
+    description: document.getElementById('teamDesc').value.trim(),
+    leader_id: parseInt(document.getElementById('teamLeader').value) || null,
+    member_ids: memberIds,
+    template_id: parseInt(document.getElementById('teamTemplate').value) || null
+  };
+  if (!body.name) return Toast.warning('اسم الفريق مطلوب');
+  if (!body.leader_id) return Toast.warning('اختر قائد للفريق');
+
+  const url = id ? `/api/admin/teams/${id}` : '/api/admin/teams';
+  const method = id ? 'PUT' : 'POST';
+  const res = await fetch(url, { method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
+  const data = await res.json();
+  if (data.error) return Toast.error(data.error);
+  Toast.success(id ? 'تم تحديث الفريق' : 'تم إنشاء الفريق');
+  closeModal('teamModal');
+  loadTeams();
+  loadUsers();
+}
+
+async function deleteTeam(id) {
+  if (!confirm('متأكد من حذف الفريق؟')) return;
+  const res = await fetch(`/api/admin/teams/${id}`, { method: 'DELETE' });
+  const data = await res.json();
+  if (data.error) return Toast.error(data.error);
+  Toast.success('تم الحذف');
+  loadTeams();
+  loadUsers();
+}
+
+async function loadGreeting(session) {
+  const hour = new Date().getHours();
+  let greeting = 'مساء الخير';
+  if (hour < 12) greeting = 'صباح الخير';
+  else if (hour < 17) greeting = 'مساء الخير';
+
+  const firstName = (session?.name || 'المدير').split(' ')[0];
+  document.getElementById('greetingPrefix').textContent = greeting;
+  document.getElementById('adminFirstName').textContent = firstName;
+  document.getElementById('userAvatar').textContent = firstName.charAt(0);
+
+  // Week pill
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 1);
+  const week = Math.ceil(((now - start) / 86400000 + start.getDay() + 1) / 7);
+  document.getElementById('weekPill').textContent = `الأسبوع ${week} - ${now.getFullYear()}`;
+}
+
+async function loadActivities() {
+  showSkeleton('activityTimeline', 'row', 4);
+  const data = await fetch('/api/admin/activities').then(r => r.json());
+  const el = document.getElementById('activityTimeline');
+  if (!data || !data.length) {
+    el.innerHTML = `<div class="empty-state-rich">
+      <div class="empty-illustration"><span data-icon="inbox"></span></div>
+      <div class="empty-title">لسه ما وصلش أي نشاط</div>
+      <div class="empty-desc">آخر التقارير المرسلة هتظهر هنا فور وصولها</div>
+    </div>`;
+    if (window.replaceEmojiIcons) replaceEmojiIcons(el);
+    return;
+  }
+  el.innerHTML = `<div class="stagger-in">${data.map(a => `
+    <div class="timeline-item" onclick="location.href='/admin/report/${a.report_id}'" style="cursor:pointer">
+      <div class="tl-avatar" style="background:${a.color}">${a.initial}</div>
+      <div class="tl-content">
+        <div class="tl-name">${a.user_name}${a.team ? ' • ' + a.team : ''}</div>
+        <div class="tl-msg">${a.message}</div>
+        <div class="tl-time">${formatRelativeTime(a.timestamp)}</div>
+      </div>
+      <div class="tl-status" style="background:${a.statusColor}"></div>
+    </div>
+  `).join('')}</div>`;
+}
+
+async function loadAlerts() {
+  const data = await fetch('/api/admin/alerts').then(r => r.json());
+  if (!data.alerts || !data.alerts.length) return;
+  // أخفِ لو فقط alert "كل شيء على ما يرام"
+  const meaningful = data.alerts.filter(a => a.severity !== 'info' || a.icon !== '✅');
+  if (!meaningful.length) return;
+  document.getElementById('alertsCard').style.display = 'block';
+  document.getElementById('alertsList').innerHTML = data.alerts.map(a => `
+    <div class="alert-card ${a.severity}">
+      <div class="ai-icon-pill">${a.icon}</div>
+      <div class="ai-content">
+        <div class="ai-title">${a.title}</div>
+        <div class="ai-desc">${a.desc}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function loadTeamProgress() {
+  showSkeleton('teamProgress', 'row', 5);
+  const data = await fetch('/api/admin/team-progress').then(r => r.json());
+  const el = document.getElementById('teamProgress');
+  if (!data.teams || !data.teams.length) { el.innerHTML = '<div class="empty-state">لا توجد فرق بعد</div>'; return; }
+  el.innerHTML = data.teams.map(t => {
+    let color = '#16a34a';
+    if (t.rate < 70) color = '#FF6B2B';
+    if (t.rate < 50) color = '#dc2626';
+    const leaderTxt = t.leader_name ? ` • قائد: ${t.leader_name}` : '';
+    return `<div class="status-row" title="${t.submitted}/${t.total} عضو رفع تقريره${leaderTxt}">
+      <div class="status-name">
+        ${t.name}
+        <small style="color:var(--gray-light);font-weight:600;font-size:10px;margin-right:6px">(${t.submitted}/${t.total})</small>
+      </div>
+      <div class="status-bar"><div style="width:${t.rate}%;background:${color}"></div></div>
+      <div class="status-pct">${t.rate}%</div>
+    </div>`;
+  }).join('');
+}
+
+function formatRelativeTime(ts) {
+  if (!ts) return '—';
+  const diff = (Date.now() - new Date(ts).getTime()) / 1000;
+  if (diff < 60) return 'الآن';
+  if (diff < 3600) return `منذ ${Math.floor(diff / 60)} دقيقة`;
+  if (diff < 86400) return `منذ ${Math.floor(diff / 3600)} ساعة`;
+  return `منذ ${Math.floor(diff / 86400)} يوم`;
+}
+
+// ── Global Search (Imp 8) ─────────────────────────────────────────────────────
+let searchTimeout = null;
+const searchInput = document.getElementById('globalSearch');
+const searchResultsBox = document.getElementById('searchResults');
+
+if (searchInput) {
+  searchInput.addEventListener('input', e => {
+    clearTimeout(searchTimeout);
+    const q = e.target.value.trim();
+    if (q.length < 2) { searchResultsBox.classList.remove('active'); return; }
+    searchTimeout = setTimeout(async () => {
+      const r = await fetch('/api/admin/search?q=' + encodeURIComponent(q)).then(r => r.json());
+      renderSearchResults(r);
+    }, 250);
+  });
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.search-global')) searchResultsBox?.classList.remove('active');
+});
+
+function escSearch(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function renderSearchResults(r) {
+  const sections = [];
+  if (r.users?.length) {
+    sections.push(`
+      <div class="search-section">
+        <div class="search-section-title">الموظفون (${r.users.length})</div>
+        ${r.users.map(u => `
+          <a class="search-item" onclick="document.querySelector('[onclick*=&quot;users&quot;]').click();searchResultsBox.classList.remove('active');">
+            <span class="search-icon">👤</span>
+            <div>
+              <div class="search-name">${escSearch(u.name)}</div>
+              <div class="search-meta" dir="ltr" style="text-align:right">${escSearch(u.email)}</div>
+            </div>
+          </a>`).join('')}
+      </div>`);
+  }
+  if (r.reports?.length) {
+    sections.push(`
+      <div class="search-section">
+        <div class="search-section-title">التقارير (${r.reports.length})</div>
+        ${r.reports.map(rp => `
+          <a class="search-item" href="/admin/report/${rp.id}">
+            <span class="search-icon">📋</span>
+            <div>
+              <div class="search-name">${escSearch(rp.title)}${rp.edited_by_admin ? ' ✏️' : ''}</div>
+              <div class="search-meta">${escSearch(rp.user_name)} • ${escSearch(rp.week || '—')}</div>
+            </div>
+          </a>`).join('')}
+      </div>`);
+  }
+  if (r.comments?.length) {
+    sections.push(`
+      <div class="search-section">
+        <div class="search-section-title">التعليقات (${r.comments.length})</div>
+        ${r.comments.map(c => {
+          const snippet = c.text.length > 70 ? c.text.slice(0, 70) + '…' : c.text;
+          return `<a class="search-item" href="/admin/report/${c.report_id}">
+            <span class="search-icon">💬</span>
+            <div>
+              <div class="search-name">${escSearch(snippet)}</div>
+              <div class="search-meta">${escSearch(c.report_title)} • ${escSearch(c.by)}</div>
+            </div>
+          </a>`;
+        }).join('')}
+      </div>`);
+  }
+
+  searchResultsBox.innerHTML = sections.length
+    ? sections.join('')
+    : '<div class="search-empty">🔍 لا توجد نتائج</div>';
+  searchResultsBox.classList.add('active');
+}
+
+function switchPanel(name, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.side-nav .nav-link').forEach(n => n.classList.remove('active'));
+  // Blur any focused button to clear sticky :focus / :hover visual
+  if (document.activeElement && typeof document.activeElement.blur === 'function') {
+    document.activeElement.blur();
+  }
+  const panel = document.getElementById('panel-' + name);
+  if (panel) panel.classList.add('active');
+  // If a button wasn't passed (e.g. called from a "View All" link), find the matching nav item
+  let target = btn;
+  if (!target) {
+    target = document.querySelector(`.side-nav .nav-link[onclick*="'${name}'"]`);
+  }
+  if (target) target.classList.add('active');
+  document.getElementById('panelTitle').textContent = panelTitles[name] || name;
+}
+
+async function loadStats() {
+  const [s, ov] = await Promise.all([
+    fetch('/api/admin/stats').then(r => r.json()),
+    fetch('/api/admin/stats/overview').then(r => r.json())
+  ]);
+
+  animateNumber(document.getElementById('stat-reports'), s.totalReports);
+  animateNumber(document.getElementById('stat-week'),    s.thisWeek);
+
+  const rateEl = document.getElementById('stat-rate');
+  if (rateEl) {
+    rateEl.dataset.suffix = '%';
+    animateNumber(rateEl, ov.submissionRate || 0);
+    const trEl = document.getElementById('trend-rate');
+    if (trEl) {
+      if (ov.submissionRate >= 80) { trEl.className = 'kpi-trend trend-up'; trEl.textContent = '▲ ممتاز'; }
+      else if (ov.submissionRate >= 50) { trEl.className = 'kpi-trend'; trEl.style.color = 'var(--yellow)'; trEl.textContent = '◆ متوسط'; }
+      else { trEl.className = 'kpi-trend trend-down'; trEl.textContent = '▼ منخفض'; }
+    }
+  }
+
+  const lateEl = document.getElementById('stat-late');
+  const lateCount = (ov.lateUsers || []).length;
+  if (lateEl) animateNumber(lateEl, lateCount);
+  const trLate = document.getElementById('trend-late');
+  if (trLate) {
+    if (lateCount === 0) { trLate.className = 'kpi-trend trend-up'; trLate.textContent = '▲ كل الفريق سلّم'; }
+    else { trLate.textContent = `▼ ${lateCount} موظف متأخر`; }
+  }
+
+  // Greeting sub
+  const greetSub = document.getElementById('greetSub');
+  if (greetSub) {
+    if (s.totalReports === 0) greetSub.textContent = 'لسه ما وصلش أي تقرير';
+    else if (s.thisWeek > 0) greetSub.textContent = `عندك ${s.thisWeek} تقرير${s.thisWeek > 1 ? 'اً' : ''} هذا الأسبوع${lateCount ? ' • ' + lateCount + ' متأخر' : ''}`;
+    else greetSub.textContent = 'مفيش تقارير هذا الأسبوع لسه';
+  }
+  if (s.unread > 0) {
+    document.getElementById('notifBadgeSide').textContent = s.unread;
+    document.getElementById('notifBadgeSide').style.display = 'inline';
+  }
+}
+
+async function loadReports() {
+  allReports = await fetch('/api/admin/reports').then(r => r.json());
+  renderReports(allReports);
+  document.getElementById('reportsTotal').textContent = allReports.length + ' تقرير';
+  if (allReports.length > 0) {
+    document.getElementById('reportsCountBadge').textContent = allReports.length;
+    document.getElementById('reportsCountBadge').style.display = 'inline';
+  }
+}
+
+function renderReports(reports) {
+  const titleWithBadges = (r) => {
+    const editedB   = r.edited_by_admin ? '<span class="badge badge-orange" style="margin-right:6px">✏️ معدّل</span>' : '';
+    const cmtCount  = (r.comments && r.comments.length) ? `<span class="badge badge-yellow" style="margin-right:6px">💬 ${r.comments.length}</span>` : '';
+    const masterB   = r.is_team_report ? `<span class="badge" style="background:linear-gradient(135deg,#FF6B2B,#FFA500);color:#fff;margin-right:6px">⭐ تقرير الفريق${r.child_count ? ' ('+r.child_count+')' : ''}</span>` : '';
+    return `${masterB}${r.title}${editedB}${cmtCount}`;
+  };
+  const completionCell = (pct) => {
+    const v = typeof pct === 'number' ? pct : 0;
+    const color = v >= 80 ? 'var(--green)' : v >= 50 ? 'var(--orange)' : 'var(--red)';
+    return `<div style="display:flex;align-items:center;gap:6px;min-width:90px">
+      <div style="flex:1;height:6px;background:var(--bg);border-radius:3px;overflow:hidden">
+        <div style="width:${v}%;height:100%;background:${color}"></div>
+      </div>
+      <strong style="color:${color};font-size:12px">${v}%</strong>
+    </div>`;
+  };
+  const rows = reports.map(r => {
+    const teamCell = r.team_name
+      ? `<span class="tag" style="border-color:${r.is_team_report?'var(--orange)':'var(--border)'}">${r.team_name}</span>`
+      : '<span style="color:var(--gray-light)">—</span>';
+    const leaderCell = r.leader_name ? r.leader_name : '<span style="color:var(--gray-light)">—</span>';
+    return `
+    <tr${r.is_team_report ? ' style="background:rgba(255,107,43,0.04)"' : ''}>
+      <td><strong>${r.user_name}</strong><br><small style="color:var(--gray-light)">${r.user_email}</small></td>
+      <td>${teamCell}</td>
+      <td>${leaderCell}</td>
+      <td>${titleWithBadges(r)}</td>
+      <td><span class="badge badge-navy">${r.week || '—'}</span></td>
+      <td>${completionCell(r.completion_pct)}</td>
+      <td>${new Date(r.submitted_at).toLocaleDateString('ar-EG', {year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})}</td>
+      <td style="display:flex;gap:6px;flex-wrap:wrap">
+        <a href="/admin/report/${r.id}" class="btn btn-primary btn-sm">عرض</a>
+        <a href="/admin/report/${r.id}/edit" class="btn btn-orange btn-sm">✏️ تعديل</a>
+        <button class="btn btn-ghost btn-sm" onclick="downloadPDF(${r.id})">📄 PDF</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteReport(${r.id})">حذف</button>
+      </td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="8" class="empty-state"><div class="icon">📭</div>لا يوجد تقارير بعد</td></tr>';
+
+  document.getElementById('allReportsBody').innerHTML = rows;
+
+  const dashList = document.getElementById('dashReportsList');
+  if (dashList) {
+    if (!reports.length) {
+      dashList.innerHTML = '<div class="empty-state"><div class="icon">📭</div>لا يوجد تقارير بعد</div>';
+    } else {
+      dashList.innerHTML = reports.slice(0, 5).map(r => {
+        const initial = (r.user_name || '?').trim().charAt(0);
+        const pct = typeof r.completion_pct === 'number' ? r.completion_pct : 0;
+        const pctClass = pct >= 80 ? 'high' : pct >= 50 ? 'mid' : 'low';
+        const pctColor = pct >= 80 ? 'var(--green)' : pct >= 50 ? 'var(--orange)' : 'var(--red)';
+        const teamPart = r.team_name
+          ? `<span class="rc-meta-item"><span data-icon="users"></span><strong>${r.team_name}</strong></span>`
+          : `<span class="rc-meta-item no-team"><span data-icon="users"></span>بدون فريق</span>`;
+        const leaderPart = r.leader_name
+          ? `<span class="rc-meta-item"><span data-icon="user-check"></span>قائد: <strong>${r.leader_name}</strong></span>`
+          : '';
+        const masterBadge = r.is_team_report
+          ? `<span class="rc-master-badge" title="التقرير الرئيسي للفريق — يحتوي ${r.child_count} تقرير فرعي">⭐ تقرير الفريق الرئيسي${r.child_count ? ` (${r.child_count})` : ''}</span>`
+          : '';
+        return `
+          <div class="report-card-rich${r.is_team_report ? ' is-master' : ''}">
+            <div class="rc-avatar">${initial}</div>
+            <div class="rc-info">
+              <div class="rc-name">
+                ${r.user_name}
+                <span class="rc-week">${r.week || '—'}</span>
+                ${masterBadge}
+              </div>
+              <div class="rc-meta">
+                ${teamPart}
+                ${leaderPart}
+                <span class="rc-meta-item"><span data-icon="clock"></span>${formatRelativeTime(r.submitted_at)}</span>
+              </div>
+            </div>
+            <div class="rc-completion" title="نسبة الإكمال مقارنة بالقالب الأساسي">
+              <div class="rc-completion-bar"><div style="width:${pct}%;background:${pctColor}"></div></div>
+              <div class="rc-completion-pct ${pctClass}">${pct}%</div>
+            </div>
+            <div class="rc-actions">
+              <a href="/admin/report/${r.id}" class="btn btn-primary btn-sm">عرض</a>
+              <a href="/admin/report/${r.id}/edit" class="btn btn-orange btn-sm">✏️</a>
+            </div>
+          </div>`;
+      }).join('');
+      if (window.replaceEmojiIcons) replaceEmojiIcons(dashList);
+      if (window.refreshIcons) refreshIcons();
+    }
+  }
+}
+
+function downloadPDF(reportId) {
+  window.open('/api/admin/reports/' + reportId + '/pdf', '_blank');
+}
+
+async function deleteReport(id) {
+  if (!confirm('هتحذف التقرير ده؟')) return;
+  await fetch('/api/admin/reports/' + id, { method: 'DELETE' });
+  loadReports(); loadStats();
+}
+
+async function loadUsers() {
+  allUsers = await fetch('/api/admin/users').then(r => r.json());
+  renderUsers(allUsers);
+}
+
+function renderUsers(users) {
+  document.getElementById('usersBody').innerHTML = users.map(u => {
+    const tpl = allTemplates.find(t => t.id === u.template_id);
+    const tplLabel = tpl ? `<span class="tag">${tpl.name}</span>` : '<span style="color:var(--gray-light)">—</span>';
+    const badges = [];
+    if (u.can_edit_template) badges.push('<span class="badge badge-green" title="يقدر يعدّل هيكل القالب">✏️ هيكل</span>');
+    if (u.is_team_leader)    badges.push('<span class="badge badge-navy" title="قائد فريق">👑 قائد</span>');
+    if (u.can_compare_team)  badges.push('<span class="badge badge-orange" title="يقدر يقارن تقارير الفريق">📊 مقارنة</span>');
+    const canEdit = badges.length ? badges.join(' ') : '<span style="color:var(--gray-light)">—</span>';
+    return `
+    <tr>
+      <td><strong>${u.name}</strong></td>
+      <td dir="ltr" style="text-align:left">${u.email}</td>
+      <td>${tplLabel}</td>
+      <td>${canEdit}</td>
+      <td style="display:flex;gap:6px">
+        <button class="btn btn-ghost btn-sm" onclick="showLink(${u.id})">الرابط</button>
+        <button class="btn btn-ghost btn-sm" onclick="editUser(${u.id})">تعديل</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteUser(${u.id})">حذف</button>
+      </td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="5" class="empty-state">لا يوجد موظفين</td></tr>';
+}
+
+async function loadTemplates() {
+  allTemplates = await fetch('/api/admin/templates').then(r => r.json());
+  document.getElementById('templatesBody').innerHTML = allTemplates.length
+    ? allTemplates.map(t => `
+      <tr>
+        <td><strong>${t.name}</strong></td>
+        <td style="color:var(--gray-light)">${t.description || '—'}</td>
+        <td><span class="badge badge-navy">${t.assigned_count || 0} موظف</span></td>
+        <td style="display:flex;gap:6px">
+          <a href="/admin/template-editor?id=${t.id}" class="btn btn-ghost btn-sm">تعديل</a>
+          <button class="btn btn-danger btn-sm" onclick="deleteTemplate(${t.id})">حذف</button>
+        </td>
+      </tr>`).join('')
+    : '<tr><td colspan="4" class="empty-state"><div class="icon">📋</div>لا يوجد قوالب بعد — أنشئ قالباً جديداً</td></tr>';
+  populateTemplateSelect();
+}
+
+async function deleteTemplate(id) {
+  if (!confirm('هتحذف القالب ده؟ الموظفون المرتبطين به هيفقدوا القالب.')) return;
+  await fetch('/api/admin/templates/' + id, { method: 'DELETE' });
+  loadTemplates(); loadUsers();
+}
+
+async function loadNotifications() {
+  const notifs = await fetch('/api/admin/notifications').then(r => r.json());
+  document.getElementById('notifList').innerHTML = notifs.length ? notifs.map(n => `
+    <div class="notif-item ${n.read ? '' : 'unread'}">
+      <div>${n.message}</div>
+      <div class="time">${new Date(n.created_at).toLocaleDateString('ar-EG', {hour:'2-digit',minute:'2-digit'})}</div>
+    </div>`).join('') : '<div class="empty-state"><div class="icon">🔔</div>لا يوجد إشعارات</div>';
+}
+
+async function markAllRead() {
+  await fetch('/api/admin/notifications/read', { method: 'POST' });
+  document.getElementById('notifBadgeSide').style.display = 'none';
+  loadNotifications(); loadStats();
+}
+
+function populateTemplateSelect() {
+  const sel = document.getElementById('userTemplate');
+  const current = sel.value;
+  sel.innerHTML = '<option value="">بدون قالب محدد</option>' +
+    allTemplates.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+  if (current) sel.value = current;
+}
+
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  if (id === 'addUserModal') {
+    document.getElementById('editUserId').value = '';
+    document.getElementById('userName').value = '';
+    document.getElementById('userEmail').value = '';
+    document.getElementById('userPassword').value = '';
+    document.getElementById('userTemplate').value = '';
+    document.getElementById('userCanEdit').checked = false;
+    document.getElementById('userCanCompare').checked = false;
+    document.getElementById('userModalTitle').textContent = 'إضافة موظف جديد';
+    document.getElementById('passHint').textContent = '';
+  }
+}
+
+function editUser(id) {
+  const u = allUsers.find(u => u.id === id);
+  if (!u) return;
+  document.getElementById('editUserId').value = id;
+  document.getElementById('userName').value = u.name;
+  document.getElementById('userEmail').value = u.email;
+  document.getElementById('userPassword').value = '';
+  document.getElementById('userTemplate').value = u.template_id || '';
+  document.getElementById('userCanEdit').checked = !!u.can_edit_template;
+  document.getElementById('userCanCompare').checked = !!u.can_compare_team;
+  document.getElementById('userModalTitle').textContent = 'تعديل بيانات الموظف';
+  document.getElementById('passHint').textContent = 'اتركها فارغة عشان ما تتغيرش';
+  openModal('addUserModal');
+}
+
+async function saveUser() {
+  const id = document.getElementById('editUserId').value;
+  const templateVal = document.getElementById('userTemplate').value;
+  const body = {
+    name: document.getElementById('userName').value,
+    email: document.getElementById('userEmail').value,
+    password: document.getElementById('userPassword').value,
+    template_id: templateVal ? parseInt(templateVal) : null,
+    can_edit_template: document.getElementById('userCanEdit').checked,
+    can_compare_team: document.getElementById('userCanCompare').checked,
+  };
+  if (!body.name || !body.email) return Toast.warning('الاسم والإيميل مطلوبين');
+  if (!id && !body.password) return Toast.warning('كلمة المرور مطلوبة للموظف الجديد');
+
+  const url = id ? '/api/admin/users/' + id : '/api/admin/users';
+  const method = id ? 'PUT' : 'POST';
+  const res = await fetch(url, { method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
+  const data = await res.json();
+  if (data.error) return Toast.error(data.error);
+  closeModal('addUserModal');
+  Toast.success(id ? 'تم تحديث بيانات الموظف' : 'تم إضافة الموظف بنجاح');
+  loadUsers(); loadStats();
+}
+
+async function deleteUser(id) {
+  if (!confirm('هتحذف الموظف ده؟')) return;
+  await fetch('/api/admin/users/' + id, { method: 'DELETE' });
+  loadUsers(); loadStats();
+}
+
+async function showLink(userId) {
+  const data = await fetch('/api/admin/report-link/' + userId).then(r => r.json());
+  document.getElementById('generatedLink').textContent = location.origin + '/employee';
+  openModal('linkModal');
+}
+
+function copyGeneratedLink() {
+  navigator.clipboard.writeText(location.origin + '/employee');
+  Toast.success('تم نسخ الرابط');
+}
+
+function doSearch(q) {
+  q = q.toLowerCase();
+  if (!q) { renderUsers(allUsers); renderReports(allReports); return; }
+  renderUsers(allUsers.filter(u => u.name.includes(q) || u.email.includes(q)));
+  renderReports(allReports.filter(r => r.user_name.includes(q) || r.title.includes(q)));
+}
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
+});
+
+init();
+</script>
+</body>
+</html>

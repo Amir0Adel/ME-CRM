@@ -1,0 +1,59 @@
+/* ──────────────────────────────────────────────────────────────────────────
+   Visual Themes — يحدد ألوان التقرير النهائي
+   تستخدم variables: --report-primary, --report-accent, --report-bg, --report-fg
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* Standard - الافتراضي (Navy + Orange) */
+.theme-standard {
+  --report-primary: #1D2F5F;
+  --report-accent:  #FF6B2B;
+  --report-bg:      #F4F6FA;
+  --report-fg:      #4B5563;
+}
+
+/* Executive - مظهر قيادي (Dark Navy + Gold) */
+.theme-executive {
+  --report-primary: #0F1729;
+  --report-accent:  #C9A961;
+  --report-bg:      #FAFAF7;
+  --report-fg:      #2D3748;
+  font-family: 'Cairo', serif;
+}
+.theme-executive .rh { background: linear-gradient(135deg, #0F1729 0%, #1A2238 100%) !important; }
+.theme-executive h2 { letter-spacing: -0.3px; }
+.theme-executive .rpt { box-shadow: 0 6px 30px rgba(15, 23, 41, 0.18) !important; }
+
+/* Analytics - أرقام كبيرة (Blue + Cyan) */
+.theme-analytics {
+  --report-primary: #1E40AF;
+  --report-accent:  #06B6D4;
+  --report-bg:      #F0F9FF;
+  --report-fg:      #1E293B;
+}
+.theme-analytics .mv { font-size: 36px !important; }
+.theme-analytics .mc { background: #fff !important; border-color: #06B6D4 !important; border-width: 2px !important; }
+
+/* Compact - مكثف (Gray + Green) */
+.theme-compact {
+  --report-primary: #374151;
+  --report-accent:  #10B981;
+  --report-bg:      #FFFFFF;
+  --report-fg:      #4B5563;
+  font-size: 12px;
+}
+.theme-compact .rs { padding: 14px 22px !important; }
+.theme-compact h2  { font-size: 13px !important; margin-bottom: 8px !important; }
+.theme-compact .mv { font-size: 22px !important; }
+.theme-compact p   { font-size: 12px !important; line-height: 1.7 !important; }
+
+/* Colorful - متعدد الألوان (Purple + Pink) */
+.theme-colorful {
+  --report-primary: #7C3AED;
+  --report-accent:  #EC4899;
+  --report-bg:      #FEF3F8;
+  --report-fg:      #4B5563;
+}
+.theme-colorful .rh { background: linear-gradient(135deg, #7C3AED 0%, #EC4899 100%) !important; }
+.theme-colorful .rs { background: linear-gradient(135deg, #FEF3F8 0%, #E0F2FE 100%) !important; }
+.theme-colorful .mc { background: #fff !important; border-color: #EC4899 !important; }
+.theme-colorful .mv { color: #7C3AED !important; }

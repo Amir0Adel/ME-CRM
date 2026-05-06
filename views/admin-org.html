@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الهيكل القيادي والتشغيلي</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/components.css">
+<link rel="stylesheet" href="/css/dark-mode.css">
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="/js/app-shell.js"></script>
+<style>
+:root {
+  --navy: #1D2F5F; --navy-light: #263a75; --navy-soft: #EEF2FF;
+  --orange: #FF6B2B; --orange-soft: #FFF0EA;
+  --bg: #F4F6FA; --white: #FFFFFF;
+  --gray: #4B5563; --gray-light: #9CA3AF; --border: #E5E7EB;
+  --green: #1A7A4A; --green-soft: #E6F5EE; --green-tint: #F0FDF4;
+  --purple: #6B21A8; --purple-soft: #F3E8FF;
+  --rose: #BE185D; --rose-soft: #FCE7F3;
+  --amber: #92400E; --amber-soft: #FEF3C7;
+  --shadow-sm: 0 1px 3px rgba(29,47,95,0.06);
+  --shadow:    0 3px 12px rgba(29,47,95,0.10);
+  --shadow-md: 0 6px 24px rgba(29,47,95,0.14);
+  --shadow-lg: 0 12px 40px rgba(29,47,95,0.18);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--gray); direction: rtl; min-height: 100vh; font-size: 14px; line-height: 1.65; }
+
+/* ── PAGE WRAPPER ────────────────────────────────────────────────── */
+.org-wrap { max-width: 1320px; margin: 0 auto; padding: 24px 28px 90px; }
+
+/* ── HERO ─────────────────────────────────────────────────────────── */
+.org-hero {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 60%, #2c4584 100%);
+  color: #fff; border-radius: 20px; padding: 28px 30px;
+  display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: center;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow-md);
+  position: relative; overflow: hidden;
+}
+.org-hero::before {
+  content: ''; position: absolute; left: -80px; bottom: -80px;
+  width: 280px; height: 280px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,107,43,0.18) 0%, transparent 70%);
+}
+.org-hero h1 { font-size: 24px; font-weight: 900; line-height: 1.25; letter-spacing: -0.3px; }
+.org-hero p  { font-size: 13.5px; color: rgba(255,255,255,0.82); margin-top: 6px; max-width: 600px; }
+.org-hero-badge { background: var(--orange); color: #fff; font-size: 11px; font-weight: 800; padding: 6px 14px; border-radius: 20px; white-space: nowrap; box-shadow: 0 4px 14px rgba(255,107,43,0.35); }
+
+/* ── SUMMARY KPIs ─────────────────────────────────────────────────── */
+.summary-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+@media (max-width: 768px) { .summary-bar { grid-template-columns: repeat(2, 1fr); } }
+.summary-card {
+  background: var(--white); border-radius: 14px; border: 1px solid var(--border);
+  padding: 16px 18px; display: flex; align-items: center; gap: 14px; box-shadow: var(--shadow-sm);
+  transition: all 0.18s;
+}
+.summary-card:hover { box-shadow: var(--shadow); transform: translateY(-1px); }
+.summary-icon { width: 42px; height: 42px; border-radius: 12px; background: var(--orange-soft); display: flex; align-items: center; justify-content: center; font-size: 19px; flex-shrink: 0; }
+.summary-num { font-size: 22px; font-weight: 900; color: var(--navy); line-height: 1; }
+.summary-label { font-size: 11.5px; color: var(--gray-light); margin-top: 4px; font-weight: 600; }
+
+/* ── CONTROLS ─────────────────────────────────────────────────────── */
+.controls-wrap { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
+.search-wrap { position: relative; flex: 1; min-width: 240px; }
+.search-wrap input { width: 100%; background: var(--white); border: 1.5px solid var(--border); border-radius: 12px; padding: 11px 44px 11px 14px; font-family: 'Cairo', sans-serif; font-size: 13px; outline: none; transition: all .18s; }
+.search-wrap input:focus { border-color: var(--navy); box-shadow: 0 0 0 4px rgba(29,47,95,0.08); }
+.search-icon-rt { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--gray-light); pointer-events: none; }
+.filters { display: flex; gap: 6px; flex-wrap: wrap; }
+.filter-btn { background: var(--white); border: 1.5px solid var(--border); border-radius: 9px; padding: 8px 14px; font-family: 'Cairo', sans-serif; font-size: 12px; font-weight: 700; color: var(--gray); cursor: pointer; transition: all .15s; white-space: nowrap; }
+.filter-btn:hover { border-color: var(--navy); color: var(--navy); }
+.filter-btn.active { background: var(--navy); border-color: var(--navy); color: #fff; box-shadow: 0 4px 12px rgba(29,47,95,0.2); }
+
+/* ── LEGEND ───────────────────────────────────────────────────────── */
+.legend { display: flex; gap: 18px; flex-wrap: wrap; padding: 12px 18px; background: var(--white); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 28px; box-shadow: var(--shadow-sm); }
+.legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--gray); }
+.legend-dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── TIER LABEL ───────────────────────────────────────────────────── */
+.tier-label {
+  display: flex; align-items: center; gap: 12px;
+  margin: 8px 0 14px;
+}
+.tier-num {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--navy); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 900; flex-shrink: 0;
+}
+.tier-text {
+  font-size: 11px; font-weight: 800;
+  color: var(--gray-light); letter-spacing: 1.2px; text-transform: uppercase;
+}
+.tier-line { flex: 1; height: 1px; background: linear-gradient(to left, var(--border), transparent); }
+
+/* ── CARD AVATAR (universal) ──────────────────────────────────────── */
+.org-avatar {
+  width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; font-weight: 900; color: #fff;
+  flex-shrink: 0; box-shadow: var(--shadow-sm);
+  border: 2px solid #fff;
+}
+.av-navy   { background: linear-gradient(135deg, var(--navy), var(--navy-light)); }
+.av-orange { background: linear-gradient(135deg, #FF8347, var(--orange)); }
+.av-green  { background: linear-gradient(135deg, #2A9461, var(--green)); }
+.av-purple { background: linear-gradient(135deg, #8B3FBC, var(--purple)); }
+.av-amber  { background: linear-gradient(135deg, #D4791F, var(--amber)); }
+.av-rose   { background: linear-gradient(135deg, #DB347C, var(--rose)); }
+.av-teal   { background: linear-gradient(135deg, #14B8A6, #0D9488); }
+
+/* ── ROLE BADGE ───────────────────────────────────────────────────── */
+.role-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 10.5px; font-weight: 800;
+  padding: 3px 10px; border-radius: 20px;
+  letter-spacing: 0.2px;
+}
+.badge-ceo     { background: var(--navy); color: #fff; }
+.badge-assist  { background: var(--orange-soft); color: var(--orange); }
+.badge-gm      { background: linear-gradient(135deg, var(--navy), var(--navy-light)); color: #fff; }
+.badge-growth  { background: var(--navy-soft); color: var(--navy); }
+.badge-exec    { background: var(--green-soft); color: var(--green); }
+.badge-sales   { background: var(--amber-soft); color: var(--amber); }
+.badge-media   { background: var(--purple-soft); color: var(--purple); }
+
+/* ── TIER 1: CEO ROW ──────────────────────────────────────────────── */
+.tier-ceo { display: grid; grid-template-columns: 2.2fr 1fr; gap: 16px; margin-bottom: 6px; }
+@media (max-width: 768px) { .tier-ceo { grid-template-columns: 1fr; } }
+
+.exec-card {
+  background: var(--white); border-radius: 16px;
+  padding: 20px 22px; cursor: pointer;
+  transition: all .22s; box-shadow: var(--shadow);
+  position: relative; overflow: hidden;
+  display: flex; gap: 16px; align-items: flex-start;
+}
+.exec-card .org-avatar { width: 56px; height: 56px; font-size: 21px; }
+.exec-card.ceo { border: 2.5px solid var(--navy); }
+.exec-card.assist { border: 1.5px solid var(--border); border-right: 4px solid var(--orange); }
+.exec-card.ceo::before {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0;
+  height: 3px; background: linear-gradient(to left, var(--navy), var(--orange));
+}
+.exec-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+.exec-card.ceo:hover { border-color: var(--orange); }
+.exec-info { flex: 1; min-width: 0; }
+.exec-name { font-size: 18px; font-weight: 900; color: var(--navy); line-height: 1.2; margin-top: 4px; }
+.exec-title { font-size: 12.5px; color: var(--orange); font-weight: 700; margin-top: 4px; }
+.exec-desc { font-size: 12.5px; color: var(--gray); margin-top: 8px; line-height: 1.6; }
+
+/* ── DOWN CONNECTOR ───────────────────────────────────────────────── */
+.connector-down {
+  display: flex; flex-direction: column; align-items: center;
+  margin: 6px auto;
+  height: 26px;
+}
+.connector-down::before {
+  content: ''; width: 2px; flex: 1;
+  background: linear-gradient(to bottom, var(--navy-light) 0%, var(--gray-light) 100%);
+}
+.connector-down::after {
+  content: ''; width: 9px; height: 9px; border-radius: 50%;
+  background: var(--navy); margin-top: -1px;
+}
+
+/* ── TIER 2: GM BRIDGE ────────────────────────────────────────────── */
+.gm-bridge {
+  background: linear-gradient(135deg, #fff, var(--navy-soft) 200%);
+  border: 2px solid var(--navy); border-radius: 16px;
+  padding: 18px 22px; cursor: pointer; transition: all .22s;
+  box-shadow: var(--shadow-md);
+  display: grid; grid-template-columns: auto 1fr auto; gap: 18px; align-items: center;
+}
+.gm-bridge:hover { transform: translateY(-3px); border-color: var(--orange); box-shadow: var(--shadow-lg); }
+.gm-bridge .org-avatar { width: 56px; height: 56px; font-size: 21px; }
+.gm-info { min-width: 0; }
+.gm-name { font-size: 19px; font-weight: 900; color: var(--navy); line-height: 1.2; margin-top: 4px; }
+.gm-sub { font-size: 12px; color: var(--orange); font-weight: 700; margin-top: 4px; }
+.gm-tracks { display: flex; gap: 10px; flex-wrap: wrap; }
+.gm-track-pill { border-radius: 11px; padding: 9px 14px; min-width: 130px; font-size: 12.5px; font-weight: 800; }
+.gm-track-pill small { display: block; font-size: 10px; font-weight: 800; opacity: 0.7; margin-bottom: 3px; }
+.gm-track-pill.direct { background: var(--navy-soft); border: 1.5px solid var(--navy); color: var(--navy); }
+.gm-track-pill.indirect { background: var(--green-tint); border: 1.5px dashed #86EFAC; color: var(--green); }
+@media (max-width: 768px) { .gm-bridge { grid-template-columns: 1fr; } }
+
+/* ── TIER 3+: TRACK SECTION ───────────────────────────────────────── */
+.track-section {
+  background: var(--white);
+  border-radius: 18px;
+  padding: 22px 24px 24px;
+  margin-top: 16px;
+  border: 1.5px solid var(--border);
+  box-shadow: var(--shadow);
+  transition: opacity 0.25s;
+  position: relative;
+}
+.track-section.growth { border-top: 4px solid var(--navy); }
+.track-section.exec   { border-top: 4px solid var(--green); }
+
+.track-header { display: flex; align-items: center; gap: 14px; padding-bottom: 16px; border-bottom: 1px dashed var(--border); margin-bottom: 18px; }
+.track-icon-big { width: 52px; height: 52px; border-radius: 13px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; color: #fff; }
+.track-section.growth .track-icon-big { background: linear-gradient(135deg, var(--navy), var(--navy-light)); }
+.track-section.exec   .track-icon-big { background: linear-gradient(135deg, #2A9461, var(--green)); }
+.track-label-en { font-size: 10.5px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+.track-section.growth .track-label-en { color: var(--navy); }
+.track-section.exec   .track-label-en { color: var(--green); }
+.track-label-ar { font-size: 17px; font-weight: 900; color: var(--navy); line-height: 1.2; margin-top: 3px; }
+.track-desc { font-size: 12px; color: var(--gray); margin-top: 4px; }
+
+/* ── PERSON CARD ──────────────────────────────────────────────────── */
+.person-card {
+  background: var(--white); border-radius: 12px;
+  border: 1.5px solid var(--border); padding: 13px 14px;
+  cursor: pointer; transition: all .16s;
+  box-shadow: var(--shadow-sm);
+  display: flex; gap: 12px; align-items: flex-start;
+  position: relative;
+}
+.person-card .org-avatar { width: 38px; height: 38px; font-size: 14px; }
+.person-card .pc-info { flex: 1; min-width: 0; }
+.person-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); border-color: var(--navy); }
+.person-card.lead { border-color: var(--navy); border-width: 2px; background: linear-gradient(135deg, #fff, var(--navy-soft) 220%); }
+.person-card.lead-green { border-color: var(--green); border-width: 2px; background: linear-gradient(135deg, #fff, var(--green-tint) 220%); }
+.person-card.standalone { border: 2px solid var(--orange); background: linear-gradient(135deg, #fff, var(--orange-soft) 240%); }
+.p-row-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+.p-name { font-size: 14px; font-weight: 800; color: var(--navy); line-height: 1.2; }
+.p-title { font-size: 11.5px; color: var(--orange); font-weight: 700; margin-top: 2px; }
+.p-desc { font-size: 12px; color: var(--gray); margin-top: 6px; line-height: 1.55; }
+.p-locked { margin-top: 9px; padding-top: 8px; border-top: 1px dashed var(--border); font-size: 10.5px; color: var(--gray-light); display: flex; align-items: center; gap: 5px; font-weight: 600; }
+
+/* ── TEAM CARD ────────────────────────────────────────────────────── */
+.team-card {
+  background: var(--white); border-radius: 12px;
+  border: 1.5px solid var(--border); padding: 12px 14px;
+  cursor: pointer; transition: all .16s;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+.team-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); border-color: var(--green); }
+.team-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.team-avatar { width: 34px; height: 34px; border-radius: 9px; background: var(--green-soft); color: var(--green); display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; font-weight: 800; }
+.team-name { font-size: 13px; font-weight: 900; color: var(--navy); line-height: 1.2; }
+.team-tag { font-size: 9.5px; background: var(--green-soft); color: var(--green); font-weight: 800; padding: 2px 8px; border-radius: 10px; display: inline-block; margin-top: 3px; letter-spacing: 0.3px; }
+.member-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.member-chip { font-size: 10.5px; background: var(--bg); color: var(--gray); padding: 3px 9px; border-radius: 12px; border: 1px solid var(--border); font-weight: 600; }
+.member-chip.shared-orange { background: var(--orange-soft); color: var(--orange); border-color: #FFD4BA; }
+.member-chip.shared-green { background: var(--green-soft); color: var(--green); border-color: #A7F3D0; }
+
+/* ── HIERARCHY CONNECTORS ─────────────────────────────────────────── */
+.children-block {
+  position: relative;
+  margin-top: 10px;
+  padding-right: 22px;
+}
+.children-block::before {
+  content: ''; position: absolute; right: 14px; top: 0; bottom: 12px;
+  width: 2px; background: var(--border);
+  border-radius: 2px;
+}
+.children-block > * { position: relative; }
+.children-block > *::before {
+  content: ''; position: absolute; right: -8px; top: 22px;
+  width: 16px; height: 2px; background: var(--border);
+}
+
+/* ── SHARED NOTE ──────────────────────────────────────────────────── */
+.shared-note {
+  background: var(--orange-soft); border: 1px dashed var(--orange);
+  border-radius: 10px; padding: 10px 13px;
+  font-size: 11.5px; color: var(--gray);
+  margin-top: 8px;
+  display: flex; align-items: flex-start; gap: 8px;
+}
+.shared-note .note-icon { font-size: 14px; flex-shrink: 0; }
+
+/* ── SUB-DIVIDER ──────────────────────────────────────────────────── */
+.sub-divider { display: flex; align-items: center; gap: 12px; margin: 18px 0 10px; }
+.sub-divider .ln { flex: 1; height: 1px; background: var(--border); }
+.sub-divider .lbl {
+  font-size: 11px; font-weight: 800; color: var(--green);
+  background: var(--green-tint); padding: 4px 12px; border-radius: 12px; white-space: nowrap;
+}
+
+/* ── ROW LAYOUTS ──────────────────────────────────────────────────── */
+.row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+@media (max-width: 768px) {
+  .row-2, .row-3 { grid-template-columns: 1fr; }
+}
+
+/* ── HIDDEN ───────────────────────────────────────────────────────── */
+.hidden { display: none !important; }
+
+/* ── SIDE PANEL ───────────────────────────────────────────────────── */
+.panel-overlay { display: none; position: fixed; inset: 0; background: rgba(15,20,40,0.5); z-index: 300; backdrop-filter: blur(3px); }
+.panel-overlay.open { display: block; animation: fadeIn 0.2s; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.side-panel { position: fixed; left: 0; top: 0; bottom: 0; width: 460px; max-width: 96vw; background: var(--white); z-index: 400; transform: translateX(-100%); transition: transform .3s cubic-bezier(.4,0,.2,1); overflow-y: auto; display: flex; flex-direction: column; box-shadow: 4px 0 40px rgba(29,47,95,0.2); }
+.side-panel.open { transform: translateX(0); }
+.panel-head { background: linear-gradient(135deg, var(--navy), var(--navy-light)); color: #fff; padding: 24px 24px 20px; position: relative; flex-shrink: 0; }
+.panel-head::after { content:''; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: linear-gradient(to left, var(--navy), var(--orange)); }
+.panel-close { position: absolute; left: 16px; top: 16px; background: rgba(255,255,255,0.14); border: none; color: #fff; border-radius: 9px; width: 36px; height: 36px; font-size: 17px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background .18s; font-family: 'Cairo', sans-serif; }
+.panel-close:hover { background: rgba(255,255,255,0.28); }
+.panel-avatar { width: 60px; height: 60px; border-radius: 50%; background: rgba(255,255,255,0.18); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 900; color: #fff; margin-bottom: 14px; border: 2px solid rgba(255,255,255,0.35); }
+.panel-name-h { font-size: 21px; font-weight: 900; line-height: 1.2; }
+.panel-title-s { font-size: 13px; color: var(--orange); font-weight: 700; margin-top: 4px; }
+.panel-body { padding: 22px 24px; flex: 1; }
+.panel-section { margin-bottom: 20px; }
+.panel-section-title { font-size: 11px; font-weight: 800; color: var(--gray-light); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.panel-section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.panel-desc { font-size: 13px; color: var(--gray); line-height: 1.7; }
+.panel-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.panel-list li { font-size: 12.5px; color: var(--gray); padding: 8px 12px; background: var(--bg); border-radius: 8px; display: flex; align-items: flex-start; gap: 8px; line-height: 1.55; border-right: 3px solid var(--orange); }
+.panel-kpi { display: flex; flex-wrap: wrap; gap: 6px; }
+.kpi-chip { background: var(--navy); color: #fff; font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 20px; }
+.relations-box { background: var(--orange-soft); border: 1px solid #FFD4BA; border-radius: 11px; padding: 12px 15px; font-size: 12.5px; color: var(--gray); line-height: 1.65; }
+</style>
+</head>
+<body>
+
+<header class="global-topbar">
+  <div class="brand-block">
+    <a href="/admin"><img src="/img/logo.jpg" alt="Marketing Experts" class="brand-logo"></a>
+  </div>
+  <a href="/admin" id="backLink" class="tb-ic-btn" title="رجوع" style="text-decoration:none;width:auto;padding:0 12px;gap:6px;font-size:12px;font-weight:700">
+    <span data-icon="arrow-right"></span> <span id="backLinkText">لوحة التحكم</span>
+  </a>
+  <span style="flex:1;text-align:center;font-size:14px;font-weight:800;color:var(--navy)"><span data-icon="git-branch"></span> الهيكل القيادي والتشغيلي</span>
+  <div class="topbar-actions">
+    <button class="tb-ic-btn theme-toggle" onclick="toggleTheme()" title="الوضع الليلي" id="themeToggleBtn">🌙</button>
+  </div>
+</header>
+
+<div class="org-wrap">
+
+  <!-- Hero -->
+  <div class="org-hero">
+    <div>
+      <h1>الهيكل القيادي والتشغيلي — خبراء التسويق</h1>
+      <p>توزيع المسؤوليات بين مسار النمو والإيرادات ومسار التنفيذ والجودة، مع قيادة استراتيجية من أعلى</p>
+    </div>
+    <span class="org-hero-badge">نسخة إدارية داخلية</span>
+  </div>
+
+  <!-- KPIs -->
+  <div class="summary-bar">
+    <div class="summary-card"><div class="summary-icon">🛤️</div><div><div class="summary-num">2</div><div class="summary-label">مسارات العمل</div></div></div>
+    <div class="summary-card"><div class="summary-icon">👥</div><div><div class="summary-num">8</div><div class="summary-label">الفرق التنفيذية</div></div></div>
+    <div class="summary-card"><div class="summary-icon">⭐</div><div><div class="summary-num">5</div><div class="summary-label">المسؤولون الرئيسيون</div></div></div>
+    <div class="summary-card"><div class="summary-icon">📅</div><div><div class="summary-num">أسبوعي</div><div class="summary-label">وضع المتابعة</div></div></div>
+  </div>
+
+  <!-- Controls -->
+  <div class="controls-wrap">
+    <div class="search-wrap">
+      <span class="search-icon-rt">🔍</span>
+      <input type="text" id="searchInput" placeholder="ابحث بالاسم، القسم، أو الفريق…" oninput="handleSearch(this.value)">
+    </div>
+    <div class="filters">
+      <button class="filter-btn active" onclick="filterCards('all', this)">الكل</button>
+      <button class="filter-btn" onclick="filterCards('growth', this)">النمو والإيرادات</button>
+      <button class="filter-btn" onclick="filterCards('exec', this)">التنفيذ والجودة</button>
+      <button class="filter-btn" onclick="filterCards('sales', this)">المبيعات</button>
+      <button class="filter-btn" onclick="filterCards('marketing', this)">التسويق والأداء</button>
+      <button class="filter-btn" onclick="filterCards('admin', this)">المالية والإدارة</button>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--navy)"></div> <strong>Growth &amp; Revenue</strong> — مسؤولية أحمد</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div> <strong>Execution Governance</strong> — متابعة إبراهيم من أعلى</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div> <strong>CEO Control Support</strong> — دعم فاطمة</div>
+  </div>
+
+  <!-- ═════ TIER 1: CEO LAYER ═════ -->
+  <div class="tier-label">
+    <div class="tier-num">1</div>
+    <div class="tier-text">القيادة التنفيذية</div>
+    <div class="tier-line"></div>
+  </div>
+  <div class="tier-ceo">
+    <div class="exec-card ceo" data-filter="growth exec" onclick="openPanel('ibrahim')">
+      <div class="org-avatar av-navy">إ</div>
+      <div class="exec-info">
+        <span class="role-badge badge-ceo">CEO · الرئيس التنفيذي</span>
+        <div class="exec-name">إبراهيم البحراوي</div>
+        <div class="exec-title">CEO / Strategy &amp; Execution Governance</div>
+        <div class="exec-desc">قيادة الاستراتيجية، متابعة التنفيذ من أعلى، تطوير الأقسام، واتخاذ القرارات.</div>
+      </div>
+    </div>
+    <div class="exec-card assist" data-filter="exec admin" onclick="openPanel('fatima')">
+      <div class="org-avatar av-orange">ف</div>
+      <div class="exec-info">
+        <span class="role-badge badge-assist">CEO Support</span>
+        <div class="exec-name">فاطمة</div>
+        <div class="exec-title">Admin Assistant / CEO Control</div>
+        <div class="exec-desc">تجميع الصورة الأسبوعية، متابعة القرارات، وتنبيه المخاطر.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector-down"></div>
+
+  <!-- ═════ TIER 2: GENERAL MANAGER ═════ -->
+  <div class="tier-label">
+    <div class="tier-num">2</div>
+    <div class="tier-text">الإدارة العامة</div>
+    <div class="tier-line"></div>
+  </div>
+  <div class="gm-bridge" data-filter="growth exec" onclick="openPanel('ahmed_ar')">
+    <div class="org-avatar av-navy">أ</div>
+    <div class="gm-info">
+      <span class="role-badge badge-gm">مدير عام · General Manager</span>
+      <div class="gm-name">أحمد عبدالرؤوف</div>
+      <div class="gm-sub">إشراف مباشر على مسار النمو، ومتابعة عامة على باقي الشركة</div>
+    </div>
+    <div class="gm-tracks">
+      <div class="gm-track-pill direct"><small>إشراف مباشر</small>📈 مسار النمو والإيرادات</div>
+      <div class="gm-track-pill indirect"><small>متابعة عامة</small>🎯 مسار التنفيذ والجودة</div>
+    </div>
+  </div>
+
+  <div class="connector-down"></div>
+
+  <!-- ═════ TIER 3: GROWTH & REVENUE TRACK ═════ -->
+  <div class="tier-label">
+    <div class="tier-num">3</div>
+    <div class="tier-text">مسار النمو والإيرادات — Growth Track</div>
+    <div class="tier-line"></div>
+  </div>
+  <div class="track-section growth" data-filter="growth">
+    <div class="track-header">
+      <div class="track-icon-big">📈</div>
+      <div>
+        <div class="track-label-en">Growth &amp; Revenue Track</div>
+        <div class="track-label-ar">مسار النمو والإيرادات</div>
+        <div class="track-desc">إشراف مباشر من أحمد — المبيعات، النمو، الحملات، وجودة الليدز</div>
+      </div>
+    </div>
+
+    <!-- Top row: 3 leads side by side -->
+    <div class="row-3">
+
+      <!-- Mohamed (Sales Manager) + sub-tree -->
+      <div>
+        <div class="person-card lead" data-filter="growth sales" onclick="openPanel('mohamed_ak')">
+          <div class="org-avatar av-amber">م</div>
+          <div class="pc-info">
+            <div class="p-row-top"><span class="role-badge badge-sales">Sales Manager</span></div>
+            <div class="p-name">محمد عبدالقوي</div>
+            <div class="p-title">Sales Manager · مدير المبيعات</div>
+            <div class="p-desc">إدارة مبيعات الأكاديمية B2C ومبيعات الشركات B2B.</div>
+          </div>
+        </div>
+        <div class="children-block">
+          <div class="person-card" data-filter="growth sales" onclick="openPanel('khaled')">
+            <div class="org-avatar av-amber">خ</div>
+            <div class="pc-info">
+              <div class="p-row-top"><span class="role-badge badge-sales">B2C Lead</span></div>
+              <div class="p-name">خالد</div>
+              <div class="p-title">B2C Sales Team Leader</div>
+            </div>
+          </div>
+          <div class="children-block" style="margin-top:10px">
+            <div class="team-card" data-filter="growth sales" onclick="openPanel('b2c_team')">
+              <div class="team-head">
+                <div class="team-avatar">👥</div>
+                <div>
+                  <div class="team-name">فريق المبيعات B2C</div>
+                  <span class="team-tag">B2C Sales Team</span>
+                </div>
+              </div>
+              <div class="member-chips">
+                <span class="member-chip">زينب</span>
+                <span class="member-chip">ريم</span>
+                <span class="member-chip">عائشة</span>
+                <span class="member-chip">مروة</span>
+              </div>
+            </div>
+          </div>
+          <div class="person-card" data-filter="growth sales" onclick="openPanel('shrouk')" style="margin-top:10px">
+            <div class="org-avatar av-amber">ش</div>
+            <div class="pc-info">
+              <div class="p-row-top"><span class="role-badge badge-sales">B2B Sales</span></div>
+              <div class="p-name">شروق</div>
+              <div class="p-title">B2B Sales · مبيعات الشركات</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sherry (standalone) -->
+      <div>
+        <div class="person-card standalone" data-filter="growth" onclick="openPanel('sherry')">
+          <div class="org-avatar av-orange">ش</div>
+          <div class="pc-info">
+            <div class="p-row-top"><span class="role-badge badge-assist">Academy Ops · مستقل</span></div>
+            <div class="p-name">شيري</div>
+            <div class="p-title">Academy Operation &amp; Customer Service</div>
+            <div class="p-desc">تشغيل الأكاديمية، تجربة المتدربين، الجروبات، والزوم.</div>
+            <div class="p-locked"><span>🔒</span> لا تسلسل هرمي تحتها — تقرر مباشرة لأحمد</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mahmoud + Ahmed Abdelfattah -->
+      <div>
+        <div class="person-card lead" data-filter="growth marketing" onclick="openPanel('mahmoud')">
+          <div class="org-avatar av-navy">م</div>
+          <div class="pc-info">
+            <div class="p-row-top"><span class="role-badge badge-growth">Performance Lead</span></div>
+            <div class="p-name">محمود القوصي</div>
+            <div class="p-title">Growth / Strategy / Performance</div>
+            <div class="p-desc">التخطيط، الأداء، جودة الليدز، وتحسين الحملات.</div>
+          </div>
+        </div>
+        <div class="children-block">
+          <div class="person-card" data-filter="growth marketing exec" onclick="openPanel('ahmed_af')">
+            <div class="org-avatar av-purple">أ</div>
+            <div class="pc-info">
+              <div class="p-row-top"><span class="role-badge badge-media">Media Buyer · مشترك</span></div>
+              <div class="p-name">أحمد عبدالفتاح</div>
+              <div class="p-title">Media Buyer</div>
+            </div>
+          </div>
+          <div class="shared-note" style="margin-right:0">
+            <span class="note-icon">🔗</span>
+            <span>يتبع فنيًا <strong>محمود</strong>، ويخدم تنفيذيًا <strong>Pod 1</strong> و<strong>Pod 2</strong>.</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="connector-down"></div>
+
+  <!-- ═════ TIER 4: EXECUTION GOVERNANCE TRACK ═════ -->
+  <div class="tier-label">
+    <div class="tier-num">4</div>
+    <div class="tier-text">مسار التنفيذ والجودة — Execution Track</div>
+    <div class="tier-line"></div>
+  </div>
+  <div class="track-section exec" data-filter="exec">
+    <div class="track-header">
+      <div class="track-icon-big">🎯</div>
+      <div>
+        <div class="track-label-en">Execution Governance Track</div>
+        <div class="track-label-ar">مسار التنفيذ والجودة</div>
+        <div class="track-desc">متابعة قيادية لضمان جودة التنفيذ، الالتزام، ورضا العملاء</div>
+      </div>
+    </div>
+
+    <!-- Narmeen at top -->
+    <div class="person-card lead-green" data-filter="exec" onclick="openPanel('narmeen')">
+      <div class="org-avatar av-green">ن</div>
+      <div class="pc-info">
+        <div class="p-row-top"><span class="role-badge badge-exec">Planning &amp; Quality Lead</span></div>
+        <div class="p-name">نرمين</div>
+        <div class="p-title">Planning &amp; Quality Governance Lead</div>
+        <div class="p-desc">تضع خطة التنفيذ لكل مشروع، تحدد معايير الجودة، وتتابع الالتزام بها عبر كل الفرق.</div>
+      </div>
+    </div>
+
+    <!-- Social Pods -->
+    <div class="sub-divider"><div class="ln"></div><div class="lbl">📱 Social Execution</div><div class="ln"></div></div>
+    <div class="row-2">
+      <div class="team-card" data-filter="exec marketing" onclick="openPanel('pod1')">
+        <div class="team-head">
+          <div class="team-avatar">🟦</div>
+          <div>
+            <div class="team-name">Social Execution Pod 1</div>
+            <span class="team-tag">Social Pod 1</span>
+          </div>
+        </div>
+        <div class="member-chips">
+          <span class="member-chip">بسنت</span>
+          <span class="member-chip">سمر</span>
+          <span class="member-chip">محمد إبراهيم</span>
+          <span class="member-chip">أحمد صبحي</span>
+          <span class="member-chip shared-orange">+ أحمد عبدالفتاح (Media)</span>
+          <span class="member-chip shared-green">+ شيماء صالح (Mod)</span>
+        </div>
+      </div>
+      <div class="team-card" data-filter="exec marketing" onclick="openPanel('pod2')">
+        <div class="team-head">
+          <div class="team-avatar">🟩</div>
+          <div>
+            <div class="team-name">Social Execution Pod 2</div>
+            <span class="team-tag">Social Pod 2</span>
+          </div>
+        </div>
+        <div class="member-chips">
+          <span class="member-chip">أميرة</span>
+          <span class="member-chip">إسراء</span>
+          <span class="member-chip">ندى</span>
+          <span class="member-chip">أحمد عاطف</span>
+          <span class="member-chip shared-orange">+ أحمد عبدالفتاح (Media)</span>
+          <span class="member-chip shared-green">+ شيماء صالح (Mod)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEO + Web -->
+    <div class="sub-divider"><div class="ln"></div><div class="lbl">🌐 SEO &amp; Web</div><div class="ln"></div></div>
+    <div class="row-2">
+      <div class="team-card" data-filter="exec marketing" onclick="openPanel('seo')">
+        <div class="team-head">
+          <div class="team-avatar">🔍</div>
+          <div>
+            <div class="team-name">SEO Team</div>
+            <span class="team-tag">SEO</span>
+          </div>
+        </div>
+        <div class="member-chips">
+          <span class="member-chip">نور</span>
+          <span class="member-chip">عبد الرحمن</span>
+          <span class="member-chip shared-orange">جهاد · كاتبة محتوى</span>
+        </div>
+      </div>
+      <div class="team-card" data-filter="exec" onclick="openPanel('web')">
+        <div class="team-head">
+          <div class="team-avatar">💻</div>
+          <div>
+            <div class="team-name">Web Team</div>
+            <span class="team-tag">Web</span>
+          </div>
+        </div>
+        <div class="member-chips">
+          <span class="member-chip">أمير</span>
+          <span class="member-chip">أحمد نصار</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Account + Finance + HR -->
+    <div class="sub-divider"><div class="ln"></div><div class="lbl">🏛️ الدعم والإدارة</div><div class="ln"></div></div>
+    <div class="row-3">
+      <div class="team-card" data-filter="exec admin" onclick="openPanel('account')">
+        <div class="team-head">
+          <div class="team-avatar">🤝</div>
+          <div>
+            <div class="team-name">Account Management</div>
+            <span class="team-tag">Account</span>
+          </div>
+        </div>
+        <div class="member-chips">
+          <span class="member-chip">سماح</span>
+        </div>
+      </div>
+      <div class="team-card" data-filter="exec admin" onclick="openPanel('finance')">
+        <div class="team-head">
+          <div class="team-avatar">💰</div>
+          <div>
+            <div class="team-name">Finance / Accounting</div>
+            <span class="team-tag">Finance</span>
+          </div>
+        </div>
+        <div class="member-chips">
+          <span class="member-chip">محمد عبد الله</span>
+          <span class="member-chip">يوسف</span>
+        </div>
+      </div>
+      <div class="team-card" data-filter="exec admin" onclick="openPanel('hr')">
+        <div class="team-head">
+          <div class="team-avatar">👤</div>
+          <div>
+            <div class="team-name">Human Resources</div>
+            <span class="team-tag">HR</span>
+          </div>
+        </div>
+        <div class="member-chips">
+          <span class="member-chip">محسن</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Side panel -->
+<div class="panel-overlay" id="overlay" onclick="closePanel()"></div>
+<div class="side-panel" id="sidePanel">
+  <div class="panel-head">
+    <button class="panel-close" onclick="closePanel()">✕</button>
+    <div class="panel-avatar" id="panelAvatar">ف</div>
+    <div class="panel-name-h" id="panelNameH">—</div>
+    <div class="panel-title-s" id="panelTitleS">—</div>
+  </div>
+  <div class="panel-body" id="panelBody"></div>
+</div>
+
+<script>
+const DATA = {
+  narmeen: { name:'نرمين', title:'Planning & Quality Governance Lead', avatar:'ن',
+    desc:'تقود التخطيط ومتابعة الجودة داخل مسار التنفيذ — تضع خطة التنفيذ لكل مشروع، تحدد معايير الجودة، وتتابع الالتزام بها عبر Social Pods وSEO وWeb وباقي الفرق.',
+    responsibilities:['بناء خطط التنفيذ لمشاريع العملاء والشركة','تحديد معايير الجودة لكل فريق','متابعة الالتزام بالخطط والمواعيد','رصد مشاكل الجودة ورفعها لإبراهيم','التنسيق مع محمود القوصي على معايير البرفورمانس','مراجعة مخرجات الفرق ومدى انسجامها مع الخطة'],
+    outputs:['خطة تنفيذ لكل مشروع أو حملة','معايير جودة موثقة لكل فريق','تقرير أسبوعي بحالة الجودة والالتزام','قائمة مشاريع معرضة للخطر','توصيات تحسين للفرق المتأخرة'],
+    kpis:['نسبة الالتزام بالخطة','عدد المشاريع الحمراء','جودة المخرجات','سرعة رصد المشاكل','رضا العملاء عن التسليمات'],
+    relations:'تعمل داخل مسار التنفيذ والجودة، وتنسق مع محمود القوصي على معايير البرفورمانس. تتابع Social Pod 1 و Pod 2 وSEO وWeb وAccount Management. ترفع لإبراهيم البحراوي.' },
+  ibrahim: { name:'إبراهيم البحراوي', title:'CEO / Strategy & Execution Governance', avatar:'إ',
+    desc:'يقود الاستراتيجية العامة، ويتابع التنفيذ من أعلى دون الدخول في الإدارة اليومية، ويركز على تطوير الأقسام، مراجعة الجودة، واتخاذ القرارات المؤثرة.',
+    responsibilities:['تحديد الاتجاه الاستراتيجي','متابعة جودة التنفيذ من أعلى','مراجعة مؤشرات الأداء والمخاطر','اتخاذ القرارات التصحيحية','تطوير الأقسام والقيادات','منع الانحراف بين الرؤية والتنفيذ'],
+    outputs:['مراجعة Weekly CEO Control Report','قرارات تصحيحية بحد أقصى 3–5 أسبوعيًا','ملاحظات على جودة التنفيذ','توجيهات تطويرية للأقسام'],
+    kpis:['وضوح الصورة العامة','انخفاض المشاريع الحمراء','تحسن جودة التنفيذ','التزام الأقسام بالتقارير','سرعة معالجة المخاطر'],
+    relations:'يتابع أحمد في مسار الإيرادات والنمو، ويتابع قادة التنفيذ من أعلى بمساعدة فاطمة.' },
+  fatima: { name:'فاطمة', title:'Admin Assistant / CEO Control Support', avatar:'ف',
+    desc:'تساعد إبراهيم في تجميع الصورة الأسبوعية، متابعة القرارات، وتوثيق المخاطر والتأخيرات.',
+    responsibilities:['تجميع التقارير من الأقسام','تجهيز ملخص أسبوعي للإدارة','متابعة تنفيذ القرارات','تنبيه إبراهيم بالمخاطر والتأخيرات','توثيق مخرجات الاجتماعات'],
+    outputs:['Weekly CEO Control Report','قائمة القرارات المفتوحة','قائمة المخاطر','متابعة قرارات الأسبوع السابق'],
+    kpis:['اكتمال التقارير في موعدها','وضوح القرارات','انخفاض القرارات غير المغلقة','سرعة تنبيه الإدارة بالمخاطر'],
+    relations:'تعمل مباشرة مع إبراهيم، وتنسق مع أحمد ومحمد وشيري ومحمود وقادة التنفيذ لجمع الصورة.' },
+  ahmed_ar: { name:'أحمد عبدالرؤوف', title:'General Manager — مدير عام', avatar:'أ',
+    desc:'مدير عام الشركة — يتولى الإشراف المباشر والتفصيلي على مسار النمو والإيرادات بشقيه المبيعات والأكاديمية، ويتابع متابعة عامة على مسار التنفيذ والجودة دون التدخل اليومي فيه.',
+    responsibilities:['الإشراف المباشر على مسار النمو والإيرادات بالكامل','متابعة محمد عبدالقوي في المبيعات B2C وB2B','متابعة شيري في تشغيل الأكاديمية وتجربة المتدربين','متابعة جودة الليدز مع محمود القوصي','متابعة المنتجات والعروض والدورات الجديدة','ربط التسويق بالمبيعات','متابعة فرص الشراكات والإيفنتات','متابعة عامة على نتائج مسار التنفيذ والجودة','الرفع لإبراهيم في القرارات الاستراتيجية الكبرى'],
+    outputs:['GM Weekly Report','Growth & Revenue Weekly Report','الإيراد المحقق والمتوقع','فجوة التارجت وخطة سدها','أهم فرص الإغلاق','نظرة عامة على صحة مسار التنفيذ','مقترحات عروض أو منتجات جديدة'],
+    kpis:['الإيراد المحقق','الإيراد المتوقع','نسبة تحقيق التارجت','عدد الفرص المفتوحة','جودة الليدز','معدل التحويل','رضا المتدربين','صحة مسار التنفيذ العامة'],
+    relations:'يرفع لإبراهيم البحراوي (CEO). يشرف مباشرة على محمد عبدالقوي (المبيعات) وشيري (الأكاديمية) ومحمود القوصي (الأداء). يتابع متابعة عامة على نتائج مسار التنفيذ والجودة.' },
+  mohamed_ak: { name:'محمد عبدالقوي', title:'Sales Manager', avatar:'م',
+    desc:'مسؤول عن إدارة مبيعات الأكاديمية B2C ومبيعات الشركات B2B، وتحويل الليدز والفرص إلى مبيعات فعلية.',
+    responsibilities:['متابعة فريق B2C وB2B','متابعة خالد كـ Team Leader لمبيعات الأكاديمية','متابعة شروق في B2B','تحليل أسباب عدم الإغلاق','تطوير السكريبتات والاعتراضات','متابعة الالتزام اليومي للمبيعات'],
+    outputs:['Sales Weekly Report','أرقام B2C وB2B','أداء كل فرد','أسباب خسارة العملاء','أهم الاعتراضات','فرص الإغلاق القريبة'],
+    kpis:['عدد الليدز','عدد المكالمات','عدد المتابعات','عدد التسجيلات أو العقود','Conversion Rate','Revenue','Pipeline Value'],
+    relations:'يتبع أحمد في مسار الإيرادات، ويقود خالد وشروق وفريق المبيعات.' },
+  khaled: { name:'خالد', title:'B2C Sales Team Leader', avatar:'خ',
+    desc:'مسؤول عن إدارة فريق مبيعات الأكاديمية يوميًا وتحسين المتابعة والتحويل.',
+    responsibilities:['توزيع الليدز','متابعة المكالمات والمتابعات','مراجعة محادثات الفريق','رفع أداء زينب وريم وعائشة ومروان','تطبيق سكريبتات البيع','رفع المشاكل لمحمد عبدالقوي'],
+    outputs:['B2C Sales Team Report','أداء كل فرد','عدد الليدز والمتابعات','التسجيلات','أفضل وأضعف محادثات','أهم الاعتراضات'],
+    kpis:['سرعة التواصل مع الليد','عدد المتابعات','نسبة التحويل','جودة المحادثات','الالتزام بالسكريبت'],
+    relations:'يتبع محمد عبدالقوي ويقود فريق B2C Sales: زينب، ريم، عائشة، مروان.' },
+  b2c_team: { name:'فريق B2C Sales', title:'Academy B2C Sales Team — زينب · ريم · عائشة · مروان', avatar:'👥',
+    desc:'مسؤولون عن التواصل مع العملاء المحتملين، فهم احتياجاتهم، وترشيح الدورة المناسبة وتحويلهم إلى مشتركين.',
+    responsibilities:['التواصل مع الليدز','تشخيص احتياج العميل','شرح الدورات','المتابعة','معالجة الاعتراضات','إغلاق التسجيلات'],
+    outputs:['عدد الليدز المستلمة','عدد المكالمات','عدد المتابعات','عدد التسجيلات','أسباب عدم الشراء'],
+    kpis:['Response Speed','Follow-up Rate','Conversion Rate','Sales Value','جودة التشخيص'],
+    relations:'يتبعون خالد، وتحت إشراف محمد عبدالقوي.' },
+  shrouk: { name:'شروق', title:'B2B Sales', avatar:'ش',
+    desc:'مسؤولة عن فتح فرص مبيعات الشركات، التواصل الأولي، بناء البايبلاين، وتجهيز الفرص للإغلاق.',
+    responsibilities:['بناء قائمة شركات مستهدفة','التواصل الأولي','حجز اجتماعات','تسجيل بيانات العملاء','فهم الاحتياج','متابعة العروض'],
+    outputs:['B2B Pipeline Report','عدد الشركات المستهدفة','عدد التواصلات','عدد الردود','عدد الاجتماعات','العروض المطلوبة أو المرسلة','الاعتراضات المتكررة'],
+    kpis:['عدد المحاولات','Response Rate','Meetings Booked','Pipeline Value','جودة تسجيل البيانات'],
+    relations:'تتبع محمد عبدالقوي، وتنسق معه في الصفقات والإغلاق.' },
+  mahmoud: { name:'محمود القوصي', title:'Growth / Planning / Strategy / Performance Lead', avatar:'م',
+    desc:'مسؤول عن تحويل الرؤية التسويقية إلى خطط وحملات قابلة للقياس، وتحسين جودة الليدز والأداء.',
+    responsibilities:['التخطيط الاستراتيجي للحملات','متابعة الأداء والتحليل','توجيه الرسائل والفانل','تدريب ومتابعة أحمد عبدالفتاح','ربط المحتوى بالحملات','تحسين جودة الليدز'],
+    outputs:['Growth & Performance Report','أداء الحملات','جودة الليدز','الاختبارات القادمة','الرسائل الأفضل والأسوأ','توصيات التحسين'],
+    kpis:['CPL','Lead Quality','Conversion Rate من الليد للمبيعات','CTR','Cost per Result','ROAS'],
+    relations:'يتعامل مع أحمد، محمد، خالد، وشيري. يتبع فنيًا له أحمد عبدالفتاح.' },
+  ahmed_af: { name:'أحمد عبدالفتاح', title:'Media Buyer — مشترك بين Growth Track & Execution Pods', avatar:'أ',
+    desc:'مسؤول عن تنفيذ وإدارة الحملات الإعلانية، مع متابعة فنية من محمود القوصي، ويخدم Social Pod 1 و Pod 2.',
+    responsibilities:['إعداد الحملات','متابعة الأداء','تنفيذ الاختبارات','تحسين الاستهداف والرسائل','رفع نتائج الحملات لمحمود','التنسيق مع فرق المحتوى والتصميم'],
+    outputs:['Ads Performance Summary','الحملات النشطة','الإنفاق','النتائج','المشاكل','التوصيات'],
+    kpis:['Spend','CPL','CPC','CTR','Leads','Conversion Quality'],
+    relations:'يتبع فنيًا محمود القوصي، ويخدم Pod 1 و Pod 2 في الحملات.' },
+  sherry: { name:'شيري', title:'Academy Operation & Customer Service', avatar:'ش',
+    desc:'مسؤولة عن تشغيل الأكاديمية وتجربة المتدربين من بعد البيع حتى انتهاء الدورة.',
+    responsibilities:['تنظيم الدورات','إرسال روابط الزوم','تجهيز المواد','إدارة الجروبات','التنسيق مع المدربين','متابعة رضا المتدربين','رصد الشكاوى','دعم الترشيحات والبيع الإضافي'],
+    outputs:['Academy Operation Report','حالة الدورات','التزام المدربين','شكاوى المتدربين','تقييمات الرضا','فرص Referral أو Upsell'],
+    kpis:['رضا المتدربين','الالتزام بالمواعيد','عدد الشكاوى','سرعة الاستجابة','جودة التجربة'],
+    relations:'تتعاون مع أحمد ومحمد وفريق المبيعات والمدربين.' },
+  pod1: { name:'Social Pod 1', title:'Social Execution Pod 1', avatar:'🟦',
+    desc:'فريق تنفيذ اجتماعي متكامل مسؤول عن مجموعة مشاريع تشمل السوشيال، المحتوى، التصميم، الفيديو، والحملات.',
+    responsibilities:['تنفيذ خطط المحتوى','إنتاج التصميمات والفيديوهات','التنسيق مع الميديا باير','متابعة تسليمات العملاء','رفع مشاكل المشاريع'],
+    outputs:['Project Status Report','نسبة الالتزام بالخطة','ما تم تسليمه','المهام المتأخرة','عينة جودة','مشاريع معرضة للخطر'],
+    kpis:['الالتزام بالمواعيد','جودة التنفيذ','رضا العميل','عدد المهام المتأخرة','حالة المشاريع: 🟢🟡🔴'],
+    relations:'تحت متابعة إبراهيم القيادية ضمن Execution Governance. يتعامل مع Account Management ومحمود عند الحملات. الأعضاء: بسنت، سمر، محمد إبراهيم، أحمد صبحي، وأحمد عبدالفتاح (Media Buyer مشترك)، وشيماء صالح (Moderation مشتركة مع Pod 2).' },
+  pod2: { name:'Social Pod 2', title:'Social Execution Pod 2', avatar:'🟩',
+    desc:'فريق تنفيذ اجتماعي متكامل مسؤول عن مجموعة مشاريع تشمل السوشيال، المحتوى، التصميم، الفيديو، والحملات.',
+    responsibilities:['تنفيذ خطط المحتوى','إنتاج التصميمات والفيديوهات','التنسيق مع الميديا باير','متابعة تسليمات العملاء','رفع مشاكل المشاريع'],
+    outputs:['Project Status Report','نسبة الالتزام بالخطة','ما تم تسليمه','المهام المتأخرة','عينة جودة','مشاريع معرضة للخطر'],
+    kpis:['الالتزام بالمواعيد','جودة التنفيذ','رضا العميل','عدد المهام المتأخرة','حالة المشاريع: 🟢🟡🔴'],
+    relations:'تحت متابعة إبراهيم القيادية ضمن Execution Governance. يتعامل مع Account Management ومحمود عند الحملات. الأعضاء: أميرة، إسراء، ندى، أحمد عاطف، وأحمد عبدالفتاح (Media Buyer مشترك)، وشيماء صالح (Moderation مشتركة مع Pod 1).' },
+  seo: { name:'SEO Team', title:'فريق تحسين محركات البحث', avatar:'🔍',
+    desc:'مسؤول عن تحسين الظهور العضوي، تنفيذ خطط SEO، وربط المحتوى والويب بفرص النمو.',
+    responsibilities:['متابعة الكلمات المفتاحية','تنفيذ التحسينات','اقتراح فرص محتوى وتنفيذها عبر جهاد','متابعة المشاكل التقنية','التنسيق مع الويب والمحتوى','إنتاج محتوى SEO مع جهاد'],
+    outputs:['SEO Progress Report','تحسن أو تراجع الكلمات','المقالات أو الصفحات المنفذة','المشاكل التقنية','فرص النمو'],
+    kpis:['Keyword Movement','Organic Traffic','Indexed Pages','Technical Issues','Content Delivery'],
+    relations:'تحت متابعة إبراهيم القيادية. يتعامل مع Web Team وContent. الأعضاء: نور، عبد الرحمن، جهاد (كاتبة محتوى). ملاحظة: شيماء صالح انتقلت لخدمة Pod 1 و Pod 2 كـ Moderation مشتركة.' },
+  web: { name:'Web Team', title:'فريق المواقع والدعم الفني', avatar:'💻',
+    desc:'مسؤول عن تنفيذ وتطوير المواقع والدعم الفني وربط المواقع بالتسويق والتحويل.',
+    responsibilities:['تنفيذ مواقع العملاء','الدعم الفني','تحسين السرعة','تركيب التتبع','ربط النماذج والواتساب','دعم SEO والحملات'],
+    outputs:['Web Projects Report','حالة كل مشروع','نسبة الإنجاز','المشاكل المفتوحة والمغلقة','المواقع التي تحتاج تدخل'],
+    kpis:['الالتزام بمواعيد التسليم','سرعة الموقع','جاهزية التتبع','حل المشاكل','جودة تجربة المستخدم'],
+    relations:'تحت متابعة إبراهيم القيادية. يتعاون مع SEO وAccount Management ومحمود عند الحملات. الأعضاء: أمير، أحمد نصار.' },
+  account: { name:'Account Management', title:'Account Manager — سماح', avatar:'🤝',
+    desc:'مسؤولة عن متابعة العملاء، نقل احتياجاتهم للفريق، وضمان رضا العميل وتقليل مخاطر فقدانه.',
+    responsibilities:['التواصل مع العملاء','متابعة الاعتمادات','نقل الملاحظات','رصد الشكاوى','متابعة رضا العميل','تنبيه الإدارة بمخاطر التجديد'],
+    outputs:['Client Health Report','العملاء الراضون','العملاء المعرضون للخطر','الشكاوى','الاعتمادات المتأخرة','فرص Upsell أو Renewal'],
+    kpis:['Client Satisfaction','Response Time','Renewals Risk','Approval Delays','Complaints'],
+    relations:'تحت متابعة إبراهيم القيادية. تتعامل مع Social Pods وSEO وWeb.' },
+  finance: { name:'Finance / Accounting', title:'Finance & Accounting Team — محمد عبد الله · يوسف', avatar:'💰',
+    desc:'مسؤول عن الفواتير، التحصيل، الكاش فلو، وربط الإيرادات المسجلة بالإيرادات المحصلة.',
+    responsibilities:['إصدار الفواتير','متابعة التحصيل','رصد المتأخرات','متابعة المصروفات','رفع العملاء المتأخرين','تجهيز صورة مالية أسبوعية'],
+    outputs:['Finance Weekly Report','الإيراد المحصل','الفواتير المستحقة','الفواتير المتأخرة','الالتزامات','المبالغ المتوقع تحصيلها'],
+    kpis:['Cash Collected','Outstanding Invoices','Collection Rate','Delayed Payments','Cash Flow Status'],
+    relations:'تحت متابعة إبراهيم القيادية. تنسق مع أحمد ومحمد عبدالقوي في التحصيل المرتبط بالإيرادات.' },
+  hr: { name:'HR', title:'Human Resources — محسن', avatar:'👤',
+    desc:'مسؤول عن شؤون الموارد البشرية، الانضباط، التوظيف، ومتابعة المشكلات السلوكية أو الإدارية.',
+    responsibilities:['متابعة الحضور والانصراف','التوظيف','ملفات الموظفين','التنبيهات والإنذارات','رصد مشكلات الالتزام','دعم تقييم الموظفين'],
+    outputs:['HR Snapshot','الحضور والغياب','التأخيرات','احتياجات التوظيف','مشاكل الأفراد','الموظفون تحت الملاحظة'],
+    kpis:['Attendance','Absence','Hiring Progress','Disciplinary Issues','Employee Stability'],
+    relations:'تحت متابعة إبراهيم القيادية. يتعامل مع قادة الأقسام حسب الحاجة.' }
+};
+
+function openPanel(id) {
+  const d = DATA[id];
+  if (!d) return;
+  document.getElementById('panelAvatar').textContent = d.avatar;
+  document.getElementById('panelNameH').textContent = d.name;
+  document.getElementById('panelTitleS').textContent = d.title;
+  document.getElementById('panelBody').innerHTML = `
+    <div class="panel-section">
+      <div class="panel-section-title">📋 وصف الدور</div>
+      <div class="panel-desc">${d.desc}</div>
+    </div>
+    <div class="panel-section">
+      <div class="panel-section-title">✅ المسؤوليات الأساسية</div>
+      <ul class="panel-list">${d.responsibilities.map(r=>`<li>${r}</li>`).join('')}</ul>
+    </div>
+    <div class="panel-section">
+      <div class="panel-section-title">📤 المخرجات الأسبوعية</div>
+      <ul class="panel-list">${d.outputs.map(o=>`<li>${o}</li>`).join('')}</ul>
+    </div>
+    <div class="panel-section">
+      <div class="panel-section-title">📊 مؤشرات المتابعة</div>
+      <div class="panel-kpi">${d.kpis.map(k=>`<span class="kpi-chip">${k}</span>`).join('')}</div>
+    </div>
+    <div class="panel-section">
+      <div class="panel-section-title">🔗 العلاقات والتنسيق</div>
+      <div class="relations-box">${d.relations}</div>
+    </div>`;
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('sidePanel').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closePanel() {
+  document.getElementById('overlay').classList.remove('open');
+  document.getElementById('sidePanel').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function filterCards(filter, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('[data-filter]').forEach(card => {
+    if (filter === 'all') {
+      card.classList.remove('hidden');
+    } else {
+      const cf = card.getAttribute('data-filter') || '';
+      if (cf.includes(filter)) card.classList.remove('hidden');
+      else card.classList.add('hidden');
+    }
+  });
+  document.querySelectorAll('.track-section').forEach(s => s.style.opacity = '1');
+  if (filter === 'growth') document.querySelector('.track-section.exec').style.opacity = '0.4';
+  else if (filter === 'exec' || filter === 'admin') document.querySelector('.track-section.growth').style.opacity = '0.4';
+}
+
+function handleSearch(val) {
+  const q = (val || '').trim().toLowerCase();
+  if (!q) {
+    document.querySelectorAll('[data-filter]').forEach(c => c.classList.remove('hidden'));
+    document.querySelectorAll('.track-section').forEach(s => s.style.opacity = '1');
+    return;
+  }
+  document.querySelectorAll('[data-filter]').forEach(card => {
+    const text = (card.innerText || '').toLowerCase();
+    if (text.includes(q)) card.classList.remove('hidden');
+    else card.classList.add('hidden');
+  });
+  document.querySelectorAll('.track-section').forEach(s => s.style.opacity = '1');
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
+
+(async function init() {
+  const session = await fetch('/api/session').then(r => r.json()).catch(() => null);
+  if (!session) return location.href = '/login';
+  const backLink = document.getElementById('backLink');
+  const backText = document.getElementById('backLinkText');
+  const brandLink = document.querySelector('.brand-block a');
+  if (session.role !== 'admin') {
+    if (backLink) backLink.href = '/employee';
+    if (backText) backText.textContent = 'الصفحة الرئيسية';
+    if (brandLink) brandLink.href = '/employee';
+  }
+  const cur = document.documentElement.getAttribute('data-theme') || 'light';
+  const tb = document.getElementById('themeToggleBtn');
+  if (tb) tb.textContent = cur === 'dark' ? '☀️' : '🌙';
+})();
+</script>
+</body>
+</html>

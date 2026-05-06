@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>محرر القالب</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/components.css">
+<link rel="stylesheet" href="/css/dark-mode.css">
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="/js/app-shell.js"></script>
+<style>
+:root {
+  --navy: #1D2F5F; --navy-light: #263a75;
+  --orange: #FF6B2B; --orange-soft: #FFF0EA;
+  --bg: #F4F6FA; --white: #FFFFFF;
+  --gray: #4B5563; --gray-light: #9CA3AF; --border: #E5E7EB;
+  --green: #16a34a; --green-soft: #dcfce7;
+  --shadow: 0 2px 8px rgba(29,47,95,0.09);
+  --shadow-md: 0 4px 20px rgba(29,47,95,0.14);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--gray); direction: rtl; min-height: 100vh; }
+
+.header { background: var(--navy); border-bottom: 3px solid var(--orange); box-shadow: var(--shadow-md); position: sticky; top: 0; z-index: 100; }
+.header-inner { max-width: 820px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; gap: 14px; }
+.back-btn { display: flex; align-items: center; gap: 7px; padding: 8px 14px; background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,255,255,0.2); border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 700; color: #fff; cursor: pointer; text-decoration: none; white-space: nowrap; transition: background .15s; }
+.back-btn:hover { background: rgba(255,255,255,0.2); }
+.hcenter { display: flex; align-items: center; gap: 10px; flex: 1; justify-content: center; }
+.htitle { font-size: 15px; font-weight: 900; color: #fff; }
+.save-status { font-size: 12px; color: rgba(255,255,255,0.6); }
+.save-status.saved { color: #86efac; }
+.action-btns { display: flex; gap: 8px; }
+.btn { padding: 9px 20px; border-radius: 10px; border: none; font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: all .15s; }
+.btn:hover { opacity: 0.87; }
+.btn-save { background: var(--orange); color: #fff; }
+.btn-ghost { background: rgba(255,255,255,0.1); color: #fff; border: 1.5px solid rgba(255,255,255,0.3); }
+
+.body { max-width: 820px; margin: 24px auto 80px; padding: 0 24px; }
+
+/* Template meta */
+.meta-card { background: var(--white); border-radius: 14px; border: 1.5px solid var(--border); box-shadow: var(--shadow); padding: 20px 22px; margin-bottom: 16px; }
+.meta-card h2 { font-size: 13px; font-weight: 800; color: var(--navy); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.meta-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 12px; }
+.fg label { display: block; font-size: 12px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.fg input, .fg textarea { width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 13px; color: var(--gray); background: var(--bg); outline: none; transition: border-color .2s; }
+.fg input:focus, .fg textarea:focus { border-color: var(--navy); background: #fff; }
+.fg textarea { min-height: 60px; resize: none; }
+
+/* Section cards */
+.section-card { background: var(--white); border-radius: 14px; border: 1.5px solid var(--border); box-shadow: var(--shadow); margin-bottom: 12px; overflow: hidden; transition: box-shadow .2s; }
+.section-card:hover { box-shadow: var(--shadow-md); }
+.section-head { display: flex; align-items: center; gap: 10px; padding: 11px 16px; background: var(--bg); border-bottom: 1.5px solid var(--border); }
+.type-badge { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 10px; background: var(--navy); color: #fff; white-space: nowrap; flex-shrink: 0; }
+.section-title-in { flex: 1; border: none; background: transparent; font-family: 'Cairo', sans-serif; font-size: 14px; font-weight: 800; color: var(--navy); outline: none; min-width: 0; }
+.section-title-in::placeholder { color: var(--gray-light); font-weight: 400; }
+.section-acts { display: flex; gap: 4px; flex-shrink: 0; }
+.ic-btn { width: 28px; height: 28px; border: 1px solid var(--border); border-radius: 6px; background: var(--white); color: var(--gray); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+.ic-btn:hover { background: var(--orange-soft); border-color: var(--orange); color: var(--orange); }
+.ic-btn.del:hover { background: #fee2e2; border-color: #dc2626; color: #dc2626; }
+.section-body { padding: 16px; }
+
+/* Text */
+.tx-area { width: 100%; min-height: 70px; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 13px; color: var(--gray); background: var(--bg); outline: none; resize: vertical; direction: rtl; line-height: 1.8; }
+.tx-area:focus { border-color: var(--navy); background: #fff; }
+.tx-hint { font-size: 11px; color: var(--gray-light); margin-top: 6px; }
+
+/* List */
+.list-items { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+.list-row { display: flex; align-items: center; gap: 8px; }
+.list-dot { color: var(--orange); font-size: 18px; font-weight: 900; flex-shrink: 0; }
+.list-in { flex: 1; padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 13px; background: var(--bg); outline: none; }
+.list-in:focus { border-color: var(--navy); background: #fff; }
+
+/* Metrics */
+.metrics-editor { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; margin-bottom: 10px; }
+.metric-ec { background: var(--bg); border: 1.5px solid var(--border); border-radius: 10px; padding: 12px; position: relative; }
+.metric-ec label { display: block; font-size: 10px; font-weight: 700; color: var(--navy); margin-bottom: 3px; }
+.metric-ec input { width: 100%; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; font-family: 'Cairo', sans-serif; font-size: 12px; background: #fff; outline: none; margin-bottom: 6px; }
+.del-mc { position: absolute; top: 6px; left: 6px; width: 20px; height: 20px; border: 1px solid #dc2626; border-radius: 4px; background: #fff; color: #dc2626; cursor: pointer; font-size: 11px; display: flex; align-items: center; justify-content: center; }
+
+/* Table */
+.tbl-wrap { overflow-x: auto; margin-bottom: 10px; }
+.tbl-wrap table { width: 100%; border-collapse: collapse; }
+.tbl-in-h { width: 100%; border: 1.5px solid var(--navy); border-radius: 6px; padding: 6px 8px; font-family: 'Cairo', sans-serif; font-size: 12px; font-weight: 800; background: #e8ecf4; outline: none; }
+.tbl-in { width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; font-family: 'Cairo', sans-serif; font-size: 12px; background: var(--bg); outline: none; }
+
+/* Scorecard */
+.scorecard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 8px; }
+.score-cell { background: var(--bg); border-radius: 10px; padding: 12px; border: 1.5px solid var(--border); position: relative; }
+.score-cell .sc-label-in { width: 100%; border: none; background: transparent; font-family: 'Cairo', sans-serif; font-size: 11px; color: var(--navy); font-weight: 700; outline: none; margin-bottom: 8px; }
+.score-toggle { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+.sc-btn { font-family: 'Cairo', sans-serif; font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 7px; border: 1.5px solid var(--border); background: var(--white); cursor: default; opacity: 0.6; }
+.sc-mode-tab { font-size: 10px; padding: 2px 6px; border-radius: 4px; background: var(--white); border: 1px solid var(--border); cursor: pointer; }
+.sc-mode-tab.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+.del-sc { position: absolute; top: 6px; left: 6px; width: 18px; height: 18px; border: 1px solid #dc2626; border-radius: 4px; background: #fff; color: #dc2626; cursor: pointer; font-size: 10px; display: flex; align-items: center; justify-content: center; }
+
+/* Checklist */
+.cl-items { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+.cl-row { display: flex; gap: 8px; align-items: stretch; }
+.cl-row .field-text { flex: 1; padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 13px; color: var(--gray); background: var(--bg); outline: none; }
+.cl-row .status-sel { padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 12px; background: #fff; outline: none; min-width: 130px; opacity: 0.7; }
+.cl-options-edit { background: var(--bg); border: 1px dashed var(--border); border-radius: 8px; padding: 8px 10px; margin-bottom: 8px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.cl-options-edit label { font-size: 11px; color: var(--gray-light); font-weight: 700; }
+.cl-options-edit input { flex: 1; min-width: 120px; padding: 5px 8px; border: 1px solid var(--border); border-radius: 5px; font-family: 'Cairo', sans-serif; font-size: 11px; background: #fff; outline: none; }
+
+/* Status (single) */
+.status-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.status-btn-edit { flex: 1; min-width: 90px; padding: 10px 8px; border-radius: 10px; border: 2px solid var(--border); background: var(--white); font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 700; text-align: center; opacity: 0.7; }
+.status-opt-edit { display: flex; gap: 6px; align-items: center; margin-bottom: 6px; }
+.status-opt-edit input { flex: 1; padding: 5px 8px; border: 1px solid var(--border); border-radius: 6px; font-family: 'Cairo', sans-serif; font-size: 12px; background: #fff; outline: none; }
+
+.add-btn { display: flex; align-items: center; gap: 6px; padding: 7px 12px; border: 1.5px dashed var(--border); border-radius: 8px; background: transparent; font-family: 'Cairo', sans-serif; font-size: 12px; font-weight: 700; color: var(--gray-light); cursor: pointer; transition: all .15s; }
+.add-btn:hover { border-color: var(--navy); color: var(--navy); }
+.btns-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.add-section-wrap { text-align: center; margin-top: 6px; }
+.add-section-btn { padding: 12px 32px; border: 2px dashed var(--border); border-radius: 12px; background: transparent; font-family: 'Cairo', sans-serif; font-size: 14px; font-weight: 700; color: var(--gray-light); cursor: pointer; transition: all .2s; }
+.add-section-btn:hover { border-color: var(--orange); color: var(--orange); background: var(--white); }
+
+/* Modal */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 999; display: none; align-items: center; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--white); border-radius: 16px; padding: 24px; width: 420px; max-width: 95vw; box-shadow: var(--shadow-md); border-top: 4px solid var(--orange); }
+.modal h3 { font-size: 16px; font-weight: 900; color: var(--navy); margin-bottom: 16px; }
+.type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.type-opt { padding: 16px; border: 2px solid var(--border); border-radius: 12px; text-align: center; cursor: pointer; transition: all .15s; }
+.type-opt:hover { border-color: var(--orange); background: var(--orange-soft); }
+.type-opt .ico { font-size: 28px; margin-bottom: 8px; }
+.type-opt .nm { font-size: 13px; font-weight: 800; color: var(--navy); }
+.type-opt .ds { font-size: 11px; color: var(--gray-light); margin-top: 3px; }
+
+/* Toast */
+.toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); padding: 13px 28px; border-radius: 12px; font-size: 14px; font-weight: 700; z-index: 9999; display: none; color: #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+.toast.show { display: block; animation: slideUp .3s ease; }
+.toast.success { background: var(--green); }
+.toast.error { background: #dc2626; }
+@keyframes slideUp { from { opacity:0; transform: translateX(-50%) translateY(10px); } to { opacity:1; transform: translateX(-50%) translateY(0); } }
+</style>
+</head>
+<body>
+
+<header class="global-topbar">
+  <div class="brand-block">
+    <a href="/admin"><img src="/img/logo.jpg" alt="Marketing Experts" class="brand-logo"></a>
+  </div>
+  <a href="/admin" class="tb-ic-btn" title="لوحة التحكم" style="text-decoration:none;width:auto;padding:0 12px;gap:6px;font-size:12px;font-weight:700">
+    <span data-icon="arrow-right"></span> لوحة التحكم
+  </a>
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:10px;min-width:0">
+    <span class="htitle" id="pageTitle" style="font-size:14px;font-weight:800;color:var(--navy)">قالب جديد</span>
+    <span class="save-status" id="saveStatus" style="font-size:11px;color:var(--gray-light)"></span>
+  </div>
+  <div class="topbar-actions">
+    <button class="tb-ic-btn theme-toggle" onclick="toggleTheme()" title="الوضع الليلي" id="themeToggleBtn">🌙</button>
+    <button class="tb-ic-btn" onclick="preview()" title="معاينة"><span data-icon="eye"></span></button>
+    <button class="btn btn-save" id="saveTplBtn" onclick="saveTemplate()" style="padding:8px 14px;font-size:12px;font-weight:700;border-radius:9px;background:var(--orange);color:#fff;border:none;font-family:'Cairo',sans-serif;cursor:pointer">💾 حفظ القالب</button>
+  </div>
+</header>
+
+<div class="body">
+
+  <!-- بيانات القالب -->
+  <div class="meta-card">
+    <h2>⚙️ إعدادات القالب</h2>
+    <div class="meta-row">
+      <div class="fg">
+        <label>اسم القالب *</label>
+        <input type="text" id="tplName" placeholder="مثال: قالب تقرير المبيعات" autocomplete="off">
+      </div>
+      <div class="fg">
+        <label>وصف القالب (اختياري)</label>
+        <input type="text" id="tplDesc" placeholder="مثال: للفريق التجاري" autocomplete="off">
+      </div>
+    </div>
+    <div class="fg" style="margin-bottom:12px">
+      <label>🎨 الثيم البصري للتقرير النهائي</label>
+      <select id="tplTheme" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;color:var(--gray);background:var(--bg);outline:none">
+        <option value="standard">📋 Standard — افتراضي (Navy + Orange)</option>
+        <option value="executive">👔 Executive — قيادي (Dark + Gold)</option>
+        <option value="analytics">📊 Analytics — تحليلي (Blue + Cyan)</option>
+        <option value="compact">📝 Compact — مكثف (Gray + Green)</option>
+        <option value="colorful">🎨 Colorful — ملون (Purple + Pink)</option>
+      </select>
+    </div>
+    <div class="fg">
+      <label style="margin-bottom:6px;display:block;font-size:12px;font-weight:700;color:var(--navy)">تعليمات للموظف (تظهر في أعلى نموذج الملء)</label>
+      <textarea id="tplInstructions" placeholder="اكتب هنا أي تعليمات أو توضيحات للموظف عند ملء هذا القالب..." rows="2"></textarea>
+    </div>
+  </div>
+
+  <!-- الأقسام -->
+  <div id="sectionsContainer"></div>
+
+  <div class="add-section-wrap">
+    <button class="add-section-btn" onclick="openModal()">+ إضافة قسم جديد</button>
+  </div>
+
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="addModal" onclick="if(event.target===this)closeModal()">
+  <div class="modal" style="width:560px">
+    <h3>اختار نوع القسم</h3>
+    <div class="type-grid" style="grid-template-columns:repeat(3,1fr)">
+      <div class="type-opt" onclick="addSection('text')">
+        <div class="ico">📝</div><div class="nm">فقرة نصية</div><div class="ds">ملاحظات، وصف</div>
+      </div>
+      <div class="type-opt" onclick="addSection('list')">
+        <div class="ico">📋</div><div class="nm">قائمة</div><div class="ds">نقاط بسيطة</div>
+      </div>
+      <div class="type-opt" onclick="addSection('metrics')">
+        <div class="ico">📊</div><div class="nm">أرقام</div><div class="ds">KPIs</div>
+      </div>
+      <div class="type-opt" onclick="addSection('scorecard')">
+        <div class="ico">✅</div><div class="nm">Scorecard</div><div class="ds">أسئلة تقييم</div>
+      </div>
+      <div class="type-opt" onclick="addSection('checklist')">
+        <div class="ico">🗂️</div><div class="nm">قائمة بحالة</div><div class="ds">عناصر + الحالة</div>
+      </div>
+      <div class="type-opt" onclick="addSection('status')">
+        <div class="ico">🚦</div><div class="nm">حالة فريق</div><div class="ds">أخضر/أصفر/أحمر</div>
+      </div>
+      <div class="type-opt" onclick="addSection('table')">
+        <div class="ico">📑</div><div class="nm">جدول</div><div class="ds">بيانات منظمة</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let sections = [];
+let currentTemplateId = null;
+const TYPE_LABELS = { text: '📝 نص', list: '📋 قائمة', metrics: '📊 أرقام', table: '📑 جدول', scorecard: '✅ Scorecard', checklist: '🗂️ قائمة بحالة', status: '🚦 حالة' };
+
+async function init() {
+  // تحقق من صلاحيات الأدمن
+  const session = await fetch('/api/session').then(r => r.json());
+  if (!session || session.role !== 'admin') return location.href = '/login';
+
+  const params = new URLSearchParams(location.search);
+  const id = params.get('id');
+
+  if (id) {
+    await loadTemplate(parseInt(id));
+  } else {
+    sections = defaultSections();
+    render();
+  }
+}
+
+async function loadTemplate(id) {
+  const t = await fetch(`/api/admin/templates/${id}`).then(r => r.json());
+  if (t.error) { showToast(t.error, 'error'); sections = defaultSections(); render(); return; }
+  currentTemplateId = t.id;
+  document.getElementById('tplName').value = t.name || '';
+  document.getElementById('tplDesc').value = t.description || '';
+  document.getElementById('tplInstructions').value = t.instructions || '';
+  document.getElementById('tplTheme').value = t.visual_theme || 'standard';
+  document.getElementById('pageTitle').textContent = 'تعديل القالب';
+  // أضف id محلي لكل section عشان buttons التعديل (حذف/تحريك/إضافة) تعمل
+  sections = (t.sections || []).filter(s => s && typeof s === 'object' && s.type).map(s => ({ ...s, id: s.id || uid() }));
+  render();
+}
+
+function defaultSections() {
+  return [
+    { id: uid(), type: 'text',    title: 'ملخص الأسبوع',        placeholder: 'اكتب ملخص ما تم إنجازه خلال الأسبوع...' },
+    { id: uid(), type: 'list',    title: 'أبرز الإنجازات',       items: [''] },
+    { id: uid(), type: 'metrics', title: 'الأرقام والمؤشرات',    items: [{ label: '', value: '', unit: '' }] },
+    { id: uid(), type: 'list',    title: 'التحديات',             items: [''] },
+    { id: uid(), type: 'text',    title: 'خطة الأسبوع القادم',  placeholder: 'اكتب خطتك للأسبوع القادم...' },
+  ];
+}
+
+function uid() { return Math.random().toString(36).slice(2, 9); }
+
+// ── Render ────────────────────────────────────────────────────────────────────
+function render() {
+  document.getElementById('sectionsContainer').innerHTML =
+    sections.map((s, i) => renderCard(s, i)).join('');
+}
+
+function renderCard(s, i) {
+  const upBtn   = i > 0 ? `<button class="ic-btn" onclick="moveSection('${s.id}',-1)">↑</button>` : '';
+  const downBtn = i < sections.length-1 ? `<button class="ic-btn" onclick="moveSection('${s.id}',1)">↓</button>` : '';
+  return `
+    <div class="section-card">
+      <div class="section-head">
+        <span class="type-badge">${TYPE_LABELS[s.type] || s.type}</span>
+        <input class="section-title-in" value="${esc(s.title)}" placeholder="عنوان القسم"
+          oninput="onTitleChange('${s.id}', this.value)">
+        <div class="section-acts">
+          ${upBtn}${downBtn}
+          <button class="ic-btn del" onclick="deleteSection('${s.id}')">✕</button>
+        </div>
+      </div>
+      <div class="section-body">${renderBody(s)}</div>
+    </div>`;
+}
+
+function renderBody(s) {
+  if (s.type === 'text') {
+    return `
+      <textarea class="tx-area" placeholder="نص توضيحي / مثال للموظف (اختياري)"
+        oninput="onPlaceholderChange('${s.id}', this.value)">${esc(s.placeholder || '')}</textarea>
+      <p class="tx-hint">💡 هذا النص سيظهر كـ placeholder للموظف عند الملء</p>`;
+  }
+  if (s.type === 'list') {
+    const rows = (s.items || []).map((item, i) => `
+      <div class="list-row">
+        <span class="list-dot">•</span>
+        <input class="list-in" value="${esc(item)}" placeholder="عنصر افتراضي (اختياري)"
+          oninput="onItemChange('${s.id}', ${i}, this.value)">
+        <button class="ic-btn del" onclick="removeItem('${s.id}', ${i})">✕</button>
+      </div>`).join('');
+    return `<div class="list-items">${rows}</div>
+      <button class="add-btn" onclick="addItem('${s.id}')">+ عنصر</button>`;
+  }
+  if (s.type === 'metrics') {
+    const cards = (s.items || []).map((m, i) => `
+      <div class="metric-ec">
+        <button class="del-mc" onclick="removeMetric('${s.id}', ${i})">✕</button>
+        <label>البيان</label>
+        <input value="${esc(m.label||'')}" placeholder="مثال: المبيعات"
+          oninput="onMetricChange('${s.id}', ${i}, 'label', this.value)">
+        <label>القيمة الافتراضية</label>
+        <input value="${esc(m.value||'')}" placeholder="اتركه فارغاً"
+          oninput="onMetricChange('${s.id}', ${i}, 'value', this.value)">
+        <label>الوحدة</label>
+        <input value="${esc(m.unit||'')}" placeholder="جنيه، %"
+          oninput="onMetricChange('${s.id}', ${i}, 'unit', this.value)">
+      </div>`).join('');
+    return `<div class="metrics-editor">${cards}</div>
+      <button class="add-btn" onclick="addMetric('${s.id}')">+ إضافة مؤشر</button>`;
+  }
+  if (s.type === 'scorecard') {
+    const cells = (s.items || []).map((c, i) => {
+      const mode = c.mode || 'yesno';
+      const buttons = mode === 'yesno'
+        ? `<button class="sc-btn">✅ نعم</button><button class="sc-btn">❌ لا</button>`
+        : `<button class="sc-btn">🟢</button><button class="sc-btn">🟡</button><button class="sc-btn">🔴</button>`;
+      return `<div class="score-cell">
+        <button class="del-sc" onclick="removeScCell('${s.id}', ${i})">✕</button>
+        <input class="sc-label-in" value="${esc(c.label||'')}" placeholder="السؤال..."
+          oninput="onScCellLabel('${s.id}', ${i}, this.value)">
+        <div style="display:flex;gap:4px;margin-bottom:8px">
+          <button class="sc-mode-tab ${mode==='yesno'?'active':''}" onclick="setScCellMode('${s.id}', ${i}, 'yesno')">نعم/لا</button>
+          <button class="sc-mode-tab ${mode==='traffic'?'active':''}" onclick="setScCellMode('${s.id}', ${i}, 'traffic')">🚦 ألوان</button>
+        </div>
+        <div class="score-toggle">${buttons}</div>
+      </div>`;
+    }).join('');
+    return `<div class="scorecard-grid">${cells}</div>
+      <button class="add-btn" onclick="addScCell('${s.id}')">+ إضافة سؤال</button>`;
+  }
+  if (s.type === 'status') {
+    const opts = s.options || [{ value: 'green', label: '🟢 ممتاز' }, { value: 'yellow', label: '🟡 متوسط' }, { value: 'red', label: '🔴 يحتاج تدخل' }];
+    const optsEdit = opts.map((o, oi) => `
+      <div class="status-opt-edit">
+        <span style="font-size:11px;color:var(--gray-light);font-weight:700;min-width:40px">${esc(o.value)}:</span>
+        <input value="${esc(o.label)}" placeholder="نص الزر" oninput="onStOptChange('${s.id}', ${oi}, this.value)">
+      </div>`).join('');
+    const preview = opts.map(o => `<button class="status-btn-edit">${esc(o.label)}</button>`).join('');
+    return `<div style="margin-bottom:10px">${optsEdit}</div>
+      <div class="status-row">${preview}</div>
+      <p class="tx-hint" style="margin-top:8px">💡 الموظف هيختار حالة واحدة من الثلاثة عند الملء</p>`;
+  }
+  if (s.type === 'checklist') {
+    const opts = s.status_options || ['🟢 منتظمة', '🟡 تحتاج متابعة', '🔴 مشكلة'];
+    const optsEditor = `
+      <div class="cl-options-edit">
+        <label>الخيارات:</label>
+        ${opts.map((o, oi) => `<input value="${esc(o)}" oninput="onClOptionChange('${s.id}', ${oi}, this.value)">`).join('')}
+      </div>`;
+    const rows = (s.items || []).map((it, i) => {
+      const item = (typeof it === 'object' && it !== null) ? it : { text: String(it||''), status: '' };
+      const sel = `<select class="status-sel" disabled>
+        <option>— الموظف يختار —</option>
+        ${opts.map(o => `<option>${esc(o)}</option>`).join('')}
+      </select>`;
+      return `<div class="cl-row">
+        <input class="field-text" value="${esc(item.text||'')}" placeholder="عنصر افتراضي (اختياري)"
+          oninput="onClItemTextChange('${s.id}', ${i}, this.value)">
+        ${sel}
+        <button class="ic-btn del" onclick="removeClItem('${s.id}', ${i})">✕</button>
+      </div>`;
+    }).join('');
+    return `${optsEditor}<div class="cl-items">${rows}</div>
+      <button class="add-btn" onclick="addClItem('${s.id}')">+ عنصر</button>`;
+  }
+  if (s.type === 'table') {
+    const headers = s.headers || ['العمود 1', 'العمود 2'];
+    const rows    = s.rows    || [['', '']];
+    const hCells  = headers.map((h, ci) =>
+      `<th style="padding:4px"><input class="tbl-in-h" value="${esc(h)}"
+        oninput="onHeaderChange('${s.id}', ${ci}, this.value)"></th>`).join('');
+    const dRows = rows.map((row, ri) =>
+      `<tr>${row.map((cell, ci) =>
+        `<td style="padding:4px"><input class="tbl-in" value="${esc(cell)}"
+          oninput="onCellChange('${s.id}', ${ri}, ${ci}, this.value)"></td>`).join('')}
+        <td style="padding:4px"><button class="ic-btn del" onclick="removeRow('${s.id}', ${ri})">✕</button></td>
+      </tr>`).join('');
+    return `
+      <div class="tbl-wrap">
+        <table><thead><tr>${hCells}<th></th></tr></thead><tbody>${dRows}</tbody></table>
+      </div>
+      <div class="btns-row">
+        <button class="add-btn" onclick="addRow('${s.id}')">+ صف</button>
+        <button class="add-btn" onclick="addCol('${s.id}')">+ عمود</button>
+      </div>`;
+  }
+  return '';
+}
+
+// ── Mutations (no re-render) ───────────────────────────────────────────────────
+function onTitleChange(id, v)           { getS(id).title = v; }
+function onPlaceholderChange(id, v)     { getS(id).placeholder = v; }
+function onItemChange(id, i, v)         { getS(id).items[i] = v; }
+function onMetricChange(id, i, f, v)    { getS(id).items[i][f] = v; }
+function onHeaderChange(id, i, v)       { getS(id).headers[i] = v; }
+function onCellChange(id, ri, ci, v)    { getS(id).rows[ri][ci] = v; }
+
+// ── Mutations (re-render) ──────────────────────────────────────────────────────
+function addItem(id)       { getS(id).items.push(''); render(); }
+function removeItem(id, i) { const s = getS(id); if (s.items.length > 1) { s.items.splice(i, 1); render(); } }
+function addMetric(id)     { getS(id).items.push({ label: '', value: '', unit: '' }); render(); }
+function removeMetric(id, i) { const s = getS(id); if (s.items.length > 1) { s.items.splice(i, 1); render(); } }
+function addRow(id)        { const s = getS(id); s.rows.push(s.headers.map(() => '')); render(); }
+function removeRow(id, i)  { const s = getS(id); if (s.rows.length > 1) { s.rows.splice(i, 1); render(); } }
+function addCol(id)        { const s = getS(id); s.headers.push('عمود'); s.rows.forEach(r => r.push('')); render(); }
+
+// scorecard
+function onScCellLabel(id, i, v)  { getS(id).items[i].label = v; }
+function setScCellMode(id, i, m)  { getS(id).items[i].mode = m; render(); }
+function addScCell(id)            { getS(id).items.push({ label: '', mode: 'yesno', value: '' }); render(); }
+function removeScCell(id, i)      { const s = getS(id); if (s.items.length > 1) { s.items.splice(i, 1); render(); } }
+
+// status
+function onStOptChange(id, oi, v) { getS(id).options[oi].label = v; render(); }
+
+// checklist
+function onClOptionChange(id, oi, v) { getS(id).status_options[oi] = v; render(); }
+function onClItemTextChange(id, i, v){ const it = getS(id).items[i]; if (typeof it === 'object' && it !== null) it.text = v; else getS(id).items[i] = { text: v, status: '' }; }
+function addClItem(id)               { getS(id).items.push({ text: '', status: '' }); render(); }
+function removeClItem(id, i)         { const s = getS(id); if (s.items.length > 1) { s.items.splice(i, 1); render(); } }
+
+function moveSection(id, dir) {
+  const i = sections.findIndex(s => s.id === id);
+  if (i + dir < 0 || i + dir >= sections.length) return;
+  [sections[i], sections[i+dir]] = [sections[i+dir], sections[i]];
+  render();
+}
+
+function deleteSection(id) {
+  if (sections.length <= 1) { showToast('لازم يكون في قسم واحد على الأقل', 'error'); return; }
+  if (!confirm('تحذف القسم ده؟')) return;
+  sections = sections.filter(s => s.id !== id);
+  render();
+}
+
+function addSection(type) {
+  const defs = {
+    text:      { placeholder: '' },
+    list:      { items: [''] },
+    metrics:   { items: [{ label: '', value: '', unit: '' }] },
+    table:     { headers: ['العمود 1', 'العمود 2'], rows: [['', '']] },
+    scorecard: { items: [{ label: '', mode: 'yesno', value: '' }] },
+    checklist: { status_options: ['🟢 منتظمة', '🟡 تحتاج متابعة', '🔴 مشكلة'], items: [{ text: '', status: '' }] },
+    status:    { options: [{ value: 'green', label: '🟢 ممتاز' }, { value: 'yellow', label: '🟡 متوسط' }, { value: 'red', label: '🔴 يحتاج تدخل' }], value: '', note: '' },
+  };
+  const names = { text: 'قسم جديد', list: 'قائمة جديدة', metrics: 'مؤشرات جديدة', table: 'جدول جديد', scorecard: 'Scorecard الأسبوع', checklist: 'قائمة بحالة', status: 'حالة الفريق' };
+  sections.push({ id: uid(), type, title: names[type], ...defs[type] });
+  render();
+  closeModal();
+  setTimeout(() => { const last = document.querySelector('.section-card:last-child'); if (last) last.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 80);
+}
+
+function getS(id) { return sections.find(s => s.id === id); }
+
+// ── Save ───────────────────────────────────────────────────────────────────────
+async function saveTemplate() {
+  const name = document.getElementById('tplName').value.trim();
+  if (!name) return showToast('اكتب اسم القالب الأول', 'error');
+  if (!sections.length) return showToast('أضف قسماً واحداً على الأقل', 'error');
+
+  // نظّف الـ id المحلي قبل الحفظ
+  const cleanSections = sections.map(({ id, ...rest }) => rest);
+
+  const payload = {
+    name,
+    description: document.getElementById('tplDesc').value.trim(),
+    instructions: document.getElementById('tplInstructions').value.trim(),
+    visual_theme: document.getElementById('tplTheme').value || 'standard',
+    sections: cleanSections
+  };
+
+  const btn = document.getElementById('saveTplBtn');
+  btnLoading(btn);
+  setStatus('saving', '⟳ جاري الحفظ...');
+  try {
+    const url    = currentTemplateId ? `/api/admin/templates/${currentTemplateId}` : '/api/admin/templates';
+    const method = currentTemplateId ? 'PUT' : 'POST';
+    const res    = await fetch(url, { method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    const data   = await res.json();
+    if (data.error) { btnReset(btn); showToast(data.error, 'error'); setStatus('', ''); return; }
+    if (!currentTemplateId) currentTemplateId = data.id;
+    setStatus('saved', '✓ تم الحفظ');
+    btnSuccess(btn);
+    Toast.success('تم حفظ القالب بنجاح');
+    setTimeout(() => { if (!new URLSearchParams(location.search).get('id')) history.replaceState({}, '', `?id=${currentTemplateId}`); }, 300);
+  } catch(e) {
+    btnReset(btn);
+    showToast('خطأ في الاتصال', 'error');
+    setStatus('', '');
+  }
+}
+
+function preview() {
+  const name = document.getElementById('tplName').value.trim() || 'معاينة القالب';
+  const win = window.open('', '_blank');
+  win.document.write(generatePreviewHTML(name));
+  win.document.close();
+}
+
+function generatePreviewHTML(name) {
+  const sHTML = sections.map(s => {
+    if (s.type === 'text')
+      return `<section class="rs"><h2>${esc(s.title)}</h2><div class="fill-box">${esc(s.placeholder || 'اكتب هنا...')}</div></section>`;
+    if (s.type === 'list')
+      return `<section class="rs"><h2>${esc(s.title)}</h2><ul>${(s.items||['']).map(i => `<li class="fill-item">${esc(i) || '...'}</li>`).join('')}</ul></section>`;
+    if (s.type === 'metrics')
+      return `<section class="rs"><h2>${esc(s.title)}</h2><div class="mr">${(s.items||[]).map(m => `<div class="mc"><div class="mv" style="color:#9CA3AF">${esc(m.value) || '—'}</div><div class="mu">${esc(m.unit)}</div><div class="ml">${esc(m.label)}</div></div>`).join('')}</div></section>`;
+    if (s.type === 'table') {
+      const th = `<tr>${(s.headers||[]).map(h=>`<th>${esc(h)}</th>`).join('')}</tr>`;
+      const tb = (s.rows||[]).map(row=>`<tr>${row.map(c=>`<td>${esc(c)||'—'}</td>`).join('')}</tr>`).join('');
+      return `<section class="rs"><h2>${esc(s.title)}</h2><div class="tw"><table><thead>${th}</thead><tbody>${tb}</tbody></table></div></section>`;
+    }
+    if (s.type === 'scorecard') {
+      const cells = (s.items || []).map(c => {
+        const buttons = (c.mode||'yesno') === 'yesno'
+          ? `<span class="pv-btn">✅ نعم</span><span class="pv-btn">❌ لا</span>`
+          : `<span class="pv-btn">🟢</span><span class="pv-btn">🟡</span><span class="pv-btn">🔴</span>`;
+        return `<div class="pv-sc"><div class="pv-sc-l">${esc(c.label||'سؤال')}</div><div class="pv-sc-b">${buttons}</div></div>`;
+      }).join('');
+      return `<section class="rs"><h2>${esc(s.title)}</h2><div class="pv-scg">${cells}</div></section>`;
+    }
+    if (s.type === 'status') {
+      const buttons = (s.options || []).map(o => `<span class="pv-st-btn">${esc(o.label)}</span>`).join('');
+      return `<section class="rs"><h2>${esc(s.title)}</h2><div class="pv-st">${buttons}</div></section>`;
+    }
+    if (s.type === 'checklist') {
+      const opts = s.status_options || [];
+      const items = s.items || [];
+      const rows = items.map(it => {
+        const text = typeof it === 'object' ? it.text : it;
+        return `<tr><td>${esc(text)||'<span style="color:#9CA3AF">عنصر...</span>'}</td><td style="text-align:center;color:#9CA3AF">— الموظف يختار —</td></tr>`;
+      }).join('');
+      return `<section class="rs"><h2>${esc(s.title)}</h2><p style="font-size:11px;color:#9CA3AF;margin-bottom:6px">الحالات: ${opts.map(esc).join(' · ')}</p><div class="tw"><table><thead><tr><th>العنصر</th><th style="text-align:center">الحالة</th></tr></thead><tbody>${rows}</tbody></table></div></section>`;
+    }
+    return '';
+  }).join('');
+  return `<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>معاينة: ${esc(name)}</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Cairo',sans-serif;background:#F4F6FA;padding:28px 16px;direction:rtl;color:#4B5563}
+.rpt{max-width:760px;margin:0 auto;background:#fff;border-radius:16px;border:1.5px solid #E5E7EB;overflow:hidden;box-shadow:0 4px 20px rgba(29,47,95,.1)}
+.rh{background:#1D2F5F;padding:24px 28px;color:#fff}.rh h1{font-size:20px;font-weight:900;margin-bottom:6px}
+.rh .badge{background:rgba(255,255,255,.2);padding:3px 12px;border-radius:20px;font-size:11px;font-weight:700;display:inline-block}
+.rs{padding:20px 28px;border-bottom:1.5px solid #E5E7EB}.rs:last-child{border-bottom:none}
+h2{font-size:14px;font-weight:900;color:#1D2F5F;margin-bottom:12px;padding-bottom:6px;border-bottom:2.5px solid #FF6B2B;display:inline-block}
+.fill-box{background:#F4F6FA;border:1.5px dashed #E5E7EB;border-radius:8px;padding:12px;font-size:13px;color:#9CA3AF;min-height:60px}
+.fill-item{font-size:13px;line-height:1.9;color:#9CA3AF;margin-bottom:4px}
+ul{padding-right:18px}.mr{display:flex;flex-wrap:wrap;gap:10px}
+.mc{background:#F4F6FA;border:1.5px solid #E5E7EB;border-radius:10px;padding:14px 16px;min-width:120px;text-align:center;flex:1}
+.mv{font-size:24px;font-weight:900;line-height:1.1}.mu{font-size:11px;color:#9CA3AF;margin:2px 0}.ml{font-size:12px;font-weight:700}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse}th{background:#1D2F5F;color:#fff;padding:8px 12px;text-align:right;font-size:12px;font-weight:700}td{padding:8px 12px;border-bottom:1px solid #E5E7EB;font-size:12px;color:#9CA3AF}
+.pv-scg{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.pv-sc{background:#F4F6FA;border:1.5px solid #E5E7EB;border-radius:10px;padding:12px;text-align:center}
+.pv-sc-l{font-size:11px;color:#1D2F5F;font-weight:700;margin-bottom:8px}
+.pv-sc-b{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.pv-btn{padding:5px 10px;background:#fff;border:1.5px solid #E5E7EB;border-radius:7px;font-size:12px;font-weight:700;color:#9CA3AF}
+.pv-st{display:flex;gap:10px;flex-wrap:wrap}
+.pv-st-btn{flex:1;min-width:90px;padding:10px 8px;background:#fff;border:2px solid #E5E7EB;border-radius:10px;text-align:center;font-size:13px;font-weight:700;color:#9CA3AF}
+</style></head><body>
+<div class="rpt"><div class="rh"><h1>${esc(name)}</h1><span class="badge">معاينة القالب</span></div>${sHTML}</div>
+</body></html>`;
+}
+
+// ── Modal & helpers ────────────────────────────────────────────────────────────
+function openModal()  { document.getElementById('addModal').classList.add('open'); }
+function closeModal() { document.getElementById('addModal').classList.remove('open'); }
+function esc(str) { return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function setStatus(type, text) { const el = document.getElementById('saveStatus'); el.textContent = text; el.className = 'save-status ' + (type||''); }
+function showToast(msg, type='success') {
+  if (window.Toast) return Toast.show(msg, type === 'success' ? 'success' : type === 'error' ? 'error' : 'info');
+  const t = document.getElementById('toast');
+  if (t) { t.textContent = msg; t.className = `toast ${type} show`; setTimeout(() => t.classList.remove('show'), 3000); }
+}
+
+init();
+</script>
+</body>
+</html>

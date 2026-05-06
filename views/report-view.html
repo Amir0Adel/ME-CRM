@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>عرض التقرير</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/components.css">
+<link rel="stylesheet" href="/css/themes.css">
+<link rel="stylesheet" href="/css/dark-mode.css">
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="/js/app-shell.js"></script>
+<style>
+:root {
+  --navy: #1D2F5F; --navy-light: #263a75;
+  --orange: #FF6B2B; --orange-soft: #FFF0EA;
+  --bg: #F4F6FA; --white: #FFFFFF;
+  --gray: #4B5563; --gray-light: #9CA3AF; --border: #E5E7EB;
+  --green: #16a34a; --green-soft: #dcfce7;
+  --yellow: #d97706; --yellow-soft: #fef3c7;
+  --red: #dc2626; --red-soft: #fee2e2;
+  --shadow: 0 2px 8px rgba(29,47,95,0.09);
+  --shadow-md: 0 4px 20px rgba(29,47,95,0.14);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--gray); direction: rtl; min-height: 100vh; }
+
+.topbar { background: var(--navy); border-bottom: 3px solid var(--orange); box-shadow: var(--shadow-md); position: sticky; top: 0; z-index: 50; }
+.topbar-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; gap: 14px; height: 60px; }
+.back-btn { display: flex; align-items: center; gap: 7px; padding: 8px 14px; background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,255,255,0.2); border-radius: 8px; font-size: 13px; font-weight: 700; color: #fff; cursor: pointer; text-decoration: none; }
+.back-btn:hover { background: rgba(255,255,255,0.2); }
+.tb-title { font-size: 14px; font-weight: 800; color: #fff; flex: 1; text-align: center; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tb-actions { display: flex; gap: 8px; }
+.tb-btn { padding: 8px 14px; border-radius: 8px; border: 1.5px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: #fff; font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; text-decoration: none; }
+.tb-btn:hover { background: rgba(255,255,255,0.2); }
+.tb-btn.primary { background: var(--orange); border-color: var(--orange); }
+
+/* Section rendering — یستخدم نفس الـ CSS من generated reports */
+.rs { padding: 22px 26px; background: var(--white); border-radius: 14px; border: 1.5px solid var(--border); box-shadow: var(--shadow); margin-bottom: 14px; }
+.rs h2 { font-size: 14px; font-weight: 900; color: var(--navy); margin-bottom: 14px; padding-bottom: 7px; border-bottom: 2.5px solid var(--orange); display: inline-block; }
+.rs p { font-size: 13px; line-height: 1.9; color: var(--gray); white-space: pre-wrap; }
+.rs ul { padding-right: 20px; }
+.rs ul li { font-size: 13px; line-height: 1.9; margin-bottom: 4px; }
+.mr { display: flex; flex-wrap: wrap; gap: 12px; }
+.mc { background: var(--bg); border: 1.5px solid var(--border); border-radius: 12px; padding: 16px 18px; min-width: 130px; text-align: center; flex: 1; }
+.mv { font-size: 26px; font-weight: 900; color: var(--navy); line-height: 1.1; }
+.mu { font-size: 11px; color: var(--gray-light); margin: 3px 0; }
+.ml { font-size: 12px; font-weight: 700; color: var(--gray); }
+.tw { overflow-x: auto; }
+.tw table { width: 100%; border-collapse: collapse; }
+.tw th { background: var(--navy); color: #fff; padding: 9px 14px; text-align: right; font-size: 12px; font-weight: 700; }
+.tw td { padding: 9px 14px; border-bottom: 1px solid var(--border); font-size: 13px; }
+.tw tr:hover td { background: var(--orange-soft); }
+.scg { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 10px; }
+.sc { background: var(--bg); border: 1.5px solid var(--border); border-radius: 10px; padding: 12px; text-align: center; }
+.scl { font-size: 11px; color: var(--navy); font-weight: 700; margin-bottom: 8px; }
+.scv { font-size: 13px; font-weight: 800; padding: 6px 12px; border-radius: 7px; display: inline-block; }
+.sc-good { background: var(--green-soft); color: var(--green); }
+.sc-bad  { background: var(--red-soft); color: var(--red); }
+.sc-warn { background: var(--yellow-soft); color: var(--yellow); }
+.sc-none { background: #fff; color: var(--gray-light); border: 1px solid var(--border); }
+.st { display: inline-block; padding: 8px 18px; border-radius: 10px; font-size: 14px; font-weight: 800; }
+
+/* Comment Modal */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; display: none; align-items: center; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal { background: #fff; border-radius: 16px; padding: 22px; width: 460px; max-width: 95vw; box-shadow: var(--shadow-md); border-top: 4px solid var(--orange); }
+.modal h3 { font-size: 16px; font-weight: 900; color: var(--navy); margin-bottom: 14px; }
+.modal textarea { width: 100%; min-height: 100px; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 13px; background: var(--bg); outline: none; resize: vertical; line-height: 1.7; }
+.modal textarea:focus { border-color: var(--navy); background: #fff; }
+.modal-foot { display: flex; gap: 10px; justify-content: flex-end; margin-top: 14px; }
+.modal-foot button { padding: 8px 18px; border-radius: 8px; border: none; font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; }
+.btn-modal-save { background: var(--orange); color: #fff; }
+.btn-modal-cancel { background: var(--bg); color: var(--gray); border: 1px solid var(--border); }
+
+.toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); padding: 13px 28px; border-radius: 12px; font-size: 14px; font-weight: 700; z-index: 9999; display: none; color: #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+.toast.show { display: block; }
+.toast.success { background: var(--green); }
+.toast.error { background: var(--red); }
+
+/* Comments inline list */
+.comments-block { background: var(--yellow-soft); border-radius: 10px; padding: 10px 14px; margin-top: 10px; border-right: 3px solid var(--yellow); }
+.cmt-line { font-size: 12px; color: var(--gray); padding: 6px 0; border-bottom: 1px dashed rgba(217,119,6,0.2); }
+.cmt-line:last-child { border-bottom: none; }
+.cmt-line .by { font-weight: 800; color: var(--navy); }
+.cmt-line .meta { font-size: 10px; color: var(--gray-light); margin-top: 2px; }
+
+@media (max-width: 768px) {
+  .tb-title { display: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="global-topbar">
+  <div class="brand-block">
+    <a href="javascript:history.back()"><img src="/img/logo.jpg" alt="Marketing Experts" class="brand-logo"></a>
+  </div>
+  <a href="/admin" class="tb-ic-btn" title="لوحة التحكم" style="text-decoration:none;width:auto;padding:0 12px;gap:6px;font-size:12px;font-weight:700">
+    <span data-icon="arrow-right"></span> لوحة التحكم
+  </a>
+  <span class="tb-title" id="tbTitle" style="flex:1;text-align:center;font-size:13px;font-weight:800;color:var(--navy);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">جاري التحميل...</span>
+  <div class="topbar-actions">
+    <button class="tb-ic-btn theme-toggle" onclick="toggleTheme()" title="الوضع الليلي" id="themeToggleBtn">🌙</button>
+    <button class="tb-ic-btn" onclick="window.print()" title="طباعة"><span data-icon="printer"></span></button>
+    <a class="tb-ic-btn" id="tbEdit" href="#" title="تعديل" style="background:var(--orange);color:#fff;border-color:var(--orange);text-decoration:none"><span data-icon="edit-3"></span></a>
+  </div>
+</header>
+
+<div class="rv-layout">
+  <main class="rv-content">
+    <div class="rv-header" id="rvHeader">
+      <h2 id="rvTitle">—</h2>
+      <div class="rv-header-meta" id="rvMeta"></div>
+    </div>
+
+    <div class="toc-pills" id="tocPills"></div>
+
+    <div id="sectionsContent"></div>
+
+    <!-- Child Reports (لو is_team_report) -->
+    <div id="childReportsSection" style="display:none;margin-top:30px;border-top:3px solid var(--orange);padding-top:24px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap">
+        <h2 style="font-size:18px;font-weight:900;color:var(--navy)">📂 التقارير الفرعية للفريق</h2>
+        <span class="badge badge-orange" id="childCount">— تقرير</span>
+      </div>
+      <div id="childReportsList"></div>
+    </div>
+  </main>
+
+  <aside class="rv-sidebar">
+    <div class="sb-section">
+      <div class="sb-title">إجراءات سريعة</div>
+      <a class="sb-action primary" id="actEdit"><span class="ico">✏️</span> تعديل التقرير</a>
+      <button class="sb-action" onclick="openCommentModal()"><span class="ico">💬</span> إضافة تعليق</button>
+      <button class="sb-action" onclick="downloadPDF()"><span class="ico">📥</span> تحميل PDF</button>
+      <button class="sb-action" onclick="shareLink()"><span class="ico">📤</span> مشاركة الرابط</button>
+      <a class="sb-action" id="actVersions"><span class="ico">📜</span> النسخ السابقة (<span id="verCount">0</span>)</a>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-title">معلومات</div>
+      <div id="metaInfo"></div>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-title">مقارنة بالأسبوع السابق</div>
+      <div id="comparison"><div style="font-size:11px;color:var(--gray-light);text-align:center;padding:8px">—</div></div>
+    </div>
+  </aside>
+</div>
+
+<!-- Comment Modal -->
+<div class="modal-overlay" id="cmtModal" onclick="if(event.target===this)closeCommentModal()">
+  <div class="modal">
+    <h3 id="cmtTitle">إضافة تعليق على التقرير</h3>
+    <textarea id="cmtText" placeholder="اكتب تعليقك..." dir="rtl"></textarea>
+    <div class="modal-foot">
+      <button class="btn-modal-cancel" onclick="closeCommentModal()">إلغاء</button>
+      <button class="btn-modal-save" onclick="submitComment()">حفظ التعليق</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let reportId = null;
+let reportData = null;
+let activeSectionForCmt = null;
+
+const TYPE_ICONS = {
+  text: '📝', list: '📋', metrics: '📊', table: '📑',
+  scorecard: '✅', checklist: '🗂️', status: '🚦'
+};
+
+async function init() {
+  const m = location.pathname.match(/\/admin\/report\/(\d+)/);
+  if (!m) return;
+  reportId = parseInt(m[1]);
+
+  const data = await fetch('/api/admin/reports/' + reportId + '/full').then(r => r.json());
+  if (data.error) return showToast(data.error, 'error');
+  reportData = data;
+
+  document.getElementById('tbTitle').textContent = data.report.title || '—';
+  document.getElementById('rvTitle').textContent = data.report.title || '—';
+  document.getElementById('rvMeta').innerHTML = `
+    <span>📅 ${esc(data.report.week || '—')}</span>
+    <span>👤 ${esc(data.user?.name || '—')}</span>
+    <span>📨 ${new Date(data.report.submitted_at).toLocaleDateString('ar-EG')}</span>
+    ${data.report.edited_by_admin ? '<span style="background:var(--orange);padding:2px 10px;border-radius:10px">✏️ معدّل</span>' : ''}
+  `;
+
+  document.getElementById('tbEdit').href   = '/admin/report/' + reportId + '/edit';
+  document.getElementById('actEdit').href  = '/admin/report/' + reportId + '/edit';
+  document.getElementById('actVersions').href = '/admin/report/' + reportId + '/edit';
+  document.getElementById('verCount').textContent = data.versionsCount || 0;
+
+  renderSections(data.report.sections || []);
+  renderTOC(data.report.sections || []);
+  renderMeta(data);
+  renderComparison(data.comparison || {});
+  renderChildReports(data.child_reports || []);
+}
+
+function renderChildReports(children) {
+  if (!children.length) return;
+  const sec = document.getElementById('childReportsSection');
+  if (!sec) return;
+  sec.style.display = 'block';
+  document.getElementById('childCount').textContent = `${children.length} تقرير`;
+
+  document.getElementById('childReportsList').innerHTML = children.map((c, idx) => `
+    <details ${idx === 0 ? 'open' : ''} style="margin-bottom:10px">
+      <summary style="cursor:pointer;padding:14px 18px;background:var(--bg);border-radius:10px;border:1px solid var(--border);display:flex;align-items:center;gap:10px;font-weight:700;list-style:none">
+        <div style="width:30px;height:30px;border-radius:50%;background:var(--orange-soft);color:var(--orange);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800">${(c.user_name || '؟').charAt(0)}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;color:var(--navy)">${esc(c.user_name || '—')}</div>
+          <div style="font-size:11px;color:var(--gray-light);font-weight:500">${esc(c.title || '—')} • ${esc(c.week || '—')}</div>
+        </div>
+        <a href="/admin/report/${c.report_id}" class="tb-btn" style="padding:6px 12px;font-size:11px" onclick="event.stopPropagation()">عرض كامل ←</a>
+      </summary>
+      <div style="padding:14px 18px;background:white;border:1px solid var(--border);border-top:none;border-radius:0 0 10px 10px;margin-top:-1px">
+        ${renderSectionsCompact(c.full_sections || c.sections_snapshot || [])}
+      </div>
+    </details>
+  `).join('');
+}
+
+function renderSectionsCompact(sections) {
+  if (!sections.length) return '<div style="color:var(--gray-light);font-size:11px">لا توجد أقسام</div>';
+  return sections.slice(0, 5).map(s => `
+    <div style="margin-bottom:12px">
+      <div style="font-weight:700;color:var(--navy);font-size:12px;margin-bottom:5px">${esc(s.title || '')}</div>
+      ${renderCompactContent(s)}
+    </div>
+  `).join('');
+}
+
+function renderCompactContent(s) {
+  if (s.type === 'metrics' && s.items) {
+    const items = s.items.filter(i => i && (i.label || i.value));
+    if (!items.length) return '<div style="font-size:10px;color:var(--gray-light)">—</div>';
+    return `<div style="display:flex;gap:12px;flex-wrap:wrap">${items.map(i =>
+      `<div style="font-size:11px"><span style="color:var(--gray-light)">${esc(i.label || '')}:</span> <strong style="color:var(--navy)">${esc(i.value || '—')}${i.unit ? ' ' + esc(i.unit) : ''}</strong></div>`
+    ).join('')}</div>`;
+  }
+  if (s.type === 'text') {
+    const txt = (s.content || '').slice(0, 200);
+    if (!txt) return '<div style="font-size:10px;color:var(--gray-light)">—</div>';
+    return `<div style="font-size:11px;color:var(--gray);line-height:1.7">${esc(txt)}${(s.content?.length || 0) > 200 ? '…' : ''}</div>`;
+  }
+  if (s.type === 'list' && s.items) {
+    const items = s.items.filter(Boolean).slice(0, 4);
+    if (!items.length) return '<div style="font-size:10px;color:var(--gray-light)">—</div>';
+    return `<ul style="font-size:11px;color:var(--gray);padding-right:16px;margin:0">${items.map(i => `<li>${esc(i)}</li>`).join('')}</ul>`;
+  }
+  if (s.type === 'scorecard' && s.items) {
+    const VAL = { yes: '✅', no: '❌', green: '🟢', yellow: '🟡', red: '🔴' };
+    return `<div style="display:flex;gap:8px;flex-wrap:wrap">${s.items.filter(i => i.label).map(i =>
+      `<div style="font-size:11px;padding:3px 8px;background:var(--bg);border-radius:6px"><strong>${esc(i.label)}</strong>: ${VAL[i.value] || '—'}</div>`
+    ).join('')}</div>`;
+  }
+  if (s.type === 'checklist' && s.items) {
+    const items = s.items.filter(it => (typeof it === 'object' && it.text) || (typeof it === 'string' && it)).slice(0, 4);
+    if (!items.length) return '<div style="font-size:10px;color:var(--gray-light)">—</div>';
+    return `<ul style="font-size:11px;color:var(--gray);padding-right:16px;margin:0">${items.map(it => {
+      const t = typeof it === 'object' ? it.text : it;
+      const s = typeof it === 'object' ? it.status : '';
+      return `<li>${esc(t)}${s ? ' <span style="color:var(--gray-light)">(' + esc(s) + ')</span>' : ''}</li>`;
+    }).join('')}</ul>`;
+  }
+  if (s.type === 'status') {
+    const opt = (s.options || []).find(o => o.value === s.value);
+    return `<div style="font-size:11px;color:var(--gray)">${opt ? esc(opt.label) : '—'}</div>`;
+  }
+  return '<div style="font-size:10px;color:var(--gray-light)">—</div>';
+}
+
+function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function renderSections(sections) {
+  const container = document.getElementById('sectionsContent');
+  if (!sections.length) { container.innerHTML = '<div class="rs" style="text-align:center;color:var(--gray-light)">لا توجد أقسام في هذا التقرير</div>'; return; }
+
+  const allComments = reportData.report.comments || [];
+  container.innerHTML = sections.map((s, i) => {
+    const sectionComments = allComments.filter(c => c.section_idx === i);
+    const cmtBlock = sectionComments.length ? `
+      <div class="comments-block">
+        <div style="font-size:11px;font-weight:800;color:var(--yellow);margin-bottom:6px">💬 ${sectionComments.length} تعليق على هذا القسم</div>
+        ${sectionComments.map(c => `
+          <div class="cmt-line">
+            <div><span class="by">${esc(c.by)}:</span> ${esc(c.text).replace(/\n/g,'<br>')}</div>
+            <div class="meta">${new Date(c.created_at).toLocaleString('ar-EG')}</div>
+          </div>`).join('')}
+      </div>` : '';
+
+    return `<div class="rs section-block" data-section-idx="${i}" id="sec-${i}">
+      ${renderSectionBody(s)}
+      ${cmtBlock}
+      <button onclick="openCommentModal(${i})" style="margin-top:10px;padding:6px 14px;background:var(--orange-soft);color:var(--orange);border:1px dashed var(--orange);border-radius:8px;font-family:'Cairo',sans-serif;font-size:11px;font-weight:700;cursor:pointer">💬 أضف تعليق على هذا القسم</button>
+    </div>`;
+  }).join('');
+}
+
+function renderSectionBody(s) {
+  const title = `<h2>${TYPE_ICONS[s.type] || '📄'} ${esc(s.title || '')}</h2>`;
+
+  if (s.type === 'text') return `${title}<p>${esc(s.content || '—').replace(/\n/g,'<br>')}</p>`;
+
+  if (s.type === 'list') {
+    const items = (s.items || []).filter(Boolean);
+    if (!items.length) return `${title}<p style="color:var(--gray-light)">لا توجد عناصر</p>`;
+    return `${title}<ul>${items.map(i => `<li>${esc(i)}</li>`).join('')}</ul>`;
+  }
+
+  if (s.type === 'metrics') {
+    const cards = (s.items || []).filter(m => m.label || m.value).map(m => `
+      <div class="mc"><div class="mv">${esc(m.value || '—')}</div><div class="mu">${esc(m.unit || '')}</div><div class="ml">${esc(m.label || '')}</div></div>`).join('');
+    if (!cards) return `${title}<p style="color:var(--gray-light)">لا توجد قيم</p>`;
+    return `${title}<div class="mr">${cards}</div>`;
+  }
+
+  if (s.type === 'table') {
+    const th = (s.headers || []).map(h => `<th>${esc(h)}</th>`).join('');
+    const tb = (s.rows || []).map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('');
+    return `${title}<div class="tw"><table><thead><tr>${th}</tr></thead><tbody>${tb}</tbody></table></div>`;
+  }
+
+  if (s.type === 'scorecard') {
+    const VAL = { yes: '✅ نعم', no: '❌ لا', green: '🟢 أخضر', yellow: '🟡 أصفر', red: '🔴 أحمر' };
+    const cells = (s.items || []).filter(c => c.label).map(c => {
+      const v = c.value ? VAL[c.value] || c.value : '— لم يُحدد —';
+      const cls = c.value === 'yes' || c.value === 'green' ? 'sc-good' : c.value === 'no' || c.value === 'red' ? 'sc-bad' : c.value === 'yellow' ? 'sc-warn' : 'sc-none';
+      return `<div class="sc"><div class="scl">${esc(c.label)}</div><div class="scv ${cls}">${esc(v)}</div></div>`;
+    }).join('');
+    return `${title}<div class="scg">${cells || '<p style="color:var(--gray-light)">—</p>'}</div>`;
+  }
+
+  if (s.type === 'status') {
+    const opt = (s.options || []).find(o => o.value === s.value);
+    const cls = s.value === 'green' ? 'sc-good' : s.value === 'red' ? 'sc-bad' : s.value === 'yellow' ? 'sc-warn' : 'sc-none';
+    const note = s.note ? `<p style="margin-top:10px">${esc(s.note).replace(/\n/g,'<br>')}</p>` : '';
+    return `${title}<div class="st ${cls}">${esc(opt ? opt.label : '— لم يُحدد —')}</div>${note}`;
+  }
+
+  if (s.type === 'checklist') {
+    const items = (s.items || []).filter(it => (typeof it === 'object' && it.text) || (typeof it === 'string' && it));
+    if (!items.length) return `${title}<p style="color:var(--gray-light)">لا توجد عناصر</p>`;
+    const rows = items.map(it => {
+      const t = typeof it === 'object' ? it.text : it;
+      const st = typeof it === 'object' ? it.status : '';
+      return `<tr><td>${esc(t)}</td><td style="text-align:center;font-weight:700">${esc(st || '—')}</td></tr>`;
+    }).join('');
+    return `${title}<div class="tw"><table><thead><tr><th>العنصر</th><th style="text-align:center">الحالة</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  }
+
+  return `${title}<p style="color:var(--gray-light)">نوع غير معروف: ${esc(s.type)}</p>`;
+}
+
+function renderTOC(sections) {
+  const el = document.getElementById('tocPills');
+  if (!sections.length) { el.style.display = 'none'; return; }
+  el.innerHTML = sections.map((s, i) => `
+    <a class="toc-pill ${i === 0 ? 'active' : ''}" data-section="${i}" onclick="scrollToSection(${i})">
+      ${TYPE_ICONS[s.type] || '📄'} ${esc(s.title || `قسم ${i+1}`)}
+    </a>
+  `).join('');
+  observeSections();
+}
+
+function observeSections() {
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      if (en.isIntersecting) {
+        const idx = en.target.dataset.sectionIdx;
+        document.querySelectorAll('.toc-pill').forEach(p => p.classList.remove('active'));
+        const pill = document.querySelector(`.toc-pill[data-section="${idx}"]`);
+        if (pill) pill.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-100px 0px -50% 0px', threshold: 0 });
+  document.querySelectorAll('.section-block').forEach(s => obs.observe(s));
+}
+
+function scrollToSection(idx) {
+  const el = document.getElementById('sec-' + idx);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderMeta(d) {
+  const r = d.report;
+  const rows = [
+    ['المرسل', d.user?.name || '—'],
+    ['الإيميل', d.user?.email || '—'],
+    ['الأسبوع', r.week || '—'],
+    ['تاريخ الإرسال', new Date(r.submitted_at).toLocaleDateString('ar-EG')],
+    r.last_edited_at ? ['آخر تعديل', formatRelativeTime(r.last_edited_at)] : null,
+    ['الحالة', r.edited_by_admin ? '✏️ معدّل' : '✓ مرسل'],
+    ['عدد التعليقات', d.commentsCount + ''],
+    ['عدد النسخ', d.versionsCount + ''],
+    d.template ? ['القالب', d.template.name] : null
+  ].filter(Boolean);
+  document.getElementById('metaInfo').innerHTML = rows.map(([l, v]) =>
+    `<div class="meta-row"><span class="label">${l}</span><span class="val">${esc(v)}</span></div>`
+  ).join('');
+}
+
+function renderComparison(comp) {
+  const keys = Object.keys(comp);
+  const el = document.getElementById('comparison');
+  if (!keys.length) { el.innerHTML = '<div style="font-size:11px;color:var(--gray-light);text-align:center;padding:8px">لا توجد metrics</div>'; return; }
+  el.innerHTML = keys.slice(0, 8).map(k => {
+    const c = comp[k];
+    const cls = c.trend;
+    const arrow = c.trend === 'up' ? '▲' : c.trend === 'down' ? '▼' : '—';
+    const sign = c.diff > 0 ? '+' : '';
+    return `<div class="comparison-row" title="${k}: ${c.previous} → ${c.current}">
+      <span class="name">${esc(k.length > 18 ? k.slice(0,18)+'…' : k)}</span>
+      <span class="trend ${cls}">${arrow} ${sign}${c.diff.toFixed(0)}</span>
+    </div>`;
+  }).join('');
+}
+
+function formatRelativeTime(ts) {
+  if (!ts) return '—';
+  const diff = (Date.now() - new Date(ts).getTime()) / 1000;
+  if (diff < 60) return 'الآن';
+  if (diff < 3600) return `منذ ${Math.floor(diff / 60)} دقيقة`;
+  if (diff < 86400) return `منذ ${Math.floor(diff / 3600)} ساعة`;
+  return `منذ ${Math.floor(diff / 86400)} يوم`;
+}
+
+function openCommentModal(sectionIdx) {
+  activeSectionForCmt = sectionIdx == null ? null : sectionIdx;
+  const t = sectionIdx != null && reportData?.report?.sections?.[sectionIdx]
+    ? `تعليق على: ${reportData.report.sections[sectionIdx].title}` : 'تعليق عام على التقرير';
+  document.getElementById('cmtTitle').textContent = t;
+  document.getElementById('cmtText').value = '';
+  document.getElementById('cmtModal').classList.add('open');
+  setTimeout(() => document.getElementById('cmtText').focus(), 100);
+}
+function closeCommentModal() { document.getElementById('cmtModal').classList.remove('open'); }
+
+async function submitComment() {
+  const text = document.getElementById('cmtText').value.trim();
+  if (!text) return showToast('اكتب نص التعليق', 'error');
+  const res = await fetch(`/api/admin/reports/${reportId}/comment`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ section_idx: activeSectionForCmt, text })
+  });
+  const data = await res.json();
+  if (data.error) return showToast(data.error, 'error');
+  closeCommentModal();
+  showToast('✓ تم إضافة التعليق', 'success');
+  setTimeout(() => init(), 400);
+}
+
+function downloadPDF() {
+  window.open('/api/admin/reports/' + reportId + '/pdf', '_blank');
+}
+
+function shareLink() {
+  const url = location.origin + '/admin/report/' + reportId;
+  navigator.clipboard?.writeText(url).then(() => showToast('✓ الرابط نُسخ', 'success'))
+    .catch(() => prompt('انسخ الرابط:', url));
+}
+
+function showToast(msg, type='success') {
+  if (window.Toast) return Toast.show(msg, type === 'success' ? 'success' : type === 'error' ? 'error' : 'info');
+  const t = document.getElementById('toast');
+  if (t) { t.textContent = msg; t.className = `toast ${type} show`; setTimeout(() => t.classList.remove('show'), 2800); }
+}
+
+init();
+</script>
+</body>
+</html>

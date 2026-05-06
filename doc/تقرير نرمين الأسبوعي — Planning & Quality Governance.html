@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<!-- saved from url=(0067)file:///Users/ibrahimelbahrawi/Downloads/narmeen-weekly-report.html -->
+<html lang="ar" dir="rtl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تقرير نرمين الأسبوعي — Planning &amp; Quality Governance</title>
+<link href="./تقرير نرمين الأسبوعي — Planning &amp; Quality Governance_files/css2" rel="stylesheet">
+<style>
+:root {
+  --navy: #1D2F5F;
+  --navy-light: #263a75;
+  --orange: #FF6B2B;
+  --orange-soft: #FFF0EA;
+  --green: #1A7A4A;
+  --green-soft: #E6F5EE;
+  --green-mid: #2D9E63;
+  --red: #DC2626;
+  --red-soft: #FEF2F2;
+  --yellow: #D97706;
+  --yellow-soft: #FFFBEB;
+  --bg: #F4F6FA;
+  --white: #FFFFFF;
+  --gray: #4B5563;
+  --gray-light: #9CA3AF;
+  --border: #E5E7EB;
+  --shadow: 0 2px 8px rgba(29,47,95,0.09);
+  --shadow-md: 0 4px 20px rgba(29,47,95,0.14);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
+  background: var(--bg);
+  color: var(--gray);
+  direction: rtl;
+  text-align: right;
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+/* ===== HEADER ===== */
+.header {
+  background: var(--white);
+  border-bottom: 3px solid var(--green);
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: var(--shadow-md);
+}
+.header-inner {
+  max-width: 1200px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 28px; gap: 20px;
+}
+.logo-wrap {
+  display: flex; align-items: center;
+  background: #fff; border-radius: 10px;
+  border: 1.5px solid var(--border);
+  padding: 5px 12px; flex-shrink: 0;
+}
+.logo-wrap img { height: 40px; width: auto; display: block; }
+.header-center { flex: 1; text-align: center; }
+.header-title { font-size: 18px; font-weight: 900; color: var(--navy); line-height: 1.2; }
+.header-sub { font-size: 12px; color: var(--gray-light); margin-top: 2px; }
+.header-meta { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+.week-badge {
+  background: var(--green); color: #fff;
+  font-size: 11px; font-weight: 700;
+  padding: 4px 12px; border-radius: 20px;
+}
+.mode-tabs {
+  display: flex; gap: 6px;
+}
+.mode-tab {
+  background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: 8px; padding: 6px 14px;
+  font-family: 'Cairo', sans-serif; font-size: 12px; font-weight: 700;
+  color: var(--gray); cursor: pointer; transition: all .2s;
+}
+.mode-tab.active { background: var(--navy); border-color: var(--navy); color: #fff; }
+
+/* ===== PAGES ===== */
+.page { display: none; max-width: 1200px; margin: 0 auto; padding: 24px 28px 60px; }
+.page.active { display: block; }
+
+/* ===== SECTION TITLES ===== */
+.section-title {
+  font-size: 15px; font-weight: 900; color: var(--navy);
+  margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+}
+.section-title::after { content: ''; flex: 1; height: 2px; background: var(--border); }
+.section-badge {
+  font-size: 10px; font-weight: 800; padding: 3px 10px; border-radius: 20px;
+}
+.badge-required { background: var(--red-soft); color: var(--red); }
+.badge-optional { background: var(--yellow-soft); color: var(--yellow); }
+
+/* ===== SUMMARY STRIP ===== */
+.summary-strip {
+  display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px;
+}
+.stat-card {
+  background: var(--white); border: 1.5px solid var(--border);
+  border-radius: 14px; padding: 14px 18px;
+  display: flex; align-items: center; gap: 12px;
+  flex: 1; min-width: 150px; box-shadow: var(--shadow);
+  cursor: pointer; transition: all .2s;
+}
+.stat-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+.stat-icon {
+  width: 42px; height: 42px; border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 19px; flex-shrink: 0;
+}
+.si-green { background: var(--green-soft); }
+.si-orange { background: var(--orange-soft); }
+.si-red { background: var(--red-soft); }
+.si-yellow { background: var(--yellow-soft); }
+.si-navy { background: var(--bg); }
+.stat-num { font-size: 24px; font-weight: 900; color: var(--navy); line-height: 1; }
+.stat-label { font-size: 11.5px; color: var(--gray-light); margin-top: 2px; }
+
+/* ===== FORM ELEMENTS ===== */
+.form-grid { display: grid; gap: 16px; }
+.form-grid-2 { grid-template-columns: 1fr 1fr; }
+.form-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+@media(max-width: 768px) { .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; } }
+
+.field-group { display: flex; flex-direction: column; gap: 5px; }
+.field-label {
+  font-size: 12px; font-weight: 700; color: var(--navy);
+  display: flex; align-items: center; gap: 5px;
+}
+.field-label .req { color: var(--red); font-size: 13px; }
+.field-input, .field-textarea, .field-select {
+  width: 100%; background: var(--white);
+  border: 1.5px solid var(--border); border-radius: 9px;
+  padding: 10px 13px; font-family: 'Cairo', sans-serif;
+  font-size: 13.5px; color: var(--gray); direction: rtl;
+  outline: none; transition: border-color .2s;
+  resize: none;
+}
+.field-input:focus, .field-textarea:focus, .field-select:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(26,122,74,0.10);
+}
+.field-textarea { min-height: 80px; }
+.field-hint { font-size: 11px; color: var(--gray-light); }
+
+/* ===== STATUS SELECTOR ===== */
+.status-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.status-btn {
+  border: 2px solid var(--border); border-radius: 9px;
+  padding: 7px 14px; font-family: 'Cairo', sans-serif;
+  font-size: 12.5px; font-weight: 700; cursor: pointer;
+  transition: all .18s; background: var(--white); color: var(--gray);
+  display: flex; align-items: center; gap: 5px;
+}
+.status-btn:hover { border-color: var(--gray-light); }
+.status-btn.sel-green { background: var(--green-soft); border-color: var(--green); color: var(--green); }
+.status-btn.sel-yellow { background: var(--yellow-soft); border-color: var(--yellow); color: var(--yellow); }
+.status-btn.sel-red { background: var(--red-soft); border-color: var(--red); color: var(--red); }
+
+/* ===== PROJECT TABLE ===== */
+.proj-table { width: 100%; border-collapse: collapse; }
+.proj-table th {
+  background: var(--navy); color: #fff;
+  font-size: 12px; font-weight: 700;
+  padding: 10px 13px; text-align: right;
+}
+.proj-table th:first-child { border-radius: 0 9px 0 0; }
+.proj-table th:last-child { border-radius: 9px 0 0 0; }
+.proj-table td {
+  padding: 10px 13px; border-bottom: 1px solid var(--border);
+  font-size: 13px; vertical-align: middle;
+  background: var(--white);
+}
+.proj-table tr:last-child td { border-bottom: none; }
+.proj-table tr:last-child td:first-child { border-radius: 0 0 9px 0; }
+.proj-table tr:last-child td:last-child { border-radius: 0 0 0 9px; }
+.proj-table input, .proj-table select {
+  width: 100%; border: 1px solid var(--border); border-radius: 6px;
+  padding: 5px 8px; font-family: 'Cairo', sans-serif;
+  font-size: 12.5px; color: var(--gray); direction: rtl;
+  background: var(--bg); outline: none;
+  transition: border-color .2s;
+}
+.proj-table input:focus, .proj-table select:focus { border-color: var(--green); background: #fff; }
+.status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-left: 5px; }
+.dot-green { background: var(--green); }
+.dot-yellow { background: var(--yellow); }
+.dot-red { background: var(--red); }
+
+/* ===== CARD BOX ===== */
+.card-box {
+  background: var(--white); border: 1.5px solid var(--border);
+  border-radius: 14px; padding: 18px 20px;
+  box-shadow: var(--shadow); margin-bottom: 20px;
+}
+.card-box-title {
+  font-size: 13px; font-weight: 800; color: var(--navy);
+  margin-bottom: 14px; display: flex; align-items: center; gap: 7px;
+}
+.add-row-btn {
+  background: var(--green-soft); border: 1.5px dashed var(--green);
+  border-radius: 8px; padding: 8px 16px;
+  font-family: 'Cairo', sans-serif; font-size: 12.5px;
+  font-weight: 700; color: var(--green); cursor: pointer;
+  transition: all .18s; margin-top: 10px; display: inline-flex; align-items: center; gap: 5px;
+}
+.add-row-btn:hover { background: var(--green); color: #fff; }
+
+/* ===== RISK ITEM ===== */
+.risk-item {
+  background: var(--red-soft); border: 1.5px solid #FECACA;
+  border-radius: 10px; padding: 12px 14px; margin-bottom: 10px;
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px; align-items: start;
+}
+.risk-item .field-label { color: var(--red); font-size: 11px; }
+
+/* ===== KPI GRID ===== */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.kpi-box {
+  background: var(--white); border: 1.5px solid var(--border);
+  border-radius: 12px; padding: 14px 16px; box-shadow: var(--shadow);
+}
+.kpi-box-label { font-size: 11px; color: var(--gray-light); font-weight: 600; margin-bottom: 6px; }
+.kpi-box-input {
+  width: 100%; border: none; border-bottom: 2px solid var(--border);
+  padding: 4px 0; font-family: 'Cairo', sans-serif;
+  font-size: 22px; font-weight: 900; color: var(--navy);
+  background: transparent; direction: rtl; outline: none;
+  transition: border-color .2s;
+}
+.kpi-box-input:focus { border-color: var(--green); }
+.kpi-box-unit { font-size: 11px; color: var(--gray-light); margin-top: 4px; }
+
+/* ===== TEXTAREA BLOCK ===== */
+.text-block {
+  background: var(--white); border: 1.5px solid var(--border);
+  border-radius: 12px; padding: 16px; box-shadow: var(--shadow);
+  margin-bottom: 14px;
+}
+.text-block-label { font-size: 12px; font-weight: 800; color: var(--navy); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.text-block textarea {
+  width: 100%; border: none; background: transparent;
+  font-family: 'Cairo', sans-serif; font-size: 13.5px;
+  color: var(--gray); direction: rtl; resize: none; outline: none;
+  min-height: 70px; line-height: 1.7;
+}
+
+/* ===== SUBMIT BAR ===== */
+.submit-bar {
+  position: sticky; bottom: 0; z-index: 50;
+  background: var(--white); border-top: 2px solid var(--border);
+  padding: 14px 28px; display: flex; justify-content: space-between; align-items: center;
+  box-shadow: 0 -4px 16px rgba(29,47,95,0.10);
+}
+.submit-bar-info { font-size: 12px; color: var(--gray-light); }
+.submit-bar-btns { display: flex; gap: 10px; }
+.btn-secondary {
+  background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: 9px; padding: 9px 20px;
+  font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 700;
+  color: var(--gray); cursor: pointer; transition: all .18s;
+}
+.btn-secondary:hover { border-color: var(--navy); color: var(--navy); }
+.btn-primary {
+  background: var(--green); border: none; border-radius: 9px;
+  padding: 9px 24px; font-family: 'Cairo', sans-serif;
+  font-size: 13px; font-weight: 800; color: #fff; cursor: pointer;
+  transition: all .18s; display: flex; align-items: center; gap: 6px;
+}
+.btn-primary:hover { background: var(--green-mid); transform: translateY(-1px); }
+
+/* ===== DASHBOARD ===== */
+.dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+@media(max-width: 900px) { .dash-grid { grid-template-columns: 1fr; } }
+.dash-card {
+  background: var(--white); border: 1.5px solid var(--border);
+  border-radius: 16px; padding: 20px; box-shadow: var(--shadow);
+}
+.dash-card-title { font-size: 13px; font-weight: 800; color: var(--navy); margin-bottom: 14px; display: flex; align-items: center; gap: 7px; }
+
+/* Progress bars */
+.progress-item { margin-bottom: 12px; }
+.progress-label { display: flex; justify-content: space-between; font-size: 12.5px; margin-bottom: 5px; }
+.progress-name { font-weight: 700; color: var(--navy); }
+.progress-val { font-weight: 800; color: var(--green); }
+.progress-bar { height: 8px; background: var(--bg); border-radius: 10px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 10px; transition: width .6s ease; }
+.fill-green { background: var(--green); }
+.fill-yellow { background: var(--yellow); }
+.fill-red { background: var(--red); }
+.fill-navy { background: var(--navy); }
+
+/* Status pills in dashboard */
+.status-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 20px;
+}
+.pill-green { background: var(--green-soft); color: var(--green); }
+.pill-yellow { background: var(--yellow-soft); color: var(--yellow); }
+.pill-red { background: var(--red-soft); color: var(--red); }
+.pill-navy { background: var(--bg); color: var(--navy); }
+
+/* Donut chart */
+.donut-wrap { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.donut-svg { flex-shrink: 0; }
+.donut-legend { display: flex; flex-direction: column; gap: 8px; }
+.donut-leg-item { display: flex; align-items: center; gap: 7px; font-size: 12.5px; }
+.donut-dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
+
+/* Risk table in dashboard */
+.risk-table { width: 100%; border-collapse: collapse; }
+.risk-table th { font-size: 11px; font-weight: 800; color: var(--gray-light); padding: 6px 10px; border-bottom: 1.5px solid var(--border); text-align: right; }
+.risk-table td { font-size: 12.5px; padding: 9px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.risk-table tr:last-child td { border: none; }
+
+/* Heatmap */
+.heatmap-grid { display: grid; grid-template-columns: 80px repeat(5, 1fr); gap: 4px; }
+.hm-label { font-size: 11px; font-weight: 700; color: var(--gray-light); display: flex; align-items: center; justify-content: flex-end; padding-left: 6px; }
+.hm-col-label { font-size: 10.5px; font-weight: 800; color: var(--navy); text-align: center; padding: 4px 0; }
+.hm-cell {
+  border-radius: 7px; height: 34px; display: flex;
+  align-items: center; justify-content: center;
+  font-size: 11.5px; font-weight: 800;
+  cursor: default;
+}
+.hm-0 { background: var(--bg); color: var(--gray-light); }
+.hm-1 { background: #DCFCE7; color: #166534; }
+.hm-2 { background: #BBF7D0; color: #166534; }
+.hm-3 { background: var(--yellow-soft); color: var(--yellow); }
+.hm-4 { background: #FED7AA; color: #9A3412; }
+.hm-5 { background: var(--red-soft); color: var(--red); }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--green); color: #fff; padding: 12px 24px; border-radius: 12px;
+  font-size: 13.5px; font-weight: 700; box-shadow: 0 6px 24px rgba(0,0,0,0.15);
+  opacity: 0; transition: all .3s; pointer-events: none; z-index: 999;
+  display: flex; align-items: center; gap: 8px;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* Delete row btn */
+.del-btn {
+  background: none; border: none; color: var(--red); cursor: pointer;
+  font-size: 15px; padding: 2px 5px; border-radius: 5px; transition: background .15s;
+}
+.del-btn:hover { background: var(--red-soft); }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <div class="logo-wrap">
+      <img src="data:image/jpeg;base64,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" alt="Marketing Experts">
+    </div>
+    <div class="header-center">
+      <div class="header-title">تقرير نرمين الأسبوعي</div>
+      <div class="header-sub">Planning &amp; Quality Governance — مسار التنفيذ والجودة</div>
+    </div>
+    <div class="header-meta">
+      <div class="week-badge" id="weekBadge">٢٧ أبريل — ٣ مايو</div>
+      <div class="mode-tabs" style="margin-top:6px;">
+        <button class="mode-tab active" onclick="switchPage(&#39;template&#39;, this)">📝 Template</button>
+        <button class="mode-tab" onclick="switchPage(&#39;dashboard&#39;, this)">📊 Dashboard</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================ -->
+<!-- TEMPLATE PAGE -->
+<!-- ============================================================ -->
+<div class="page active" id="page-template">
+
+  <!-- Summary Strip -->
+  <div class="summary-strip">
+    <div class="stat-card" title="مشاريع ملتزمة بالخطة">
+      <div class="stat-icon si-green">✅</div>
+      <div><div class="stat-num" id="s-ontrack">—</div><div class="stat-label">مشاريع على الخطة</div></div>
+    </div>
+    <div class="stat-card" title="مشاريع متأخرة">
+      <div class="stat-icon si-yellow">⚠️</div>
+      <div><div class="stat-num" id="s-delayed">—</div><div class="stat-label">مشاريع متأخرة</div></div>
+    </div>
+    <div class="stat-card" title="مشاريع معرضة للخطر">
+      <div class="stat-icon si-red">🔴</div>
+      <div><div class="stat-num" id="s-atrisk">—</div><div class="stat-label">مشاريع تحت المراقبة</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon si-navy">📋</div>
+      <div><div class="stat-num" id="s-total">—</div><div class="stat-label">إجمالي المشاريع</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon si-orange">⚡</div>
+      <div><div class="stat-num" id="s-risks">—</div><div class="stat-label">مخاطر مفتوحة</div></div>
+    </div>
+  </div>
+
+  <!-- SECTION 1: معلومات الأسبوع -->
+  <div class="section-title">📅 معلومات الأسبوع <span class="section-badge badge-required">مطلوب</span></div>
+  <div class="card-box">
+    <div class="form-grid form-grid-3">
+      <div class="field-group">
+        <div class="field-label">من <span class="req">*</span></div>
+        <input type="date" class="field-input" id="weekFrom" onchange="updateWeekBadge()">
+      </div>
+      <div class="field-group">
+        <div class="field-label">إلى <span class="req">*</span></div>
+        <input type="date" class="field-input" id="weekTo" onchange="updateWeekBadge()">
+      </div>
+      <div class="field-group">
+        <div class="field-label">تاريخ رفع التقرير</div>
+        <input type="date" class="field-input" id="reportDate">
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: مؤشرات الجودة والأداء -->
+  <div class="section-title">📊 مؤشرات الجودة والأداء <span class="section-badge badge-required">مطلوب</span></div>
+  <div class="kpi-grid">
+    <div class="kpi-box">
+      <div class="kpi-box-label">% الالتزام بالخطة</div>
+      <input class="kpi-box-input" type="number" min="0" max="100" placeholder="—" id="kpi-commitment" oninput="refreshDash()">
+      <div class="kpi-box-unit">من إجمالي المشاريع</div>
+    </div>
+    <div class="kpi-box">
+      <div class="kpi-box-label">عدد المشاريع الحمراء</div>
+      <input class="kpi-box-input" type="number" min="0" placeholder="—" id="kpi-red" oninput="refreshDash()">
+      <div class="kpi-box-unit">مشروع يحتاج تدخل</div>
+    </div>
+    <div class="kpi-box">
+      <div class="kpi-box-label">جودة المخرجات</div>
+      <input class="kpi-box-input" type="number" min="0" max="10" step="0.1" placeholder="—" id="kpi-quality" oninput="refreshDash()">
+      <div class="kpi-box-unit">من 10 (تقييم نرمين)</div>
+    </div>
+    <div class="kpi-box">
+      <div class="kpi-box-label">سرعة رصد المشاكل</div>
+      <input class="kpi-box-input" type="number" min="0" placeholder="—" id="kpi-detection">
+      <div class="kpi-box-unit">ساعة متوسط الرصد</div>
+    </div>
+    <div class="kpi-box">
+      <div class="kpi-box-label">رضا العملاء</div>
+      <input class="kpi-box-input" type="number" min="0" max="10" step="0.1" placeholder="—" id="kpi-satisfaction" oninput="refreshDash()">
+      <div class="kpi-box-unit">من 10 (مؤشر هذا الأسبوع)</div>
+    </div>
+    <div class="kpi-box">
+      <div class="kpi-box-label">مهام مسلّمة في موعدها</div>
+      <input class="kpi-box-input" type="number" min="0" placeholder="—" id="kpi-ontime" oninput="refreshDash()">
+      <div class="kpi-box-unit">من إجمالي المهام</div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: حالة المشاريع -->
+  <div class="section-title">🗂️ حالة المشاريع <span class="section-badge badge-required">مطلوب</span></div>
+  <div class="card-box" style="padding:0;overflow:hidden;">
+    <table class="proj-table" id="projTable">
+      <thead>
+        <tr>
+          <th>اسم المشروع / العميل</th>
+          <th>الفريق المسؤول</th>
+          <th>% الإنجاز</th>
+          <th>الحالة</th>
+          <th>الملاحظة</th>
+          <th style="width:36px;"></th>
+        </tr>
+      </thead>
+      <tbody id="projBody"></tbody>
+    </table>
+  </div>
+  <button class="add-row-btn" onclick="addProjRow()">＋ إضافة مشروع</button>
+
+  <!-- SECTION 4: التخطيط -->
+  <div class="section-title" style="margin-top:24px;">🎯 التخطيط <span class="section-badge badge-required">مطلوب</span></div>
+  <div class="text-block">
+    <div class="text-block-label">📌 ما تم تخطيطه هذا الأسبوع</div>
+    <textarea placeholder="اكتبي الخطط والمبادرات التي وُضعت هذا الأسبوع…" id="plan-done"></textarea>
+  </div>
+  <div class="text-block">
+    <div class="text-block-label">📅 خطة الأسبوع القادم</div>
+    <textarea placeholder="ما الخطط والمبادرات المقررة للأسبوع القادم؟" id="plan-next"></textarea>
+  </div>
+  <div class="text-block">
+    <div class="text-block-label">🔄 تحديثات على معايير الجودة</div>
+    <textarea placeholder="هل تم تعديل أي معيار جودة؟ إضافة معيار جديد؟ تغيير في التوقعات؟" id="plan-quality-update"></textarea>
+  </div>
+
+  <!-- SECTION 5: الجودة -->
+  <div class="section-title">🔍 الجودة <span class="section-badge badge-required">مطلوب</span></div>
+  <div class="form-grid form-grid-2">
+    <div class="text-block" style="margin-bottom:0;">
+      <div class="text-block-label">✅ أفضل مخرجات الأسبوع جودةً</div>
+      <textarea placeholder="أكثر 2-3 مخرجات أعجبتك في الأسبوع هذا من ناحية الجودة…" id="qual-best"></textarea>
+    </div>
+    <div class="text-block" style="margin-bottom:0;">
+      <div class="text-block-label">⚠️ مخرجات بحاجة لتحسين</div>
+      <textarea placeholder="مخرجات لم ترقَ للمستوى المطلوب وماذا تقترحين لتحسينها…" id="qual-improve"></textarea>
+    </div>
+  </div>
+  <div class="text-block" style="margin-top:12px;">
+    <div class="text-block-label">🔁 أنماط متكررة في مشاكل الجودة</div>
+    <textarea placeholder="هل هناك مشكلة جودة تتكرر عبر فرق أو مشاريع متعددة؟" id="qual-patterns"></textarea>
+  </div>
+
+  <!-- SECTION 6: المخاطر -->
+  <div class="section-title">🚨 المخاطر <span class="section-badge badge-optional">اختياري</span></div>
+  <div id="risksContainer"></div>
+  <button class="add-row-btn" style="background:#FEF2F2;border-color:var(--red);color:var(--red);" onclick="addRisk()">＋ إضافة خطر</button>
+
+  <!-- SECTION 7: القرارات والتوجيهات -->
+  <div class="section-title" style="margin-top:24px;">⚡ القرارات المطلوبة من الإدارة <span class="section-badge badge-optional">اختياري</span></div>
+  <div class="text-block">
+    <div class="text-block-label">📢 قرارات أو توجيهات تحتاجها من إبراهيم</div>
+    <textarea placeholder="ما القرارات أو التوجيهات التي تحتاجها من الإدارة هذا الأسبوع؟" id="decisions"></textarea>
+  </div>
+
+  <!-- SECTION 8: ملاحظات ختامية -->
+  <div class="section-title">💬 ملاحظات ختامية</div>
+  <div class="text-block">
+    <div class="text-block-label">🗒️ أي ملاحظات أو تعليقات إضافية</div>
+    <textarea placeholder="أي شيء آخر تودي إيصاله لإبراهيم أو للفريق هذا الأسبوع…" id="notes"></textarea>
+  </div>
+
+  <!-- Submit Bar -->
+  <div class="submit-bar">
+    <div class="submit-bar-info" id="saveInfo">آخر حفظ: ٤:٢٩:٥٨ م</div>
+    <div class="submit-bar-btns">
+      <button class="btn-secondary" onclick="clearForm()">🗑️ مسح الكل</button>
+      <button class="btn-secondary" onclick="switchPage(&#39;dashboard&#39;, document.querySelectorAll(&#39;.mode-tab&#39;)[1])">📊 عرض Dashboard</button>
+      <button class="btn-primary" onclick="saveReport()">💾 حفظ التقرير</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- DASHBOARD PAGE -->
+<!-- ============================================================ -->
+<div class="page" id="page-dashboard">
+
+  <!-- KPI Strip -->
+  <div class="summary-strip" id="dash-kpi-strip"><div class="stat-card">
+      <div class="stat-icon si-green">📈</div>
+      <div><div class="stat-num">—</div><div class="stat-label">% الالتزام بالخطة</div></div>
+    </div><div class="stat-card">
+      <div class="stat-icon si-navy">⭐</div>
+      <div><div class="stat-num">—</div><div class="stat-label">جودة المخرجات</div></div>
+    </div><div class="stat-card">
+      <div class="stat-icon si-green">📈</div>
+      <div><div class="stat-num">—</div><div class="stat-label">رضا العملاء</div></div>
+    </div><div class="stat-card">
+      <div class="stat-icon si-red">🔴</div>
+      <div><div class="stat-num">—</div><div class="stat-label">مشاريع حمراء</div></div>
+    </div><div class="stat-card">
+      <div class="stat-icon si-green">📈</div>
+      <div><div class="stat-num">—</div><div class="stat-label">مهام في الموعد</div></div>
+    </div></div>
+
+  <div class="dash-grid">
+
+    <!-- Card 1: Projects Status Bars -->
+    <div class="dash-card">
+      <div class="dash-card-title">🗂️ حالة المشاريع</div>
+      <div id="dash-projects"><div style="color:var(--gray-light);font-size:13px;text-align:center;padding:20px 0;">لا مشاريع مسجّلة بعد</div></div>
+    </div>
+
+    <!-- Card 2: Quality Donut -->
+    <div class="dash-card">
+      <div class="dash-card-title">📊 توزيع حالات المشاريع</div>
+      <div class="donut-wrap" id="dash-donut">
+        <svg class="donut-svg" width="120" height="120" viewBox="0 0 120 120" id="donutSvg"><circle cx="60" cy="60" r="50" fill="none" stroke="#E5E7EB" stroke-width="18"></circle>
+      <text x="60" y="65" text-anchor="middle" font-family="Cairo" font-size="13" fill="#9CA3AF">لا بيانات</text></svg>
+        <div class="donut-legend" id="donutLegend"><div style="color:var(--gray-light);font-size:12px;">أدخل بيانات المشاريع أولاً</div></div>
+      </div>
+    </div>
+
+    <!-- Card 3: KPI Bars -->
+    <div class="dash-card">
+      <div class="dash-card-title">📈 مؤشرات الجودة والأداء</div>
+      <div id="dash-kpi-bars"><div style="color:var(--gray-light);font-size:13px;text-align:center;padding:20px 0;">أدخل المؤشرات في Template أولاً</div></div>
+    </div>
+
+    <!-- Card 4: Risks -->
+    <div class="dash-card">
+      <div class="dash-card-title">🚨 المخاطر المفتوحة</div>
+      <div id="dash-risks"><div style="color:var(--gray-light);font-size:13px;text-align:center;padding:20px 0;">✅ لا مخاطر مسجّلة</div></div>
+    </div>
+
+    <!-- Card 5: Heatmap per team -->
+    <div class="dash-card" style="grid-column: span 2;">
+      <div class="dash-card-title">🔥 خريطة الأداء بالفريق</div>
+      <div class="heatmap-grid" id="heatmapGrid"><div class="hm-label"></div><div class="hm-col-label">الخطة</div><div class="hm-col-label">الجودة</div><div class="hm-col-label">المواعيد</div><div class="hm-col-label">العميل</div><div class="hm-col-label">المخاطر</div><div class="hm-label">Pod 1</div><div class="hm-cell hm-4">🟧</div><div class="hm-cell hm-2">🟩</div><div class="hm-cell hm-1">🟩</div><div class="hm-cell hm-2">🟩</div><div class="hm-cell hm-3">🟨</div><div class="hm-label">Pod 2</div><div class="hm-cell hm-4">🟧</div><div class="hm-cell hm-3">🟨</div><div class="hm-cell hm-1">🟩</div><div class="hm-cell hm-3">🟨</div><div class="hm-cell hm-2">🟩</div><div class="hm-label">SEO</div><div class="hm-cell hm-2">🟩</div><div class="hm-cell hm-3">🟨</div><div class="hm-cell hm-4">🟧</div><div class="hm-cell hm-1">🟩</div><div class="hm-cell hm-2">🟩</div><div class="hm-label">Web</div><div class="hm-cell hm-2">🟩</div><div class="hm-cell hm-3">🟨</div><div class="hm-cell hm-1">🟩</div><div class="hm-cell hm-1">🟩</div><div class="hm-cell hm-1">🟩</div><div class="hm-label">Account</div><div class="hm-cell hm-1">🟩</div><div class="hm-cell hm-3">🟨</div><div class="hm-cell hm-3">🟨</div><div class="hm-cell hm-2">🟩</div><div class="hm-cell hm-2">🟩</div></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;font-size:11px;color:var(--gray-light);">
+        <span>🟩 ممتاز</span><span>🟨 جيد</span><span>🟧 يحتاج تحسين</span><span>🟥 مشكلة</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Planning & Notes summary -->
+  <div class="dash-grid" style="margin-top:18px;">
+    <div class="dash-card">
+      <div class="dash-card-title">📋 خطة الأسبوع القادم</div>
+      <div id="dash-plan-next" style="font-size:13.5px;color:var(--gray);line-height:1.7;white-space:pre-wrap;">—</div>
+    </div>
+    <div class="dash-card">
+      <div class="dash-card-title">💬 ملاحظات ختامية</div>
+      <div id="dash-notes" style="font-size:13.5px;color:var(--gray);line-height:1.7;white-space:pre-wrap;">—</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">✅ تم حفظ التقرير بنجاح</div>
+
+<script>
+// ===== INIT =====
+let projectRows = [];
+let riskRows = [];
+
+function init() {
+  // Set dates
+  const today = new Date();
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - today.getDay() + 1);
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+
+  document.getElementById('weekFrom').value = monday.toISOString().split('T')[0];
+  document.getElementById('weekTo').value = sunday.toISOString().split('T')[0];
+  document.getElementById('reportDate').value = today.toISOString().split('T')[0];
+  updateWeekBadge();
+
+  // Add 3 default project rows
+  addProjRow('Social Pod 1', 'Pod 1');
+  addProjRow('Social Pod 2', 'Pod 2');
+  addProjRow('', 'SEO Team');
+
+  renderHeatmap();
+  refreshDash();
+}
+
+function updateWeekBadge() {
+  const from = document.getElementById('weekFrom').value;
+  const to = document.getElementById('weekTo').value;
+  if (from && to) {
+    const f = new Date(from).toLocaleDateString('ar-SA', {day:'numeric',month:'short'});
+    const t = new Date(to).toLocaleDateString('ar-SA', {day:'numeric',month:'short'});
+    document.getElementById('weekBadge').textContent = `${f} — ${t}`;
+  }
+}
+
+// ===== PROJECT ROWS =====
+const TEAMS = ['Pod 1','Pod 2','SEO Team','Web Team','Account Management','Finance','HR','أخرى'];
+const STATUS_OPTS = ['على الخطة 🟢','متأخر 🟡','تحت المراقبة 🔴'];
+
+function addProjRow(name='', team='Pod 1') {
+  const id = Date.now() + Math.random();
+  projectRows.push({id, name, team, pct:'', status:'على الخطة 🟢', note:''});
+  renderProjTable();
+}
+
+function renderProjTable() {
+  const tbody = document.getElementById('projBody');
+  tbody.innerHTML = projectRows.map((r,i) => `
+    <tr>
+      <td><input type="text" value="${r.name}" placeholder="اسم المشروع / العميل" oninput="updateRow(${i},'name',this.value)"></td>
+      <td>
+        <select onchange="updateRow(${i},'team',this.value)">
+          ${TEAMS.map(t=>`<option ${r.team===t?'selected':''}>${t}</option>`).join('')}
+        </select>
+      </td>
+      <td><input type="number" min="0" max="100" value="${r.pct}" placeholder="%" style="width:70px;" oninput="updateRow(${i},'pct',this.value);refreshDash()"></td>
+      <td>
+        <select onchange="updateRow(${i},'status',this.value);refreshDash()">
+          ${STATUS_OPTS.map(s=>`<option ${r.status===s?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </td>
+      <td><input type="text" value="${r.note}" placeholder="ملاحظة مختصرة…" oninput="updateRow(${i},'note',this.value)"></td>
+      <td><button class="del-btn" onclick="delRow(${i})">✕</button></td>
+    </tr>
+  `).join('');
+  updateSummaryStrip();
+}
+
+function updateRow(i, key, val) { projectRows[i][key] = val; updateSummaryStrip(); }
+function delRow(i) { projectRows.splice(i,1); renderProjTable(); refreshDash(); }
+
+function updateSummaryStrip() {
+  const total = projectRows.length;
+  const ontrack = projectRows.filter(r => r.status.includes('🟢')).length;
+  const delayed = projectRows.filter(r => r.status.includes('🟡')).length;
+  const atrisk  = projectRows.filter(r => r.status.includes('🔴')).length;
+  document.getElementById('s-total').textContent = total || '—';
+  document.getElementById('s-ontrack').textContent = ontrack || '—';
+  document.getElementById('s-delayed').textContent = delayed || '—';
+  document.getElementById('s-atrisk').textContent = atrisk || '—';
+  document.getElementById('s-risks').textContent = riskRows.length || '—';
+}
+
+// ===== RISKS =====
+function addRisk() {
+  const id = Date.now();
+  riskRows.push({id, desc:'', owner:'', level:'متوسط'});
+  renderRisks();
+}
+
+function renderRisks() {
+  const c = document.getElementById('risksContainer');
+  if (!riskRows.length) { c.innerHTML = ''; updateSummaryStrip(); return; }
+  c.innerHTML = riskRows.map((r,i) => `
+    <div class="risk-item">
+      <div class="field-group">
+        <div class="field-label">وصف الخطر</div>
+        <input class="field-input" type="text" value="${r.desc}" placeholder="اكتبي الخطر…" oninput="updateRisk(${i},'desc',this.value)" style="font-size:13px;padding:7px 10px;">
+      </div>
+      <div class="field-group">
+        <div class="field-label">الجهة المعنية</div>
+        <select class="field-select" onchange="updateRisk(${i},'owner',this.value)" style="font-size:13px;padding:7px 10px;">
+          ${['Pod 1','Pod 2','SEO Team','Web Team','Account','Finance','HR','الكل'].map(t=>`<option ${r.owner===t?'selected':''}>${t}</option>`).join('')}
+        </select>
+      </div>
+      <div class="field-group">
+        <div class="field-label">مستوى الخطورة</div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <select class="field-select" onchange="updateRisk(${i},'level',this.value);refreshDash()" style="font-size:13px;padding:7px 10px;">
+            ${['منخفض','متوسط','مرتفع','حرج'].map(l=>`<option ${r.level===l?'selected':''}>${l}</option>`).join('')}
+          </select>
+          <button class="del-btn" onclick="delRisk(${i})">✕</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+  updateSummaryStrip();
+}
+
+function updateRisk(i, key, val) { riskRows[i][key] = val; }
+function delRisk(i) { riskRows.splice(i,1); renderRisks(); refreshDash(); }
+
+// ===== HEATMAP =====
+function renderHeatmap() {
+  const teams = ['Pod 1','Pod 2','SEO','Web','Account'];
+  const metrics = ['الخطة','الجودة','المواعيد','العميل','المخاطر'];
+  const g = document.getElementById('heatmapGrid');
+  let html = '<div class="hm-label"></div>' + metrics.map(m=>`<div class="hm-col-label">${m}</div>`).join('');
+  teams.forEach(team => {
+    html += `<div class="hm-label">${team}</div>`;
+    for (let m=0;m<5;m++) {
+      const val = Math.floor(Math.random()*4)+1; // placeholder; in production link to form data
+      const cls = val<=1?'hm-1':val===2?'hm-2':val===3?'hm-3':val===4?'hm-4':'hm-5';
+      const emoji = val<=1?'🟩':val===2?'🟩':val===3?'🟨':val===4?'🟧':'🟥';
+      html += `<div class="hm-cell ${cls}">${emoji}</div>`;
+    }
+  });
+  g.innerHTML = html;
+}
+
+// ===== DASHBOARD REFRESH =====
+function refreshDash() {
+  // KPI strip
+  const kpis = [
+    {id:'kpi-commitment', label:'% الالتزام بالخطة', unit:'%', color:'green'},
+    {id:'kpi-quality', label:'جودة المخرجات', unit:'/10', color:'navy'},
+    {id:'kpi-satisfaction', label:'رضا العملاء', unit:'/10', color:'green'},
+    {id:'kpi-red', label:'مشاريع حمراء', unit:'', color:'red'},
+    {id:'kpi-ontime', label:'مهام في الموعد', unit:'', color:'green'},
+  ];
+  const strip = document.getElementById('dash-kpi-strip');
+  strip.innerHTML = kpis.map(k => {
+    const v = document.getElementById(k.id)?.value || '—';
+    const colorMap = {green:'si-green',navy:'si-navy',red:'si-red'};
+    const emojiMap = {green:'📈',navy:'⭐',red:'🔴'};
+    return `<div class="stat-card">
+      <div class="stat-icon ${colorMap[k.color]}">${emojiMap[k.color]}</div>
+      <div><div class="stat-num">${v}${v!=='—'?k.unit:''}</div><div class="stat-label">${k.label}</div></div>
+    </div>`;
+  }).join('');
+
+  // Projects status bars
+  const projDiv = document.getElementById('dash-projects');
+  if (!projectRows.length) {
+    projDiv.innerHTML = '<div style="color:var(--gray-light);font-size:13px;text-align:center;padding:20px 0;">لا مشاريع مسجّلة بعد</div>';
+  } else {
+    projDiv.innerHTML = projectRows.map(r => {
+      const pct = parseInt(r.pct)||0;
+      const fillCls = r.status.includes('🟢')?'fill-green':r.status.includes('🟡')?'fill-yellow':'fill-red';
+      const pillCls = r.status.includes('🟢')?'pill-green':r.status.includes('🟡')?'pill-yellow':'pill-red';
+      return `<div class="progress-item">
+        <div class="progress-label">
+          <span class="progress-name">${r.name||'(بدون اسم)'} <span style="font-size:11px;color:var(--gray-light);">${r.team}</span></span>
+          <span style="display:flex;align-items:center;gap:7px;">
+            <span class="status-pill ${pillCls}">${r.status}</span>
+            <span class="progress-val">${pct}%</span>
+          </span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill ${fillCls}" style="width:${pct}%"></div></div>
+        ${r.note?`<div style="font-size:11.5px;color:var(--gray-light);margin-top:3px;">📝 ${r.note}</div>`:''}
+      </div>`;
+    }).join('');
+  }
+
+  // Donut
+  const total = projectRows.length;
+  const ontrack = projectRows.filter(r=>r.status.includes('🟢')).length;
+  const delayed = projectRows.filter(r=>r.status.includes('🟡')).length;
+  const atrisk  = projectRows.filter(r=>r.status.includes('🔴')).length;
+  drawDonut([
+    {label:'على الخطة', val:ontrack, color:'#1A7A4A'},
+    {label:'متأخر', val:delayed, color:'#D97706'},
+    {label:'تحت المراقبة', val:atrisk, color:'#DC2626'},
+  ], total);
+
+  // KPI bars
+  const kpiBarData = [
+    {label:'الالتزام بالخطة', val:parseInt(document.getElementById('kpi-commitment')?.value)||0, max:100, unit:'%'},
+    {label:'جودة المخرجات', val:parseFloat(document.getElementById('kpi-quality')?.value)||0, max:10, unit:'/10'},
+    {label:'رضا العملاء', val:parseFloat(document.getElementById('kpi-satisfaction')?.value)||0, max:10, unit:'/10'},
+  ];
+  const kpiDiv = document.getElementById('dash-kpi-bars');
+  const anyVal = kpiBarData.some(k=>k.val>0);
+  if (!anyVal) {
+    kpiDiv.innerHTML = '<div style="color:var(--gray-light);font-size:13px;text-align:center;padding:20px 0;">أدخل المؤشرات في Template أولاً</div>';
+  } else {
+    kpiDiv.innerHTML = kpiBarData.map(k => {
+      const pct = k.max > 0 ? Math.min(100,(k.val/k.max)*100) : 0;
+      const fillCls = pct >= 70 ? 'fill-green' : pct >= 40 ? 'fill-yellow' : 'fill-red';
+      return `<div class="progress-item">
+        <div class="progress-label">
+          <span class="progress-name">${k.label}</span>
+          <span class="progress-val">${k.val}${k.unit}</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill ${fillCls}" style="width:${pct}%"></div></div>
+      </div>`;
+    }).join('');
+  }
+
+  // Risks table
+  const riskDiv = document.getElementById('dash-risks');
+  if (!riskRows.length) {
+    riskDiv.innerHTML = '<div style="color:var(--gray-light);font-size:13px;text-align:center;padding:20px 0;">✅ لا مخاطر مسجّلة</div>';
+  } else {
+    const lvlColor = {منخفض:'pill-navy',متوسط:'pill-yellow',مرتفع:'pill-red',حرج:'pill-red'};
+    riskDiv.innerHTML = `<table class="risk-table">
+      <thead><tr><th>الخطر</th><th>الجهة</th><th>الخطورة</th></tr></thead>
+      <tbody>
+        ${riskRows.map(r=>`<tr>
+          <td>${r.desc||'—'}</td>
+          <td>${r.owner||'—'}</td>
+          <td><span class="status-pill ${lvlColor[r.level]||'pill-navy'}">${r.level}</span></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+  }
+
+  // Plan next & notes
+  document.getElementById('dash-plan-next').textContent = document.getElementById('plan-next')?.value || '—';
+  document.getElementById('dash-notes').textContent = document.getElementById('notes')?.value || '—';
+}
+
+// ===== DONUT CHART =====
+function drawDonut(segments, total) {
+  const r = 50; const cx = 60; const cy = 60;
+  const circ = 2*Math.PI*r;
+  let offset = 0;
+  let paths = '';
+  const legend = document.getElementById('donutLegend');
+  legend.innerHTML = '';
+  if (!total) {
+    document.getElementById('donutSvg').innerHTML = `<circle cx="60" cy="60" r="50" fill="none" stroke="#E5E7EB" stroke-width="18"/>
+      <text x="60" y="65" text-anchor="middle" font-family="Cairo" font-size="13" fill="#9CA3AF">لا بيانات</text>`;
+    legend.innerHTML = '<div style="color:var(--gray-light);font-size:12px;">أدخل بيانات المشاريع أولاً</div>';
+    return;
+  }
+  segments.forEach(seg => {
+    const pct = seg.val/total;
+    const dash = pct * circ;
+    const gap  = circ - dash;
+    paths += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${seg.color}" stroke-width="18"
+      stroke-dasharray="${dash} ${gap}" stroke-dashoffset="${-offset}" transform="rotate(-90 ${cx} ${cy})" opacity="${seg.val?1:0}"/>`;
+    offset += dash;
+    legend.innerHTML += `<div class="donut-leg-item">
+      <div class="donut-dot" style="background:${seg.color}"></div>
+      <span style="font-weight:700;color:var(--navy);">${seg.val}</span>
+      <span style="color:var(--gray-light);">${seg.label}</span>
+    </div>`;
+  });
+  const pctGreen = total ? Math.round((segments[0].val/total)*100) : 0;
+  document.getElementById('donutSvg').innerHTML = paths +
+    `<text x="60" y="57" text-anchor="middle" font-family="Cairo" font-size="16" font-weight="900" fill="${segments[0].color}">${pctGreen}%</text>
+     <text x="60" y="72" text-anchor="middle" font-family="Cairo" font-size="10" fill="#9CA3AF">على الخطة</text>`;
+}
+
+// ===== PAGE SWITCH =====
+function switchPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.mode-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'dashboard') { refreshDash(); renderHeatmap(); }
+}
+
+// ===== SAVE =====
+function saveReport() {
+  const data = {
+    weekFrom: document.getElementById('weekFrom').value,
+    weekTo: document.getElementById('weekTo').value,
+    kpis: {
+      commitment: document.getElementById('kpi-commitment').value,
+      quality: document.getElementById('kpi-quality').value,
+      satisfaction: document.getElementById('kpi-satisfaction').value,
+      red: document.getElementById('kpi-red').value,
+      ontime: document.getElementById('kpi-ontime').value,
+      detection: document.getElementById('kpi-detection').value,
+    },
+    projects: projectRows,
+    risks: riskRows,
+    planDone: document.getElementById('plan-done').value,
+    planNext: document.getElementById('plan-next').value,
+    qualityUpdate: document.getElementById('plan-quality-update').value,
+    qualBest: document.getElementById('qual-best').value,
+    qualImprove: document.getElementById('qual-improve').value,
+    qualPatterns: document.getElementById('qual-patterns').value,
+    decisions: document.getElementById('decisions').value,
+    notes: document.getElementById('notes').value,
+  };
+  localStorage.setItem('narmeen-report-latest', JSON.stringify(data));
+  const now = new Date().toLocaleTimeString('ar-SA');
+  document.getElementById('saveInfo').textContent = `آخر حفظ: ${now}`;
+  showToast('✅ تم حفظ التقرير بنجاح');
+}
+
+function clearForm() {
+  if (!confirm('هل أنت متأكدة من مسح جميع البيانات؟')) return;
+  projectRows = []; riskRows = [];
+  renderProjTable(); renderRisks();
+  ['kpi-commitment','kpi-red','kpi-quality','kpi-detection','kpi-satisfaction','kpi-ontime',
+   'plan-done','plan-next','plan-quality-update','qual-best','qual-improve','qual-patterns','decisions','notes']
+    .forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  refreshDash();
+  showToast('🗑️ تم مسح البيانات');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// Auto-save every 60s
+setInterval(() => {
+  const from = document.getElementById('weekFrom')?.value;
+  if (from) saveReport();
+}, 60000);
+
+// ===== START =====
+init();
+</script>
+
+
+</body></html>

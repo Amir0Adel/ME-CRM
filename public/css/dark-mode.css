@@ -1,0 +1,636 @@
+/* ──────────────────────────────────────────────────────────────────────────
+   Dark Mode Override — تُطبَّق عبر [data-theme="dark"] على html
+   تستخدم specificity أعلى من :root لتجاوز المتغيرات الأصلية
+   ────────────────────────────────────────────────────────────────────────── */
+
+html[data-theme="dark"] {
+  --navy: #f1f5f9;
+  --navy-light: #cbd5e1;
+  --orange: #FF6B2B;
+  --orange-soft: rgba(255,107,43,0.18);
+  --bg: #0f172a;
+  --white: #1e293b;
+  --gray: #cbd5e1;
+  --gray-light: #64748b;
+  --border: #334155;
+  --green: #22c55e;
+  --green-soft: rgba(34,197,94,0.18);
+  --yellow: #eab308;
+  --yellow-soft: rgba(234,179,8,0.18);
+  --red: #ef4444;
+  --red-soft: rgba(239,68,68,0.18);
+  --shadow: 0 2px 8px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+html[data-theme="dark"] body { background: var(--bg) !important; color: var(--gray) !important; }
+
+/* Override hard-coded colors في الصفحات */
+html[data-theme="dark"] .header,
+html[data-theme="dark"] .topbar,
+html[data-theme="dark"] .meta-card,
+html[data-theme="dark"] .section-card,
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .table-card,
+html[data-theme="dark"] .stat-card,
+html[data-theme="dark"] .modal,
+html[data-theme="dark"] .hero-card,
+html[data-theme="dark"] .feedback-card,
+html[data-theme="dark"] .week-strip,
+html[data-theme="dark"] .rv-sidebar,
+html[data-theme="dark"] .wiz-stepper,
+html[data-theme="dark"] .wiz-section-card,
+html[data-theme="dark"] .rs,
+html[data-theme="dark"] .sidebar-brand,
+html[data-theme="dark"] .new-report-btn { background: var(--white) !important; color: var(--gray) !important; }
+
+html[data-theme="dark"] .sidebar { background: #020617 !important; }
+html[data-theme="dark"] .topbar  { background: #020617 !important; }
+html[data-theme="dark"] .header  { background: var(--white) !important; }
+
+html[data-theme="dark"] .rh,
+html[data-theme="dark"] .rv-header,
+html[data-theme="dark"] .section-head { background: var(--navy-light) !important; color: var(--bg) !important; }
+
+html[data-theme="dark"] th { background: #1e293b !important; color: var(--gray) !important; }
+html[data-theme="dark"] td { border-bottom-color: var(--border) !important; }
+html[data-theme="dark"] tr:hover td { background: rgba(255,107,43,0.08) !important; }
+
+html[data-theme="dark"] input,
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] select { background: #0f172a !important; border-color: var(--border) !important; color: var(--gray) !important; }
+html[data-theme="dark"] input:focus,
+html[data-theme="dark"] textarea:focus,
+html[data-theme="dark"] select:focus { background: #1e293b !important; border-color: var(--orange) !important; }
+
+html[data-theme="dark"] .btn-ghost,
+html[data-theme="dark"] .btn-save { background: #334155 !important; color: var(--gray) !important; border-color: var(--border) !important; }
+html[data-theme="dark"] .stat-card .num,
+html[data-theme="dark"] .htitle,
+html[data-theme="dark"] .topbar h1,
+html[data-theme="dark"] h1, html[data-theme="dark"] h2, html[data-theme="dark"] h3, html[data-theme="dark"] h4 { color: var(--gray) !important; }
+html[data-theme="dark"] .topbar h1 { color: var(--gray) !important; }
+html[data-theme="dark"] .field-input,
+html[data-theme="dark"] .tx-area,
+html[data-theme="dark"] .list-in,
+html[data-theme="dark"] .tbl-in { background: #0f172a !important; color: var(--gray) !important; }
+html[data-theme="dark"] .tbl-in-h { background: #1e293b !important; color: var(--gray) !important; border-color: var(--orange) !important; }
+
+/* Score / status cells */
+html[data-theme="dark"] .score-cell,
+html[data-theme="dark"] .metric-ec,
+html[data-theme="dark"] .mc { background: #0f172a !important; }
+html[data-theme="dark"] .mv { color: var(--gray) !important; }
+
+/* Sidebar nav */
+html[data-theme="dark"] .nav-item:hover { background: rgba(255,255,255,0.05) !important; }
+
+/* New global topbar + side-nav dark mode */
+html[data-theme="dark"] .global-topbar { background: var(--white) !important; border-color: var(--border) !important; }
+html[data-theme="dark"] .side-nav { background: var(--white) !important; border-color: var(--border) !important; }
+html[data-theme="dark"] .main-content { background: var(--bg) !important; }
+html[data-theme="dark"] .kpi-card { background: var(--white) !important; }
+html[data-theme="dark"] .card-new { background: var(--white) !important; border-color: var(--border) !important; }
+html[data-theme="dark"] .nav-link:hover { background: rgba(255,107,43,0.08) !important; }
+html[data-theme="dark"] .nav-link.active { background: rgba(255,107,43,0.18) !important; }
+html[data-theme="dark"] .tb-ic-btn { background: #0f172a !important; }
+html[data-theme="dark"] .search-global-tb input { background: #0f172a !important; }
+
+/* Theme toggle button */
+.theme-toggle {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--white);
+  cursor: pointer;
+  font-size: 16px;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+  color: var(--gray);
+}
+.theme-toggle:hover { background: var(--orange-soft); border-color: var(--orange); }
+html[data-theme="dark"] .theme-toggle { background: #334155; }
+
+/* Daily Goal banner */
+.daily-goal {
+  background: linear-gradient(135deg, var(--orange) 0%, #ff8a55 100%);
+  color: white;
+  border-radius: 12px;
+  padding: 12px 18px;
+  margin-bottom: 14px;
+  display: flex; align-items: center; gap: 12px;
+  box-shadow: 0 4px 14px rgba(255,107,43,0.3);
+}
+.daily-goal .dg-icon { font-size: 20px; }
+.daily-goal .dg-text { flex: 1; font-size: 13px; font-weight: 700; }
+.daily-goal input { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; border-radius: 8px; padding: 6px 10px; font-family: 'Cairo', sans-serif; font-size: 12px; outline: none; }
+.daily-goal input::placeholder { color: rgba(255,255,255,0.7); }
+.daily-goal button { background: white; color: var(--orange); border: none; border-radius: 8px; padding: 6px 14px; font-family: 'Cairo', sans-serif; font-weight: 800; cursor: pointer; font-size: 12px; }
+.daily-goal .dg-close { background: transparent; color: white; padding: 4px 8px; }
+
+/* Notification permission banner */
+.notif-banner {
+  background: var(--navy);
+  color: white;
+  padding: 10px 16px;
+  border-radius: 10px;
+  margin-bottom: 14px;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 12px;
+}
+.notif-banner button { background: var(--orange); color: white; border: none; padding: 6px 14px; border-radius: 7px; font-family: 'Cairo', sans-serif; font-weight: 700; cursor: pointer; font-size: 11px; margin-right: auto; }
+.notif-banner .close { background: transparent; padding: 4px 8px; }
+
+/* Heatmap */
+.heatmap-grid { display: grid; gap: 2px; padding: 12px; background: var(--white); border-radius: 10px; }
+.heatmap-row { display: grid; grid-template-columns: 140px repeat(12, 1fr); gap: 2px; align-items: center; }
+.heatmap-cell { aspect-ratio: 1; border-radius: 4px; font-size: 9px; font-weight: 800; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.15s; }
+.heatmap-cell:hover { transform: scale(1.15); z-index: 2; }
+.heatmap-team-name { font-size: 11px; font-weight: 700; color: var(--navy); padding-left: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.heatmap-week-label { font-size: 9px; font-weight: 700; color: var(--gray-light); text-align: center; }
+.heatmap-legend { display: flex; align-items: center; gap: 8px; padding: 8px 12px; font-size: 11px; color: var(--gray-light); }
+.heatmap-legend-cell { width: 14px; height: 14px; border-radius: 3px; }
+
+/* AI Alerts */
+.alert-card { padding: 12px 14px; margin-bottom: 8px; border-radius: 10px; border-right: 3px solid; display: flex; gap: 10px; align-items: flex-start; }
+.alert-card.warning { background: var(--yellow-soft); border-color: var(--yellow); }
+.alert-card.danger  { background: var(--red-soft);    border-color: var(--red); }
+.alert-card.info    { background: var(--orange-soft); border-color: var(--orange); }
+.alert-card .ai-icon-pill { font-size: 18px; flex-shrink: 0; }
+.alert-card .ai-content { flex: 1; }
+.alert-card .ai-title { font-size: 12px; font-weight: 800; color: var(--navy); margin-bottom: 2px; }
+.alert-card .ai-desc  { font-size: 11px; color: var(--gray); line-height: 1.6; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   DARK MODE — extra overrides for newer UI sections
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* Brand logo on dark — wrap in light box so it stays readable */
+html[data-theme="dark"] .brand-logo {
+  background: rgba(255,255,255,0.92);
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+/* ── Recent reports rich cards (admin dashboard) ──────────────────── */
+html[data-theme="dark"] .report-card-rich {
+  background: var(--white) !important;
+  border-color: var(--border) !important;
+}
+html[data-theme="dark"] .report-card-rich:hover { border-color: var(--orange) !important; }
+html[data-theme="dark"] .report-card-rich.is-master {
+  background: linear-gradient(to left, rgba(255,107,43,0.10), var(--white)) !important;
+  border-color: var(--orange) !important;
+}
+html[data-theme="dark"] .rc-name { color: var(--gray) !important; }
+html[data-theme="dark"] .rc-name .rc-week,
+html[data-theme="dark"] .rc-meta-item strong { color: var(--gray) !important; }
+html[data-theme="dark"] .rc-completion-bar { background: #0f172a !important; }
+
+/* ── Admin stats: compare forms ────────────────────────────────────── */
+html[data-theme="dark"] .compare-section { background: var(--white) !important; }
+html[data-theme="dark"] .filter-group label { color: var(--gray) !important; }
+html[data-theme="dark"] .filter-group select,
+html[data-theme="dark"] .filter-group input[type="date"],
+html[data-theme="dark"] .filter-group input[type="text"] {
+  background: #0f172a !important;
+  color: var(--gray) !important;
+  border-color: var(--border) !important;
+}
+html[data-theme="dark"] .filter-group select:focus,
+html[data-theme="dark"] .filter-group input[type="date"]:focus {
+  background: #1e293b !important;
+  border-color: var(--orange) !important;
+}
+html[data-theme="dark"] .compare-divider { color: var(--gray-light) !important; }
+html[data-theme="dark"] .compare-divider::before,
+html[data-theme="dark"] .compare-divider::after { background: var(--border) !important; }
+html[data-theme="dark"] .compare-result table { border-color: var(--border) !important; }
+html[data-theme="dark"] .compare-result th { background: var(--navy-light) !important; color: var(--bg) !important; }
+html[data-theme="dark"] .compare-result td { border-color: var(--border) !important; }
+html[data-theme="dark"] .team-checks {
+  background: #0f172a !important;
+  border-color: var(--border) !important;
+}
+html[data-theme="dark"] .team-check-label {
+  background: var(--white) !important;
+  border-color: var(--border) !important;
+  color: var(--gray) !important;
+}
+html[data-theme="dark"] .team-check-label:hover,
+html[data-theme="dark"] .team-check-label:has(input:checked) {
+  background: rgba(255,107,43,0.18) !important;
+  border-color: var(--orange) !important;
+  color: var(--orange) !important;
+}
+
+/* ── Admin stats: heatmap & legacy bits ───────────────────────────── */
+html[data-theme="dark"] .heatmap-grid { background: var(--white) !important; }
+html[data-theme="dark"] .heatmap-team-name { color: var(--gray) !important; }
+html[data-theme="dark"] .heatmap-week-label { color: var(--gray-light) !important; }
+html[data-theme="dark"] .stat-card { background: var(--white) !important; border-color: var(--border) !important; }
+html[data-theme="dark"] .stat-card .num { color: var(--gray) !important; }
+html[data-theme="dark"] .stat-card .label { color: var(--gray-light) !important; }
+html[data-theme="dark"] .empty { color: var(--gray-light) !important; }
+html[data-theme="dark"] .late-row { background: rgba(239,68,68,0.12) !important; }
+html[data-theme="dark"] .late-row td { color: #fca5a5 !important; }
+
+/* ── Employee leader compare ──────────────────────────────────────── */
+html[data-theme="dark"] .lc-tab {
+  background: #0f172a !important;
+  border-color: var(--border) !important;
+  color: var(--gray-light) !important;
+}
+html[data-theme="dark"] .lc-tab.active {
+  background: var(--orange) !important;
+  border-color: var(--orange) !important;
+  color: #fff !important;
+}
+html[data-theme="dark"] .lc-filters { background: #0f172a !important; }
+html[data-theme="dark"] .lc-fg label { color: var(--gray) !important; }
+html[data-theme="dark"] .lc-fg select,
+html[data-theme="dark"] .lc-fg input[type="date"] {
+  background: var(--white) !important;
+  color: var(--gray) !important;
+  border-color: var(--border) !important;
+}
+html[data-theme="dark"] .lc-result table { border-color: var(--border) !important; }
+html[data-theme="dark"] .lc-result th { background: var(--navy-light) !important; color: var(--bg) !important; }
+html[data-theme="dark"] .lc-result td { border-color: var(--border) !important; }
+html[data-theme="dark"] .lc-empty { color: var(--gray-light) !important; }
+
+/* ── Admin reports table (new columns) ────────────────────────────── */
+html[data-theme="dark"] .tag {
+  background: #0f172a !important;
+  color: var(--gray) !important;
+  border-color: var(--border) !important;
+}
+
+/* ── Admin Org page — full coverage ───────────────────────────────── */
+html[data-theme="dark"] .org-wrap { color: var(--gray); }
+html[data-theme="dark"] .org-hero {
+  background: linear-gradient(135deg, #020617 0%, #0f172a 60%, #1e293b 100%) !important;
+}
+html[data-theme="dark"] .summary-card {
+  background: var(--white) !important;
+  border-color: var(--border) !important;
+}
+html[data-theme="dark"] .summary-icon { background: rgba(255,107,43,0.16) !important; }
+html[data-theme="dark"] .summary-num { color: var(--gray) !important; }
+html[data-theme="dark"] .summary-label { color: var(--gray-light) !important; }
+html[data-theme="dark"] .search-wrap input {
+  background: #0f172a !important;
+  color: var(--gray) !important;
+  border-color: var(--border) !important;
+}
+html[data-theme="dark"] .filter-btn {
+  background: var(--white) !important;
+  border-color: var(--border) !important;
+  color: var(--gray) !important;
+}
+html[data-theme="dark"] .filter-btn:hover {
+  border-color: var(--orange) !important;
+  color: var(--orange) !important;
+}
+html[data-theme="dark"] .filter-btn.active {
+  background: var(--orange) !important;
+  border-color: var(--orange) !important;
+  color: #fff !important;
+}
+html[data-theme="dark"] .legend {
+  background: var(--white) !important;
+  border-color: var(--border) !important;
+}
+html[data-theme="dark"] .legend-item { color: var(--gray) !important; }
+
+/* Tier label */
+html[data-theme="dark"] .tier-text { color: var(--gray-light) !important; }
+html[data-theme="dark"] .tier-line { background: linear-gradient(to left, var(--border), transparent) !important; }
+
+/* Exec/CEO cards */
+html[data-theme="dark"] .exec-card,
+html[data-theme="dark"] .gm-bridge,
+html[data-theme="dark"] .person-card,
+html[data-theme="dark"] .team-card {
+  background: var(--white) !important;
+  border-color: var(--border) !important;
+}
+html[data-theme="dark"] .exec-card.ceo,
+html[data-theme="dark"] .person-card.lead,
+html[data-theme="dark"] .person-card.lead-green,
+html[data-theme="dark"] .person-card.standalone {
+  background: linear-gradient(135deg, var(--white), #0f172a 220%) !important;
+}
+html[data-theme="dark"] .gm-bridge {
+  background: linear-gradient(135deg, var(--white), #0f172a 200%) !important;
+  border-color: var(--orange) !important;
+}
+html[data-theme="dark"] .exec-name,
+html[data-theme="dark"] .gm-name,
+html[data-theme="dark"] .p-name,
+html[data-theme="dark"] .team-name { color: var(--gray) !important; }
+html[data-theme="dark"] .exec-desc,
+html[data-theme="dark"] .gm-sub,
+html[data-theme="dark"] .p-desc,
+html[data-theme="dark"] .p-locked,
+html[data-theme="dark"] .track-desc { color: var(--gray-light) !important; }
+
+/* GM track pills */
+html[data-theme="dark"] .gm-track-pill.direct {
+  background: rgba(99,102,241,0.16) !important;
+  border-color: rgba(99,102,241,0.45) !important;
+  color: #c7d2fe !important;
+}
+html[data-theme="dark"] .gm-track-pill.indirect {
+  background: rgba(34,197,94,0.14) !important;
+  border-color: rgba(34,197,94,0.45) !important;
+  color: #86efac !important;
+}
+
+/* Track sections */
+html[data-theme="dark"] .track-section {
+  background: var(--white) !important;
+  border-color: var(--border) !important;
+}
+html[data-theme="dark"] .track-section.growth { border-top-color: #818cf8 !important; }
+html[data-theme="dark"] .track-section.exec   { border-top-color: var(--green) !important; }
+html[data-theme="dark"] .track-header { border-bottom-color: var(--border) !important; }
+html[data-theme="dark"] .track-section.growth .track-icon-big {
+  background: linear-gradient(135deg, #4f46e5, #6366f1) !important;
+}
+html[data-theme="dark"] .track-section.exec .track-icon-big {
+  background: linear-gradient(135deg, #15803d, #22c55e) !important;
+}
+html[data-theme="dark"] .track-label-ar { color: var(--gray) !important; }
+html[data-theme="dark"] .track-section.growth .track-label-en { color: #c7d2fe !important; }
+html[data-theme="dark"] .track-section.exec .track-label-en   { color: #86efac !important; }
+
+/* Hierarchy connectors */
+html[data-theme="dark"] .children-block::before,
+html[data-theme="dark"] .children-block > *::before { background: var(--border) !important; }
+html[data-theme="dark"] .connector-down::before {
+  background: linear-gradient(to bottom, var(--gray-light) 0%, var(--border) 100%) !important;
+}
+html[data-theme="dark"] .connector-down::after { background: var(--gray-light) !important; }
+
+/* Sub divider */
+html[data-theme="dark"] .sub-divider .ln { background: var(--border) !important; }
+html[data-theme="dark"] .sub-divider .lbl {
+  background: rgba(34,197,94,0.16) !important;
+  color: #86efac !important;
+}
+
+/* Member chips */
+html[data-theme="dark"] .member-chip {
+  background: #0f172a !important;
+  color: var(--gray) !important;
+  border-color: var(--border) !important;
+}
+html[data-theme="dark"] .member-chip.shared-orange {
+  background: rgba(255,107,43,0.16) !important;
+  color: #fdba74 !important;
+  border-color: rgba(255,107,43,0.45) !important;
+}
+html[data-theme="dark"] .member-chip.shared-green {
+  background: rgba(34,197,94,0.16) !important;
+  color: #86efac !important;
+  border-color: rgba(34,197,94,0.45) !important;
+}
+
+/* Team avatar pill */
+html[data-theme="dark"] .team-avatar {
+  background: rgba(34,197,94,0.16) !important;
+  color: #86efac !important;
+}
+html[data-theme="dark"] .team-tag {
+  background: rgba(34,197,94,0.16) !important;
+  color: #86efac !important;
+}
+
+/* Shared note */
+html[data-theme="dark"] .shared-note {
+  background: rgba(255,107,43,0.10) !important;
+  border-color: rgba(255,107,43,0.45) !important;
+  color: var(--gray-light) !important;
+}
+html[data-theme="dark"] .shared-note strong { color: var(--gray) !important; }
+
+/* Role badges (keep white text on colored bg readable) */
+html[data-theme="dark"] .badge-growth {
+  background: rgba(99,102,241,0.18) !important;
+  color: #c7d2fe !important;
+}
+html[data-theme="dark"] .badge-exec {
+  background: rgba(34,197,94,0.16) !important;
+  color: #86efac !important;
+}
+html[data-theme="dark"] .badge-sales {
+  background: rgba(245,158,11,0.16) !important;
+  color: #fcd34d !important;
+}
+html[data-theme="dark"] .badge-media {
+  background: rgba(168,85,247,0.18) !important;
+  color: #d8b4fe !important;
+}
+html[data-theme="dark"] .badge-assist {
+  background: rgba(255,107,43,0.18) !important;
+  color: #fdba74 !important;
+}
+
+/* Side panel */
+html[data-theme="dark"] .side-panel { background: var(--white) !important; }
+html[data-theme="dark"] .panel-list li {
+  background: #0f172a !important;
+  color: var(--gray) !important;
+}
+html[data-theme="dark"] .relations-box {
+  background: rgba(255,107,43,0.10) !important;
+  border-color: rgba(255,107,43,0.4) !important;
+  color: var(--gray) !important;
+}
+html[data-theme="dark"] .panel-section-title { color: var(--gray-light) !important; }
+html[data-theme="dark"] .panel-section-title::after { background: var(--border) !important; }
+html[data-theme="dark"] .panel-desc { color: var(--gray) !important; }
+
+/* ── Common topbar buttons (text on dark) ─────────────────────────── */
+html[data-theme="dark"] .global-topbar a,
+html[data-theme="dark"] .tb-ic-btn {
+  color: var(--gray) !important;
+}
+html[data-theme="dark"] .tb-ic-btn:hover { background: rgba(255,107,43,0.12) !important; }
+
+/* ── Greeting bar / week pill / KPI cards ─────────────────────────── */
+html[data-theme="dark"] .greeting-bar { background: var(--white) !important; border-color: var(--border) !important; }
+html[data-theme="dark"] .greet-title { color: var(--gray) !important; }
+html[data-theme="dark"] .greet-sub { color: var(--gray-light) !important; }
+html[data-theme="dark"] .week-pill { background: rgba(255,107,43,0.16) !important; color: #fdba74 !important; }
+html[data-theme="dark"] .kpi-label { color: var(--gray-light) !important; }
+html[data-theme="dark"] .kpi-num { color: var(--gray) !important; }
+html[data-theme="dark"] .kpi-trend { color: var(--gray-light) !important; }
+
+/* ── Tables ───────────────────────────────────────────────────────── */
+html[data-theme="dark"] table { color: var(--gray) !important; }
+html[data-theme="dark"] .table-card { background: var(--white) !important; border-color: var(--border) !important; }
+html[data-theme="dark"] .table-header { border-color: var(--border) !important; }
+html[data-theme="dark"] .table-header h3 { color: var(--gray) !important; }
+
+/* ── Status rows (team progress) ──────────────────────────────────── */
+html[data-theme="dark"] .status-row { border-color: var(--border) !important; }
+html[data-theme="dark"] .status-name { color: var(--gray) !important; }
+html[data-theme="dark"] .status-bar { background: #0f172a !important; }
+html[data-theme="dark"] .status-pct { color: var(--gray) !important; }
+
+/* ── Modals ───────────────────────────────────────────────────────── */
+html[data-theme="dark"] .modal { background: var(--white) !important; }
+html[data-theme="dark"] .modal-head { border-color: var(--border) !important; }
+html[data-theme="dark"] .modal-foot { border-color: var(--border) !important; }
+html[data-theme="dark"] .form-group label { color: var(--gray) !important; }
+
+/* ── Hero card (employee) ─────────────────────────────────────────── */
+html[data-theme="dark"] .hero-card {
+  background: linear-gradient(135deg, var(--white), #0f172a 220%) !important;
+  border-color: var(--border) !important;
+}
+html[data-theme="dark"] .hero-greet { color: var(--gray-light) !important; }
+html[data-theme="dark"] .hero-title { color: var(--gray) !important; }
+html[data-theme="dark"] .hero-sub { color: var(--gray-light) !important; }
+html[data-theme="dark"] .prog-bar { background: #0f172a !important; }
+html[data-theme="dark"] .prog-label { color: var(--gray-light) !important; }
+html[data-theme="dark"] .prog-value { color: var(--gray) !important; }
+
+/* ── Week strip ───────────────────────────────────────────────────── */
+html[data-theme="dark"] .ws-day {
+  background: var(--white) !important;
+  border-color: var(--border) !important;
+  color: var(--gray) !important;
+}
+
+/* ── Cards / panels generic ───────────────────────────────────────── */
+html[data-theme="dark"] .card-head { border-color: var(--border) !important; }
+html[data-theme="dark"] .card-head h3 { color: var(--gray) !important; }
+html[data-theme="dark"] .panel-title { color: var(--gray) !important; }
+
+/* Tag pill */
+html[data-theme="dark"] .badge-navy { background: var(--navy-light) !important; color: var(--bg) !important; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   DARK MODE — primary buttons & hard-coded colors that broke
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* Primary button (uses var(--navy) bg + #fff text → invisible in dark) */
+html[data-theme="dark"] .btn-primary {
+  background: var(--orange) !important;
+  color: #fff !important;
+}
+html[data-theme="dark"] .btn-primary:hover { background: #e85a1c !important; }
+
+/* Ghost button — was bg:var(--bg) → invisible on the same dark bg */
+html[data-theme="dark"] .btn-ghost {
+  background: #334155 !important;
+  color: var(--gray) !important;
+  border-color: var(--border) !important;
+}
+html[data-theme="dark"] .btn-ghost:hover { background: #475569 !important; }
+
+/* Hero CTA when in "secondary" state (used after submit) — was navy bg + white text */
+html[data-theme="dark"] .hero-cta.secondary {
+  background: var(--orange) !important;
+  color: #fff !important;
+}
+
+/* Date input color-scheme hint so the native picker icon adapts */
+html[data-theme="dark"] input[type="date"],
+html[data-theme="dark"] input[type="time"],
+html[data-theme="dark"] input[type="datetime-local"] {
+  color-scheme: dark;
+}
+
+/* Week strip — replace hard-coded light pastels */
+html[data-theme="dark"] .week-strip {
+  background: var(--white) !important;
+  border-color: var(--border) !important;
+}
+html[data-theme="dark"] .week-item {
+  background: #0f172a !important;
+  color: var(--gray) !important;
+  border-color: transparent !important;
+}
+html[data-theme="dark"] .week-item.done {
+  background: rgba(34,197,94,0.18) !important;
+  border-color: rgba(34,197,94,0.4) !important;
+}
+html[data-theme="dark"] .week-item.done .week-status { color: #86efac !important; }
+html[data-theme="dark"] .week-item.late {
+  background: rgba(239,68,68,0.16) !important;
+  border-color: rgba(239,68,68,0.4) !important;
+}
+html[data-theme="dark"] .week-item.late .week-status { color: #fca5a5 !important; }
+html[data-theme="dark"] .week-item.current {
+  background: rgba(255,107,43,0.18) !important;
+  border-color: var(--orange) !important;
+}
+html[data-theme="dark"] .week-item.current .week-status { color: #fdba74 !important; }
+html[data-theme="dark"] .week-item.pending .week-status { color: var(--gray-light) !important; }
+html[data-theme="dark"] .week-num { color: var(--gray-light) !important; }
+
+/* Drafts/Submitted tables in employee — backgrounds */
+html[data-theme="dark"] #draftsCard,
+html[data-theme="dark"] .submitted-card { background: var(--white) !important; border-color: var(--border) !important; }
+html[data-theme="dark"] #draftsCard table,
+html[data-theme="dark"] .table-card table { color: var(--gray) !important; }
+
+/* Team reports avatar circles (employee leader view) — they used inline orange-soft bg */
+html[data-theme="dark"] #teamReportsList { background: transparent !important; }
+html[data-theme="dark"] #teamReportsList > div { border-color: var(--border) !important; }
+
+/* Inputs across the app: tie color-scheme so calendar/clock icons render correctly */
+html[data-theme="dark"] body { color-scheme: dark; }
+
+/* Ensure existing inline `style="color:var(--navy)"` text labels stay readable */
+html[data-theme="dark"] [style*="color:var(--navy)"],
+html[data-theme="dark"] [style*="color: var(--navy)"] { color: var(--gray) !important; }
+
+/* Greeting bar week pill (uses inline style="background:#FFF1EA;color:#FF6B2B") */
+html[data-theme="dark"] [style*="background:#FFF1EA"],
+html[data-theme="dark"] [style*="background: #FFF1EA"] {
+  background: rgba(255,107,43,0.18) !important;
+}
+
+/* Status filter buttons + small filter pills */
+html[data-theme="dark"] .badge-yellow { background: rgba(234,179,8,0.18) !important; color: #fde68a !important; }
+html[data-theme="dark"] .badge-green  { background: rgba(34,197,94,0.18)  !important; color: #86efac !important; }
+html[data-theme="dark"] .badge-orange { background: rgba(255,107,43,0.18) !important; color: #fdba74 !important; }
+html[data-theme="dark"] .badge-red    { background: rgba(239,68,68,0.18)  !important; color: #fca5a5 !important; }
+
+/* Notification/Daily Goal banners — gradient looks fine, but text might need fix */
+html[data-theme="dark"] .daily-goal { box-shadow: 0 4px 14px rgba(0,0,0,0.4); }
+
+/* Inline feedback card */
+html[data-theme="dark"] .feedback-card {
+  background: var(--white) !important;
+  border-color: var(--border) !important;
+}
+html[data-theme="dark"] .fb-pill { background: rgba(255,107,43,0.18) !important; color: #fdba74 !important; }
+html[data-theme="dark"] .fb-context { color: var(--gray-light) !important; }
+html[data-theme="dark"] .fb-text { color: var(--gray) !important; }
+html[data-theme="dark"] .fb-meta { color: var(--gray-light) !important; }
+
+/* Skeleton loaders */
+html[data-theme="dark"] .skeleton,
+html[data-theme="dark"] .sk-line,
+html[data-theme="dark"] .sk-card,
+html[data-theme="dark"] .sk-circle {
+  background: linear-gradient(90deg, #1e293b 0%, #334155 50%, #1e293b 100%) !important;
+  background-size: 200% 100% !important;
+}
+
+/* Empty state */
+html[data-theme="dark"] .empty-state-rich,
+html[data-theme="dark"] .empty-state { color: var(--gray-light) !important; }
+
+/* Topbar avatar tile */
+html[data-theme="dark"] .user-avatar-tb { background: rgba(255,107,43,0.2) !important; color: #fdba74 !important; }
+
+/* Comments modal */
+html[data-theme="dark"] .modal-overlay { background: rgba(0,0,0,0.7) !important; }
+html[data-theme="dark"] .cmt-item { background: #0f172a !important; color: var(--gray) !important; }

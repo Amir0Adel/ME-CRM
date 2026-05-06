@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>متجر القوالب — لوحة الأدمن</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/components.css">
+<link rel="stylesheet" href="/css/dark-mode.css">
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="/js/app-shell.js"></script>
+<style>
+:root {
+  --navy: #1D2F5F; --orange: #FF6B2B; --orange-soft: #FFF0EA;
+  --bg: #F4F6FA; --white: #FFFFFF; --gray: #4B5563;
+  --gray-light: #9CA3AF; --border: #E5E7EB;
+  --green: #16a34a; --green-soft: #dcfce7;
+  --yellow: #d97706; --red: #dc2626;
+  --shadow: 0 2px 8px rgba(29,47,95,0.09);
+  --shadow-md: 0 4px 20px rgba(29,47,95,0.14);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--gray); direction: rtl; min-height: 100vh; }
+
+.header { background: var(--navy); border-bottom: 3px solid var(--orange); position: sticky; top: 0; z-index: 50; }
+.header-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; gap: 14px; }
+.back-btn { display: flex; align-items: center; gap: 7px; padding: 8px 14px; background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,255,255,0.2); border-radius: 8px; font-size: 13px; font-weight: 700; color: #fff; text-decoration: none; }
+.back-btn:hover { background: rgba(255,255,255,0.2); }
+.htitle { font-size: 16px; font-weight: 900; color: #fff; }
+
+.body { max-width: 1100px; margin: 24px auto 60px; padding: 0 24px; }
+
+.intro { background: var(--white); border: 1px solid var(--border); border-radius: 14px; padding: 20px 24px; margin-bottom: 18px; box-shadow: var(--shadow); }
+.intro h1 { font-size: 22px; font-weight: 900; color: var(--navy); margin-bottom: 6px; }
+.intro p { font-size: 13px; color: var(--gray); line-height: 1.7; }
+
+.cat-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+.cat-tab { padding: 8px 16px; border-radius: 22px; background: var(--white); border: 1px solid var(--border); font-family: 'Cairo', sans-serif; font-size: 12px; font-weight: 700; color: var(--gray); cursor: pointer; transition: all 0.15s; }
+.cat-tab:hover { background: var(--orange-soft); }
+.cat-tab.active { background: var(--navy); color: white; border-color: var(--navy); }
+
+.tpl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.tpl-card { background: var(--white); border: 1px solid var(--border); border-radius: 14px; padding: 20px; box-shadow: var(--shadow); display: flex; flex-direction: column; transition: transform 0.15s; }
+.tpl-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+.tpl-icon { font-size: 32px; margin-bottom: 10px; }
+.tpl-cat { font-size: 11px; color: var(--orange); font-weight: 800; text-transform: uppercase; margin-bottom: 4px; }
+.tpl-name { font-size: 16px; font-weight: 800; color: var(--navy); margin-bottom: 6px; }
+.tpl-desc { font-size: 12px; color: var(--gray); line-height: 1.7; flex: 1; margin-bottom: 12px; }
+.tpl-stats { font-size: 11px; color: var(--gray-light); margin-bottom: 12px; }
+.tpl-install { padding: 9px 18px; background: var(--orange); color: white; border: none; border-radius: 9px; font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: opacity 0.15s; }
+.tpl-install:hover { opacity: 0.88; }
+.tpl-install.installed { background: var(--green-soft); color: var(--green); cursor: default; }
+
+.toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); padding: 13px 28px; border-radius: 12px; font-size: 14px; font-weight: 700; z-index: 9999; display: none; color: #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+.toast.show { display: block; }
+.toast.success { background: var(--green); }
+.toast.error { background: var(--red); }
+</style>
+</head>
+<body>
+
+<header class="global-topbar">
+  <div class="brand-block">
+    <a href="/admin"><img src="/img/logo.jpg" alt="Marketing Experts" class="brand-logo"></a>
+  </div>
+  <a href="/admin" class="tb-ic-btn" title="لوحة التحكم" style="text-decoration:none;width:auto;padding:0 12px;gap:6px;font-size:12px;font-weight:700">
+    <span data-icon="arrow-right"></span> لوحة التحكم
+  </a>
+  <span style="flex:1;text-align:center;font-size:14px;font-weight:800;color:var(--navy)"><span data-icon="shopping-bag"></span> متجر القوالب</span>
+  <div class="topbar-actions">
+    <button class="tb-ic-btn theme-toggle" onclick="toggleTheme()" title="الوضع الليلي" id="themeToggleBtn">🌙</button>
+  </div>
+</header>
+
+<div class="body">
+  <div class="intro">
+    <h1>قوالب جاهزة للاستخدام</h1>
+    <p>اختار من القوالب المُصمَّمة مسبقاً واستنسخها في حسابك بضغطة زر. كل قالب يأتي بـ scorecard, metrics, و sections مناسبة لقطاعه. بعد التركيب يمكنك تعديله من المحرر.</p>
+  </div>
+
+  <div class="cat-tabs" id="catTabs"></div>
+  <div class="tpl-grid" id="tplGrid"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let allTemplates = [];
+let activeCat = 'الكل';
+let installedNames = new Set();
+
+async function init() {
+  const cur = document.documentElement.getAttribute('data-theme') || 'light';
+  document.getElementById('themeToggleBtn').textContent = cur === 'dark' ? '☀️' : '🌙';
+
+  // اللي مركّب فعلاً (لمنع تكرار)
+  const installed = await fetch('/api/admin/templates').then(r => r.json());
+  installedNames = new Set(installed.map(t => t.name));
+
+  const data = await fetch('/api/admin/marketplace').then(r => r.json());
+  allTemplates = data.templates;
+  renderCategories();
+  renderGrid();
+}
+
+function renderCategories() {
+  const cats = ['الكل', ...new Set(allTemplates.map(t => t.category))];
+  document.getElementById('catTabs').innerHTML = cats.map(c =>
+    `<button class="cat-tab ${c === activeCat ? 'active' : ''}" onclick="setCat('${c}')">${c}</button>`
+  ).join('');
+}
+
+function setCat(c) { activeCat = c; renderCategories(); renderGrid(); }
+
+function renderGrid() {
+  const filtered = activeCat === 'الكل' ? allTemplates : allTemplates.filter(t => t.category === activeCat);
+  document.getElementById('tplGrid').innerHTML = filtered.map(t => {
+    const fullName = t.icon + ' ' + t.name;
+    const isInstalled = installedNames.has(fullName);
+    return `<div class="tpl-card">
+      <div class="tpl-icon">${t.icon}</div>
+      <div class="tpl-cat">${t.category}</div>
+      <div class="tpl-name">${t.name}</div>
+      <div class="tpl-desc">${t.description}</div>
+      <div class="tpl-stats">📋 ${t.sections.length} أقسام جاهزة</div>
+      <button class="tpl-install ${isInstalled ? 'installed' : ''}" ${isInstalled ? 'disabled' : ''} onclick="install('${t.id}', event)">
+        ${isInstalled ? '✓ مركّب بالفعل' : '+ أضف لقوالبي'}
+      </button>
+    </div>`;
+  }).join('');
+}
+
+async function install(id, ev) {
+  const btn = ev?.target?.closest('button');
+  if (btn) btnLoading(btn);
+  try {
+    const r = await fetch('/api/admin/marketplace/install/' + id, { method: 'POST' });
+    const data = await r.json();
+    if (data.error) { if (btn) btnReset(btn); return Toast.error(data.error); }
+    if (btn) btnSuccess(btn);
+    Toast.success('تم تركيب القالب — افتحه من "قوالب التقارير"');
+    setTimeout(() => init(), 1200);
+  } catch (e) {
+    if (btn) btnReset(btn);
+    Toast.error('فشل التركيب');
+  }
+}
+
+function showToast(msg, type='success') {
+  if (window.Toast) return Toast.show(msg, type === 'success' ? 'success' : type === 'error' ? 'error' : 'info');
+  const t = document.getElementById('toast');
+  if (t) { t.textContent = msg; t.className = `toast ${type} show`; setTimeout(() => t.classList.remove('show'), 2800); }
+}
+
+init();
+</script>
+</body>
+</html>

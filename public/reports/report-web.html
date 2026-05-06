@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💻 تقرير Web Team — خبراء التسويق</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>:root {
+  --navy: #1D2F5F;
+  --navy-light: #263a75;
+  --orange: #FF6B2B;
+  --orange-soft: #FFF0EA;
+  --bg: #F4F6FA;
+  --white: #FFFFFF;
+  --gray: #4B5563;
+  --gray-light: #9CA3AF;
+  --border: #E5E7EB;
+  --green: #16a34a;
+  --green-soft: #dcfce7;
+  --yellow: #d97706;
+  --yellow-soft: #fef3c7;
+  --red: #dc2626;
+  --red-soft: #fee2e2;
+  --shadow: 0 2px 8px rgba(29,47,95,0.09);
+  --shadow-md: 0 4px 20px rgba(29,47,95,0.14);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
+  background: var(--bg);
+  color: var(--gray);
+  direction: rtl;
+  text-align: right;
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.65;
+}
+/* Header */
+.rpt-header {
+  background: var(--white);
+  border-bottom: 3px solid var(--orange);
+  box-shadow: var(--shadow-md);
+  padding: 0;
+  position: sticky; top: 0; z-index: 100;
+}
+.rpt-header-inner {
+  max-width: 960px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 28px; gap: 16px;
+}
+.rpt-logo { height: 40px; width: auto; }
+.rpt-titles { flex: 1; }
+.rpt-team-name { font-size: 18px; font-weight: 900; color: var(--navy); line-height: 1.2; }
+.rpt-subtitle { font-size: 11.5px; color: var(--gray-light); margin-top: 2px; }
+.rpt-week-badge {
+  background: var(--navy); color: #fff;
+  font-size: 11px; font-weight: 700;
+  padding: 5px 14px; border-radius: 20px;
+  white-space: nowrap;
+}
+/* Week selector */
+.week-bar {
+  max-width: 960px; margin: 18px auto 0; padding: 0 28px;
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.week-bar label { font-size: 13px; font-weight: 700; color: var(--navy); }
+.week-bar input[type=date], .week-bar input[type=text] {
+  font-family: 'Cairo', sans-serif; font-size: 13px;
+  border: 1.5px solid var(--border); border-radius: 8px;
+  padding: 7px 12px; outline: none; color: var(--gray);
+  background: var(--white); transition: border-color .2s;
+}
+.week-bar input:focus { border-color: var(--navy); }
+/* Body */
+.rpt-body { max-width: 960px; margin: 22px auto 60px; padding: 0 28px; display: flex; flex-direction: column; gap: 22px; }
+/* Section card */
+.section-card {
+  background: var(--white); border-radius: 14px;
+  border: 1.5px solid var(--border); box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.section-head {
+  background: var(--navy); color: #fff;
+  padding: 13px 20px; display: flex; align-items: center; gap: 10px;
+}
+.section-head .s-icon { font-size: 18px; }
+.section-head .s-title { font-size: 15px; font-weight: 800; }
+.section-head .s-subtitle { font-size: 11px; color: rgba(255,255,255,0.65); margin-top: 1px; }
+.section-body { padding: 18px 20px; display: flex; flex-direction: column; gap: 14px; }
+/* Field */
+.field-row { display: flex; flex-direction: column; gap: 5px; }
+.field-label { font-size: 12px; font-weight: 700; color: var(--navy); }
+.field-hint { font-size: 11px; color: var(--gray-light); margin-top: 1px; }
+.field-input {
+  font-family: 'Cairo', sans-serif; font-size: 13.5px;
+  border: 1.5px solid var(--border); border-radius: 9px;
+  padding: 9px 13px; outline: none; color: var(--gray);
+  background: var(--white); transition: border-color .2s; width: 100%;
+  resize: vertical; direction: rtl;
+}
+.field-input:focus { border-color: var(--orange); }
+textarea.field-input { min-height: 72px; }
+/* Numbers grid */
+.numbers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.number-field { background: var(--bg); border-radius: 10px; padding: 10px 12px; border: 1.5px solid var(--border); }
+.number-field label { font-size: 11px; font-weight: 700; color: var(--navy); display: block; margin-bottom: 4px; }
+.number-field input {
+  font-family: 'Cairo', sans-serif; font-size: 16px; font-weight: 800; color: var(--navy);
+  border: none; outline: none; background: transparent; width: 100%; direction: rtl;
+}
+/* Status row */
+.status-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.status-btn {
+  flex: 1; min-width: 80px; padding: 10px 8px; border-radius: 10px;
+  border: 2px solid var(--border); background: var(--white);
+  font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: all .18s; text-align: center;
+}
+.status-btn.green.active { background: var(--green-soft); border-color: var(--green); color: var(--green); }
+.status-btn.yellow.active { background: var(--yellow-soft); border-color: var(--yellow); color: var(--yellow); }
+.status-btn.red.active { background: var(--red-soft); border-color: var(--red); color: var(--red); }
+.status-btn:not(.active):hover { border-color: var(--gray-light); }
+/* Items list */
+.items-list { display: flex; flex-direction: column; gap: 8px; }
+.item-row { display: flex; gap: 8px; align-items: flex-start; }
+.item-row .field-input { flex: 1; min-height: 0; padding: 8px 11px; }
+.item-row .status-select {
+  font-family: 'Cairo', sans-serif; font-size: 12px; font-weight: 700;
+  border: 1.5px solid var(--border); border-radius: 8px; padding: 7px 10px;
+  outline: none; background: var(--white); color: var(--gray); cursor: pointer;
+}
+.add-row-btn {
+  font-family: 'Cairo', sans-serif; font-size: 12px; font-weight: 700;
+  color: var(--navy); background: transparent; border: 1.5px dashed var(--border);
+  border-radius: 9px; padding: 8px 14px; cursor: pointer; width: 100%;
+  transition: all .18s; margin-top: 4px;
+}
+.add-row-btn:hover { border-color: var(--orange); color: var(--orange); background: var(--orange-soft); }
+.remove-btn {
+  background: transparent; border: 1.5px solid var(--border); border-radius: 7px;
+  width: 30px; height: 34px; cursor: pointer; color: var(--gray-light);
+  font-size: 14px; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: all .15s;
+}
+.remove-btn:hover { border-color: var(--red); color: var(--red); background: var(--red-soft); }
+/* Scorecard */
+.scorecard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.score-cell {
+  background: var(--bg); border-radius: 10px; padding: 12px;
+  border: 1.5px solid var(--border); text-align: center;
+}
+.score-cell .sc-label { font-size: 11px; color: var(--gray-light); font-weight: 600; margin-bottom: 8px; }
+.score-toggle { display: flex; gap: 6px; justify-content: center; }
+.score-toggle button {
+  font-family: 'Cairo', sans-serif; font-size: 12px; font-weight: 700;
+  padding: 5px 10px; border-radius: 7px; border: 1.5px solid var(--border);
+  background: var(--white); cursor: pointer; transition: all .15s;
+}
+.score-toggle button.yes.active { background: var(--green-soft); border-color: var(--green); color: var(--green); }
+.score-toggle button.no.active { background: var(--red-soft); border-color: var(--red); color: var(--red); }
+/* Actions */
+.actions-bar {
+  max-width: 960px; margin: 0 auto 30px; padding: 0 28px;
+  display: flex; gap: 12px; flex-wrap: wrap;
+}
+.btn-primary {
+  font-family: 'Cairo', sans-serif; font-size: 14px; font-weight: 800;
+  background: var(--navy); color: #fff;
+  border: none; border-radius: 10px; padding: 11px 24px; cursor: pointer;
+  transition: background .18s; display: flex; align-items: center; gap: 7px;
+}
+.btn-primary:hover { background: var(--navy-light, #263a75); }
+.btn-secondary {
+  font-family: 'Cairo', sans-serif; font-size: 14px; font-weight: 700;
+  background: var(--white); color: var(--navy);
+  border: 1.5px solid var(--border); border-radius: 10px; padding: 11px 24px;
+  cursor: pointer; transition: all .18s;
+}
+.btn-secondary:hover { border-color: var(--orange); color: var(--orange); }
+.btn-danger {
+  font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 700;
+  background: var(--red-soft); color: var(--red);
+  border: 1.5px solid var(--red); border-radius: 10px; padding: 11px 20px;
+  cursor: pointer; transition: all .18s;
+}
+/* Save toast */
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+  background: var(--navy); color: #fff;
+  padding: 12px 24px; border-radius: 12px; font-size: 14px; font-weight: 700;
+  box-shadow: 0 6px 24px rgba(29,47,95,0.25); transition: transform .3s; z-index: 999;
+  display: flex; align-items: center; gap: 8px;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+/* Print */
+@media print {
+  .actions-bar, .week-bar { display: none !important; }
+  .rpt-header { position: static; }
+  .section-card { break-inside: avoid; }
+  body { background: white; }
+}
+</style>
+</head>
+<body>
+<header class="rpt-header"><div class="rpt-header-inner">
+  <img src="data:image/jpeg;base64,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" class="rpt-logo" alt="ME">
+  <div class="rpt-titles"><div class="rpt-team-name">💻 تقرير Web Team</div><div class="rpt-subtitle">أمير · أحمد نصار</div></div>
+  <div class="rpt-week-badge" id="weekBadge">الأسبوع الحالي</div>
+</div></header>
+<div class="week-bar">
+  <label>أسبوع:</label>
+  <input type="date" id="weekStart" onchange="updateWeekBadge();saveData()">
+  <span style="color:var(--gray-light);font-size:13px;">إلى</span>
+  <input type="date" id="weekEnd" onchange="updateWeekBadge();saveData()">
+  <label style="margin-right:12px;">مقدّم التقرير:</label>
+  <input type="text" id="reporterName" placeholder="أمير · أحمد نصار" style="width:220px;" oninput="saveData()">
+</div>
+<div class="rpt-body">
+<div class="section-card">
+  <div class="section-head"><span class="s-icon">📊</span><div><div class="s-title">Scorecard الأسبوع</div><div class="s-subtitle">تقييم الالتزام والمخرجات</div></div></div>
+  <div class="section-body">
+    <div class="scorecard-grid">
+      <div class="score-cell"><div class="sc-label">التقرير مكتمل ومرسل؟</div><div class="score-toggle"><button class="yes" data-score="sc1" data-sval="yes" onclick="setScore('sc1','yes')">✅ نعم</button><button class="no" data-score="sc1" data-sval="no" onclick="setScore('sc1','no')">❌ لا</button></div></div>
+      <div class="score-cell"><div class="sc-label">تم تحقيق المخرجات؟</div><div class="score-toggle"><button class="yes" data-score="sc2" data-sval="yes" onclick="setScore('sc2','yes')">✅ نعم</button><button class="no" data-score="sc2" data-sval="no" onclick="setScore('sc2','no')">❌ لا</button></div></div>
+      <div class="score-cell"><div class="sc-label">حالة الفريق</div><div class="score-toggle"><button class="yes" data-score="sc3" data-sval="green" onclick="setScore('sc3','green')" style="color:var(--green)">🟢</button><button class="no" data-score="sc3" data-sval="yellow" onclick="setScore('sc3','yellow')" style="color:var(--yellow)">🟡</button><button class="no" data-score="sc3" data-sval="red" onclick="setScore('sc3','red')" style="color:var(--red)">🔴</button></div></div>
+    </div>
+  </div>
+</div>
+<div class="section-card">
+  <div class="section-head"><span class="s-icon">🌐</span><div><div class="s-title">حالة مشاريع الويب</div></div></div>
+  <div class="section-body">
+    <div class="items-list" id="projects">
+      <div class="item-row"><input class="field-input" placeholder="اسم المشروع / العميل" oninput="saveData()"><input class="field-input" placeholder="نسبة الإنجاز" style="max-width:120px" oninput="saveData()"><select class="status-select" onchange="saveData()"><option>🟢 في الموعد</option><option>🟡 تحتاج متابعة</option><option>🔴 متأخر / مشكلة</option></select><button class="remove-btn" onclick="this.parentElement.remove();saveData()">✕</button></div>
+    </div>
+    <button class="add-row-btn" id="addProject">+ إضافة مشروع</button>
+  </div>
+</div>
+<div class="section-card">
+  <div class="section-head"><span class="s-icon">⚙️</span><div><div class="s-title">المشاكل التقنية والدعم</div></div></div>
+  <div class="section-body">
+    <div class="numbers-grid">
+      <div class="number-field"><label>مشاكل تم حلها</label><input type="number" id="n_solved" placeholder="0" oninput="saveData()"></div>
+      <div class="number-field"><label>مشاكل مفتوحة</label><input type="number" id="n_open" placeholder="0" oninput="saveData()"></div>
+      <div class="number-field"><label>مواقع تحتاج تدخل</label><input type="number" id="n_urgent" placeholder="0" oninput="saveData()"></div>
+    </div>
+    <div class="field-row" style="margin-top:12px"><div class="field-label">تفاصيل المشاكل المفتوحة</div><textarea class="field-input" id="open_issues" placeholder="اكتب تفاصيل المشاكل التقنية المفتوحة..." oninput="saveData()"></textarea></div>
+    <div class="field-row"><div class="field-label">مدى جاهزية التتبع والتحويل للمواقع</div><textarea class="field-input" id="tracking_status" placeholder="هل التتبع مُركّب وشغال على كل المواقع؟" oninput="saveData()"></textarea></div>
+  </div>
+</div>
+<div class="section-card">
+  <div class="section-head"><span class="s-icon">🔑</span><div><div class="s-title">قرارات مطلوبة</div></div></div>
+  <div class="section-body">
+    <div class="items-list" id="decisions">
+      <div class="item-row"><textarea class="field-input" placeholder="اكتب القرار المطلوب..." rows="2" oninput="saveData()"></textarea><select class="status-select" onchange="saveData()"><option>عاجل</option><option>هذا الأسبوع</option><option>الأسبوع القادم</option></select><button class="remove-btn" onclick="this.parentElement.remove();saveData()">✕</button></div>
+    </div>
+    <button class="add-row-btn" id="addDecision">+ إضافة قرار</button>
+  </div>
+</div></div>
+<div class="actions-bar">
+  <button class="btn-primary" onclick="saveData()">💾 حفظ التقرير</button>
+  <button class="btn-secondary" onclick="window.print()">🖨️ طباعة / PDF</button>
+  <button class="btn-danger" onclick="clearData()">🗑️ مسح البيانات</button>
+</div>
+<div class="toast" id="toast">✅ تم حفظ التقرير بنجاح</div>
+<script>
+const STORAGE_KEY = 'me_report_web';
+function setScore(f,v){document.querySelectorAll('[data-score="'+f+'"]').forEach(b=>b.classList.remove('active'));const btn=document.querySelector('[data-score="'+f+'"][data-sval="'+v+'"]');if(btn)btn.classList.add('active');saveData();}
+function addItemRow(cid,tpl){const c=document.getElementById(cid);const d=document.createElement('div');d.className='item-row';d.innerHTML=tpl+'<button class="remove-btn" onclick="this.parentElement.remove();saveData()">✕</button>';c.appendChild(d);}
+function updateWeekBadge(){const s=document.getElementById('weekStart').value;const e=document.getElementById('weekEnd').value;if(s&&e){const ds=new Date(s).toLocaleDateString('ar-EG',{day:'numeric',month:'short'});const de=new Date(e).toLocaleDateString('ar-EG',{day:'numeric',month:'short',year:'numeric'});document.getElementById('weekBadge').textContent=ds+' — '+de;}}
+function saveData(){const data={};document.querySelectorAll('input,textarea,select').forEach(el=>{if(el.id)data[el.id]=el.value;});document.querySelectorAll('[data-score].active').forEach(b=>{data['score_'+b.dataset.score]=b.dataset.sval;});localStorage.setItem(STORAGE_KEY,JSON.stringify(data));showToast();}
+function showToast(){const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+function clearData(){if(confirm('هل تريد مسح جميع البيانات؟')){localStorage.removeItem(STORAGE_KEY);location.reload();}}
+window.addEventListener('DOMContentLoaded',()=>{
+document.getElementById('addProject').onclick=()=>addItemRow('projects','<input class="field-input" placeholder="اسم المشروع / العميل" oninput="saveData()"><input class="field-input" placeholder="نسبة الإنجاز" style="max-width:120px" oninput="saveData()"><select class="status-select" onchange="saveData()"><option>🟢 في الموعد</option><option>🟡 تحتاج متابعة</option><option>🔴 متأخر / مشكلة</option></select>');
+document.getElementById('addDecision').onclick=()=>addItemRow('decisions','<textarea class="field-input" placeholder="القرار المطلوب..." rows="2" oninput="saveData()"></textarea><select class="status-select" onchange="saveData()"><option>عاجل</option><option>هذا الأسبوع</option><option>الأسبوع القادم</option></select>');
+const saved=localStorage.getItem(STORAGE_KEY);if(!saved)return;const data=JSON.parse(saved);Object.keys(data).forEach(key=>{if(key.startsWith('score_')){const f=key.replace('score_','');const v=data[key];const btn=document.querySelector('[data-score="'+f+'"][data-sval="'+v+'"]');if(btn)btn.classList.add('active');}else{const el=document.getElementById(key);if(el)el.value=data[key];}});updateWeekBadge();});
+</script>
+</body></html>

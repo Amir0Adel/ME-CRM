@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تعديل التقرير — لوحة الأدمن</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/components.css">
+<link rel="stylesheet" href="/css/dark-mode.css">
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="/js/app-shell.js"></script>
+<style>
+:root {
+  --navy: #1D2F5F; --navy-light: #263a75;
+  --orange: #FF6B2B; --orange-soft: #FFF0EA;
+  --bg: #F4F6FA; --white: #FFFFFF;
+  --gray: #4B5563; --gray-light: #9CA3AF; --border: #E5E7EB;
+  --green: #16a34a; --green-soft: #dcfce7;
+  --yellow: #d97706; --yellow-soft: #fef3c7;
+  --red: #dc2626; --red-soft: #fee2e2;
+  --shadow: 0 2px 8px rgba(29,47,95,0.09);
+  --shadow-md: 0 4px 20px rgba(29,47,95,0.14);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--gray); direction: rtl; min-height: 100vh; }
+
+.header { background: var(--navy); border-bottom: 3px solid var(--orange); box-shadow: var(--shadow-md); position: sticky; top: 0; z-index: 100; }
+.header-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; gap: 14px; }
+.back-btn { display: flex; align-items: center; gap: 7px; padding: 8px 14px; background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,255,255,0.2); border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 700; color: #fff; cursor: pointer; text-decoration: none; }
+.back-btn:hover { background: rgba(255,255,255,0.2); }
+.hcenter { display: flex; flex-direction: column; align-items: center; flex: 1; min-width: 0; }
+.htitle { font-size: 14px; font-weight: 900; color: #fff; }
+.hsubtitle { font-size: 11px; color: rgba(255,255,255,0.65); margin-top: 2px; }
+.action-btns { display: flex; gap: 8px; }
+.btn { padding: 9px 18px; border-radius: 10px; border: none; font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: opacity .15s; white-space: nowrap; }
+.btn:hover { opacity: 0.87; }
+.btn-save { background: var(--orange); color: #fff; }
+.btn-ghost { background: rgba(255,255,255,0.1); color: #fff; border: 1.5px solid rgba(255,255,255,0.3); }
+
+.layout { max-width: 1100px; margin: 24px auto 80px; padding: 0 24px; display: grid; grid-template-columns: 1fr 320px; gap: 18px; }
+@media (max-width: 980px) { .layout { grid-template-columns: 1fr; } }
+
+.body { min-width: 0; }
+.side { min-width: 0; }
+.side-card { background: var(--white); border-radius: 14px; border: 1.5px solid var(--border); box-shadow: var(--shadow); margin-bottom: 14px; overflow: hidden; }
+.side-card .h { padding: 12px 16px; background: var(--navy); color: #fff; font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: space-between; }
+.side-card .b { padding: 12px 16px; }
+
+.meta-card { background: var(--white); border-radius: 14px; border: 1.5px solid var(--border); box-shadow: var(--shadow); padding: 18px 22px; margin-bottom: 14px; }
+.meta-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.fg label { display: block; font-size: 12px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.fg input { width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 13px; color: var(--gray); background: var(--bg); outline: none; transition: border-color .2s; }
+.fg input:focus { border-color: var(--navy); background: #fff; }
+
+.section-card { background: var(--white); border-radius: 14px; border: 1.5px solid var(--border); box-shadow: var(--shadow); margin-bottom: 12px; overflow: hidden; }
+.section-card.has-comments { border-color: var(--yellow); border-width: 2px; }
+.section-head { display: flex; align-items: center; gap: 10px; padding: 11px 16px; background: var(--bg); border-bottom: 1.5px solid var(--border); }
+.type-badge { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 10px; background: var(--navy); color: #fff; white-space: nowrap; flex-shrink: 0; }
+.section-title-in { flex: 1; border: none; background: transparent; font-family: 'Cairo', sans-serif; font-size: 14px; font-weight: 800; color: var(--navy); outline: none; min-width: 0; }
+.section-acts { display: flex; gap: 4px; flex-shrink: 0; }
+.ic-btn { width: 28px; height: 28px; border: 1px solid var(--border); border-radius: 6px; background: var(--white); color: var(--gray); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+.ic-btn:hover { background: var(--orange-soft); border-color: var(--orange); color: var(--orange); }
+.ic-btn.del:hover { background: #fee2e2; border-color: #dc2626; color: #dc2626; }
+.ic-btn.cmt { background: var(--yellow-soft); border-color: var(--yellow); color: var(--yellow); }
+.ic-btn.cmt.has { background: var(--yellow); color: #fff; }
+.section-body { padding: 16px; }
+
+.tx-area { width: 100%; min-height: 90px; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 13px; color: var(--gray); background: var(--bg); outline: none; resize: vertical; direction: rtl; line-height: 1.8; }
+.tx-area:focus { border-color: var(--navy); background: #fff; }
+
+.list-items { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+.list-row { display: flex; align-items: center; gap: 8px; }
+.list-dot { color: var(--orange); font-size: 18px; font-weight: 900; flex-shrink: 0; }
+.list-in { flex: 1; padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 13px; background: var(--bg); outline: none; }
+.list-in:focus { border-color: var(--navy); background: #fff; }
+
+.metrics-editor { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; margin-bottom: 10px; }
+.metric-ec { background: var(--bg); border: 1.5px solid var(--border); border-radius: 10px; padding: 12px; position: relative; }
+.metric-ec label { display: block; font-size: 10px; font-weight: 700; color: var(--navy); margin-bottom: 3px; }
+.metric-ec input { width: 100%; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; font-family: 'Cairo', sans-serif; font-size: 12px; background: #fff; outline: none; margin-bottom: 6px; }
+.metric-ec input:last-of-type { margin-bottom: 0; }
+.del-mc { position: absolute; top: 6px; left: 6px; width: 20px; height: 20px; border: 1px solid #dc2626; border-radius: 4px; background: #fff; color: #dc2626; cursor: pointer; font-size: 11px; }
+
+.tbl-wrap { overflow-x: auto; margin-bottom: 10px; }
+.tbl-wrap table { width: 100%; border-collapse: collapse; }
+.tbl-in-h { width: 100%; border: 1.5px solid var(--navy); border-radius: 6px; padding: 6px 8px; font-family: 'Cairo', sans-serif; font-size: 12px; font-weight: 800; background: #e8ecf4; outline: none; }
+.tbl-in { width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; font-family: 'Cairo', sans-serif; font-size: 12px; background: var(--bg); outline: none; }
+
+.scorecard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 8px; }
+.score-cell { background: var(--bg); border-radius: 10px; padding: 12px; border: 1.5px solid var(--border); position: relative; }
+.score-cell .sc-label-in { width: 100%; border: none; background: transparent; font-family: 'Cairo', sans-serif; font-size: 11px; color: var(--navy); font-weight: 700; outline: none; margin-bottom: 8px; }
+.score-toggle { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+.sc-btn { font-family: 'Cairo', sans-serif; font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 7px; border: 1.5px solid var(--border); background: var(--white); cursor: pointer; transition: all .15s; }
+.sc-btn.yes.active { background: var(--green-soft); border-color: var(--green); color: var(--green); }
+.sc-btn.no.active { background: var(--red-soft); border-color: var(--red); color: var(--red); }
+.sc-btn.green.active { background: var(--green-soft); border-color: var(--green); color: var(--green); }
+.sc-btn.yellow.active { background: var(--yellow-soft); border-color: var(--yellow); color: var(--yellow); }
+.sc-btn.red.active { background: var(--red-soft); border-color: var(--red); color: var(--red); }
+.sc-mode-tab { font-size: 10px; padding: 2px 6px; border-radius: 4px; background: var(--white); border: 1px solid var(--border); cursor: pointer; }
+.sc-mode-tab.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+.del-sc { position: absolute; top: 6px; left: 6px; width: 18px; height: 18px; border: 1px solid #dc2626; border-radius: 4px; background: #fff; color: #dc2626; cursor: pointer; font-size: 10px; }
+
+.cl-items { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+.cl-row { display: flex; gap: 8px; }
+.cl-row .field-text { flex: 1; padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 13px; background: var(--bg); outline: none; }
+.cl-row .status-sel { padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 12px; background: #fff; outline: none; min-width: 130px; }
+.cl-options-edit { background: var(--bg); border: 1px dashed var(--border); border-radius: 8px; padding: 8px 10px; margin-bottom: 8px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.cl-options-edit label { font-size: 11px; color: var(--gray-light); font-weight: 700; }
+.cl-options-edit input { flex: 1; min-width: 120px; padding: 5px 8px; border: 1px solid var(--border); border-radius: 5px; font-family: 'Cairo', sans-serif; font-size: 11px; background: #fff; outline: none; }
+
+.status-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.status-btn { flex: 1; min-width: 90px; padding: 10px 8px; border-radius: 10px; border: 2px solid var(--border); background: var(--white); font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: all .18s; text-align: center; }
+.status-btn.active.green { background: var(--green-soft); border-color: var(--green); color: var(--green); }
+.status-btn.active.yellow { background: var(--yellow-soft); border-color: var(--yellow); color: var(--yellow); }
+.status-btn.active.red { background: var(--red-soft); border-color: var(--red); color: var(--red); }
+
+.add-btn { display: flex; align-items: center; gap: 6px; padding: 7px 12px; border: 1.5px dashed var(--border); border-radius: 8px; background: transparent; font-family: 'Cairo', sans-serif; font-size: 12px; font-weight: 700; color: var(--gray-light); cursor: pointer; }
+.add-btn:hover { border-color: var(--navy); color: var(--navy); }
+.btns-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.add-section-wrap { text-align: center; margin-top: 6px; }
+.add-section-btn { padding: 12px 32px; border: 2px dashed var(--border); border-radius: 12px; background: transparent; font-family: 'Cairo', sans-serif; font-size: 14px; font-weight: 700; color: var(--gray-light); cursor: pointer; }
+.add-section-btn:hover { border-color: var(--orange); color: var(--orange); background: var(--white); }
+
+/* Comments side panel */
+.cmt-list { display: flex; flex-direction: column; gap: 10px; }
+.cmt-empty { padding: 20px; text-align: center; color: var(--gray-light); font-size: 13px; }
+.cmt-item { background: var(--yellow-soft); border-right: 3px solid var(--yellow); border-radius: 8px; padding: 10px 12px; font-size: 12px; }
+.cmt-item .by { font-weight: 800; color: var(--navy); display: flex; justify-content: space-between; align-items: center; }
+.cmt-item .by .del { background: transparent; border: none; color: var(--red); cursor: pointer; font-size: 13px; }
+.cmt-item .text { margin: 6px 0; line-height: 1.7; }
+.cmt-item .meta { font-size: 10px; color: var(--gray-light); }
+.cmt-item .sec-ref { display: inline-block; padding: 2px 6px; background: var(--white); border-radius: 4px; font-size: 10px; color: var(--navy); font-weight: 700; margin-bottom: 4px; }
+
+/* Versions list */
+.ver-item { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; font-size: 12px; margin-bottom: 8px; }
+.ver-item .by { font-weight: 700; color: var(--navy); }
+.ver-item .meta { font-size: 10px; color: var(--gray-light); margin: 3px 0 8px; }
+.ver-item .restore-btn { width: 100%; padding: 6px; background: var(--orange); color: #fff; border: none; border-radius: 6px; font-family: 'Cairo', sans-serif; font-size: 11px; font-weight: 700; cursor: pointer; }
+.ver-item .restore-btn:hover { background: var(--navy); }
+
+/* Modal */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; display: none; align-items: center; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--white); border-radius: 16px; padding: 22px; width: 480px; max-width: 95vw; box-shadow: var(--shadow-md); border-top: 4px solid var(--orange); }
+.modal h3 { font-size: 16px; font-weight: 900; color: var(--navy); margin-bottom: 16px; }
+.type-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.type-opt { padding: 14px; border: 2px solid var(--border); border-radius: 12px; text-align: center; cursor: pointer; }
+.type-opt:hover { border-color: var(--orange); background: var(--orange-soft); }
+.type-opt .ico { font-size: 24px; margin-bottom: 6px; }
+.type-opt .nm { font-size: 12px; font-weight: 800; color: var(--navy); }
+.type-opt .ds { font-size: 10px; color: var(--gray-light); margin-top: 2px; }
+
+.cmt-modal-body { display: flex; flex-direction: column; gap: 12px; }
+.cmt-modal-body textarea { width: 100%; min-height: 100px; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 13px; background: var(--bg); outline: none; resize: vertical; line-height: 1.7; }
+.cmt-modal-body textarea:focus { border-color: var(--navy); background: #fff; }
+.modal-foot { display: flex; gap: 10px; justify-content: flex-end; margin-top: 14px; }
+.modal-foot button { padding: 8px 18px; border-radius: 8px; border: none; font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; }
+.btn-modal-save { background: var(--orange); color: #fff; }
+.btn-modal-cancel { background: var(--bg); color: var(--gray); border: 1px solid var(--border); }
+
+.toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); padding: 13px 28px; border-radius: 12px; font-size: 14px; font-weight: 700; z-index: 9999; display: none; color: #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+.toast.show { display: block; }
+.toast.success { background: var(--green); }
+.toast.error { background: var(--red); }
+
+.info-strip { background: var(--orange-soft); border: 1.5px solid var(--orange); border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; font-size: 12px; color: var(--navy); display: flex; gap: 8px; align-items: center; }
+</style>
+</head>
+<body>
+
+<header class="global-topbar">
+  <div class="brand-block">
+    <a href="/admin"><img src="/img/logo.jpg" alt="Marketing Experts" class="brand-logo"></a>
+  </div>
+  <a href="/admin" class="tb-ic-btn" title="لوحة التحكم" style="text-decoration:none;width:auto;padding:0 12px;gap:6px;font-size:12px;font-weight:700">
+    <span data-icon="arrow-right"></span> لوحة التحكم
+  </a>
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;min-width:0;gap:2px">
+    <span class="htitle" id="pageTitle" style="font-size:13px;font-weight:800;color:var(--navy)">تعديل التقرير</span>
+    <span class="hsubtitle" id="pageSubtitle" style="font-size:10px;color:var(--gray-light)">—</span>
+  </div>
+  <div class="topbar-actions">
+    <button class="tb-ic-btn theme-toggle" onclick="toggleTheme()" title="الوضع الليلي" id="themeToggleBtn">🌙</button>
+    <button class="tb-ic-btn" onclick="openVersionsModal()" title="النسخ السابقة"><span data-icon="history"></span></button>
+    <button class="tb-ic-btn" onclick="window.open('/api/admin/reports/'+reportId+'/pdf', '_blank')" title="PDF"><span data-icon="download"></span></button>
+    <button class="btn btn-save" id="saveRptBtn" onclick="saveReport()" style="padding:8px 14px;font-size:12px;font-weight:700;border-radius:9px;background:var(--orange);color:#fff;border:none;font-family:'Cairo',sans-serif;cursor:pointer">💾 حفظ التعديلات</button>
+  </div>
+</header>
+
+<div class="layout">
+  <div class="body">
+    <div class="info-strip" id="editedStrip" style="display:none">
+      ✏️ تم تعديل هذا التقرير من قبل الأدمن آخر مرة في <span id="lastEditedAt"></span>
+    </div>
+
+    <div class="meta-card">
+      <div class="meta-row">
+        <div class="fg">
+          <label>عنوان التقرير</label>
+          <input type="text" id="reportTitle">
+        </div>
+        <div class="fg">
+          <label>الأسبوع</label>
+          <input type="text" id="reportWeek">
+        </div>
+      </div>
+    </div>
+
+    <div id="sectionsContainer"></div>
+
+    <div class="add-section-wrap">
+      <button class="add-section-btn" onclick="openAddModal()">+ إضافة قسم جديد</button>
+    </div>
+  </div>
+
+  <aside class="side">
+    <div class="side-card">
+      <div class="h">💬 التعليقات <span id="cmtCount">0</span></div>
+      <div class="b">
+        <button class="add-btn" style="width:100%;justify-content:center;margin-bottom:10px" onclick="openCommentModal(null)">+ تعليق عام</button>
+        <div class="cmt-list" id="cmtList"></div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- Modal: اختيار نوع القسم -->
+<div class="modal-overlay" id="addModal" onclick="if(event.target===this)closeAddModal()">
+  <div class="modal" style="width:560px">
+    <h3>اختار نوع القسم</h3>
+    <div class="type-grid">
+      <div class="type-opt" onclick="addSection('text')"><div class="ico">📝</div><div class="nm">نص</div><div class="ds">فقرة</div></div>
+      <div class="type-opt" onclick="addSection('list')"><div class="ico">📋</div><div class="nm">قائمة</div><div class="ds">نقاط</div></div>
+      <div class="type-opt" onclick="addSection('metrics')"><div class="ico">📊</div><div class="nm">أرقام</div><div class="ds">KPIs</div></div>
+      <div class="type-opt" onclick="addSection('scorecard')"><div class="ico">✅</div><div class="nm">Scorecard</div><div class="ds">أسئلة</div></div>
+      <div class="type-opt" onclick="addSection('checklist')"><div class="ico">🗂️</div><div class="nm">قائمة بحالة</div><div class="ds">عناصر+حالة</div></div>
+      <div class="type-opt" onclick="addSection('status')"><div class="ico">🚦</div><div class="nm">حالة</div><div class="ds">أحمر/أصفر/أخضر</div></div>
+      <div class="type-opt" onclick="addSection('table')"><div class="ico">📑</div><div class="nm">جدول</div><div class="ds">منظم</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: التعليق -->
+<div class="modal-overlay" id="cmtModal" onclick="if(event.target===this)closeCommentModal()">
+  <div class="modal">
+    <h3 id="cmtModalTitle">إضافة تعليق</h3>
+    <div class="cmt-modal-body">
+      <textarea id="cmtText" placeholder="اكتب التعليق هنا..." dir="rtl"></textarea>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-modal-cancel" onclick="closeCommentModal()">إلغاء</button>
+      <button class="btn-modal-save" onclick="submitComment()">حفظ التعليق</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: النسخ السابقة -->
+<div class="modal-overlay" id="versionsModal" onclick="if(event.target===this)closeVersionsModal()">
+  <div class="modal" style="width:560px">
+    <h3>📜 النسخ السابقة</h3>
+    <div id="versionsList"><div class="cmt-empty">لا توجد نسخ سابقة</div></div>
+    <div class="modal-foot">
+      <button class="btn-modal-cancel" onclick="closeVersionsModal()">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let sections = [];
+let comments = [];
+let versions = [];
+let reportId = null;
+let reportData = null;
+let activeSectionForComment = null;
+
+const TYPE_LABELS = { text:'📝 نص', list:'📋 قائمة', metrics:'📊 أرقام', table:'📑 جدول', scorecard:'✅ Scorecard', checklist:'🗂️ قائمة بحالة', status:'🚦 حالة' };
+
+async function init() {
+  const session = await fetch('/api/session').then(r => r.json());
+  if (!session || session.role !== 'admin') return location.href = '/login';
+
+  const m = location.pathname.match(/\/admin\/report\/(\d+)\/edit/);
+  if (!m) { showToast('ID مفقود', 'error'); return; }
+  reportId = parseInt(m[1]);
+
+  await loadReport();
+}
+
+async function loadReport() {
+  const data = await fetch('/api/admin/reports/' + reportId).then(r => r.json());
+  if (data.error) { showToast(data.error, 'error'); return; }
+
+  reportData = data.report;
+  reportData.user_name = data.user_name;
+  reportData.user_email = data.user_email;
+  reportData.theme = (data.template && data.template.visual_theme) || 'standard';
+  sections = data.report.sections || [];
+  comments = data.report.comments || [];
+  versions = data.report.versions || [];
+
+  // أعطِ كل قسم id محلي للمتعامل معه
+  sections.forEach(s => { if (!s.id) s.id = uid(); });
+
+  document.getElementById('reportTitle').value = data.report.title || '';
+  document.getElementById('reportWeek').value  = data.report.week  || '';
+  document.getElementById('pageTitle').textContent = data.report.title || 'تعديل التقرير';
+  document.getElementById('pageSubtitle').textContent = `${data.user_name} (${data.user_email})`;
+
+  if (data.report.last_edited_at) {
+    document.getElementById('editedStrip').style.display = 'flex';
+    document.getElementById('lastEditedAt').textContent = new Date(data.report.last_edited_at).toLocaleString('ar-EG');
+  }
+
+  render();
+  renderComments();
+}
+
+function uid() { return Math.random().toString(36).slice(2, 9); }
+function getS(id) { return sections.find(s => s.id === id); }
+function esc(s)   { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
+// ── Render ────────────────────────────────────────────────────────────────────
+function render() {
+  document.getElementById('sectionsContainer').innerHTML =
+    sections.map((s, i) => renderCard(s, i)).join('');
+}
+
+function renderCard(s, i) {
+  const sectionComments = comments.filter(c => c.section_idx === i);
+  const cmtHas = sectionComments.length ? 'has' : '';
+  const cmtClass = sectionComments.length ? 'has-comments' : '';
+  const upBtn   = i > 0 ? `<button class="ic-btn" onclick="moveSection('${s.id}',-1)">↑</button>` : '';
+  const downBtn = i < sections.length-1 ? `<button class="ic-btn" onclick="moveSection('${s.id}',1)">↓</button>` : '';
+  return `
+    <div class="section-card ${cmtClass}">
+      <div class="section-head">
+        <span class="type-badge">${TYPE_LABELS[s.type] || s.type}</span>
+        <input class="section-title-in" value="${esc(s.title)}" placeholder="عنوان القسم"
+          oninput="onTitleChange('${s.id}', this.value)">
+        <div class="section-acts">
+          <button class="ic-btn cmt ${cmtHas}" title="تعليق" onclick="openCommentModal(${i})">💬${sectionComments.length ? ' '+sectionComments.length : ''}</button>
+          ${upBtn}${downBtn}
+          <button class="ic-btn del" onclick="deleteSection('${s.id}')">✕</button>
+        </div>
+      </div>
+      <div class="section-body">${renderBody(s)}</div>
+    </div>`;
+}
+
+function renderBody(s) {
+  if (s.type === 'text') {
+    return `<textarea class="tx-area" placeholder="اكتب هنا..." oninput="onTextChange('${s.id}', this.value)">${esc(s.content || '')}</textarea>`;
+  }
+  if (s.type === 'list') {
+    const rows = (s.items || ['']).map((item, i) => `
+      <div class="list-row">
+        <span class="list-dot">•</span>
+        <input class="list-in" value="${esc(item)}" placeholder="عنصر..."
+          oninput="onItemChange('${s.id}', ${i}, this.value)">
+        <button class="ic-btn del" onclick="removeItem('${s.id}', ${i})">✕</button>
+      </div>`).join('');
+    return `<div class="list-items">${rows}</div>
+      <button class="add-btn" onclick="addItem('${s.id}')">+ عنصر</button>`;
+  }
+  if (s.type === 'metrics') {
+    const cards = (s.items || []).map((m, i) => `
+      <div class="metric-ec">
+        <button class="del-mc" onclick="removeMetric('${s.id}', ${i})">✕</button>
+        <label>البيان</label>
+        <input value="${esc(m.label||'')}" placeholder="..." oninput="onMetricChange('${s.id}', ${i}, 'label', this.value)">
+        <label>القيمة</label>
+        <input value="${esc(m.value||'')}" placeholder="..." oninput="onMetricChange('${s.id}', ${i}, 'value', this.value)">
+        <label>الوحدة</label>
+        <input value="${esc(m.unit||'')}" placeholder="..." oninput="onMetricChange('${s.id}', ${i}, 'unit', this.value)">
+      </div>`).join('');
+    return `<div class="metrics-editor">${cards}</div>
+      <button class="add-btn" onclick="addMetric('${s.id}')">+ مؤشر</button>`;
+  }
+  if (s.type === 'scorecard') {
+    const cells = (s.items || []).map((c, i) => {
+      const mode = c.mode || 'yesno';
+      let buttons = mode === 'yesno'
+        ? `<button class="sc-btn yes ${c.value==='yes'?'active':''}" onclick="setScCellValue('${s.id}', ${i}, 'yes')">✅ نعم</button>
+           <button class="sc-btn no ${c.value==='no'?'active':''}" onclick="setScCellValue('${s.id}', ${i}, 'no')">❌ لا</button>`
+        : `<button class="sc-btn green ${c.value==='green'?'active':''}" onclick="setScCellValue('${s.id}', ${i}, 'green')">🟢</button>
+           <button class="sc-btn yellow ${c.value==='yellow'?'active':''}" onclick="setScCellValue('${s.id}', ${i}, 'yellow')">🟡</button>
+           <button class="sc-btn red ${c.value==='red'?'active':''}" onclick="setScCellValue('${s.id}', ${i}, 'red')">🔴</button>`;
+      return `<div class="score-cell">
+        <button class="del-sc" onclick="removeScCell('${s.id}', ${i})">✕</button>
+        <input class="sc-label-in" value="${esc(c.label||'')}" placeholder="السؤال..." oninput="onScCellLabel('${s.id}', ${i}, this.value)">
+        <div style="display:flex;gap:4px;margin-bottom:8px">
+          <button class="sc-mode-tab ${mode==='yesno'?'active':''}" onclick="setScCellMode('${s.id}', ${i}, 'yesno')">نعم/لا</button>
+          <button class="sc-mode-tab ${mode==='traffic'?'active':''}" onclick="setScCellMode('${s.id}', ${i}, 'traffic')">🚦 ألوان</button>
+        </div>
+        <div class="score-toggle">${buttons}</div>
+      </div>`;
+    }).join('');
+    return `<div class="scorecard-grid">${cells}</div>
+      <button class="add-btn" onclick="addScCell('${s.id}')">+ سؤال</button>`;
+  }
+  if (s.type === 'status') {
+    const opts = s.options || [{value:'green',label:'🟢 ممتاز'},{value:'yellow',label:'🟡 متوسط'},{value:'red',label:'🔴 يحتاج تدخل'}];
+    const buttons = opts.map(o => `
+      <button class="status-btn ${o.value} ${s.value===o.value?'active':''}" onclick="setStatusValue('${s.id}', '${o.value}')">${esc(o.label)}</button>`).join('');
+    return `<div class="status-row">${buttons}</div>
+      <textarea class="tx-area" style="margin-top:10px" placeholder="ملاحظات..." oninput="onStatusNote('${s.id}', this.value)">${esc(s.note||'')}</textarea>`;
+  }
+  if (s.type === 'checklist') {
+    const opts = s.status_options || ['🟢 منتظمة','🟡 تحتاج متابعة','🔴 مشكلة'];
+    const optsEditor = `
+      <div class="cl-options-edit">
+        <label>الخيارات:</label>
+        ${opts.map((o, oi) => `<input value="${esc(o)}" oninput="onClOptionChange('${s.id}', ${oi}, this.value)">`).join('')}
+      </div>`;
+    const rows = (s.items || []).map((it, i) => {
+      const item = (typeof it === 'object' && it !== null) ? it : { text: String(it||''), status: '' };
+      const sel = `<select class="status-sel" onchange="onClStatusChange('${s.id}', ${i}, this.value)">
+        <option value="">— اختر —</option>
+        ${opts.map(o => `<option ${item.status===o?'selected':''}>${esc(o)}</option>`).join('')}
+      </select>`;
+      return `<div class="cl-row">
+        <input class="field-text" value="${esc(item.text||'')}" placeholder="عنصر..." oninput="onClTextChange('${s.id}', ${i}, this.value)">
+        ${sel}
+        <button class="ic-btn del" onclick="removeClItem('${s.id}', ${i})">✕</button>
+      </div>`;
+    }).join('');
+    return `${optsEditor}<div class="cl-items">${rows}</div>
+      <button class="add-btn" onclick="addClItem('${s.id}')">+ عنصر</button>`;
+  }
+  if (s.type === 'table') {
+    const headers = s.headers || ['العمود 1','العمود 2'];
+    const rows    = s.rows    || [['','']];
+    const hCells  = headers.map((h, ci) => `<th style="padding:4px"><input class="tbl-in-h" value="${esc(h)}" oninput="onHeaderChange('${s.id}', ${ci}, this.value)"></th>`).join('');
+    const dRows = rows.map((row, ri) => `
+      <tr>${row.map((c, ci) => `<td style="padding:4px"><input class="tbl-in" value="${esc(c)}" oninput="onCellChange('${s.id}', ${ri}, ${ci}, this.value)"></td>`).join('')}
+      <td style="padding:4px"><button class="ic-btn del" onclick="removeRow('${s.id}', ${ri})">✕</button></td></tr>`).join('');
+    return `<div class="tbl-wrap"><table><thead><tr>${hCells}<th></th></tr></thead><tbody>${dRows}</tbody></table></div>
+      <div class="btns-row">
+        <button class="add-btn" onclick="addRow('${s.id}')">+ صف</button>
+        <button class="add-btn" onclick="addCol('${s.id}')">+ عمود</button>
+      </div>`;
+  }
+  return '';
+}
+
+// ── Mutators (no re-render) ──────────────────────────────────────────────────
+function onTitleChange(id, v)        { getS(id).title = v; }
+function onTextChange(id, v)         { getS(id).content = v; }
+function onItemChange(id, i, v)      { getS(id).items[i] = v; }
+function onMetricChange(id, i, f, v) { getS(id).items[i][f] = v; }
+function onHeaderChange(id, i, v)    { getS(id).headers[i] = v; }
+function onCellChange(id, ri, ci, v) { getS(id).rows[ri][ci] = v; }
+function onScCellLabel(id, i, v)     { getS(id).items[i].label = v; }
+function onStatusNote(id, v)         { getS(id).note = v; }
+function onClOptionChange(id, oi, v) { getS(id).status_options[oi] = v; }
+function onClTextChange(id, i, v)    { const it = getS(id).items[i]; if (typeof it === 'object' && it !== null) it.text = v; else getS(id).items[i] = { text: v, status: '' }; }
+function onClStatusChange(id, i, v)  { const it = getS(id).items[i]; if (typeof it === 'object' && it !== null) it.status = v; else getS(id).items[i] = { text: String(it||''), status: v }; render(); }
+
+// ── Mutators (re-render) ─────────────────────────────────────────────────────
+function addItem(id)     { getS(id).items.push(''); render(); }
+function removeItem(id, i){ const s = getS(id); if (s.items.length > 1) { s.items.splice(i, 1); render(); } }
+function addMetric(id)   { getS(id).items.push({label:'',value:'',unit:''}); render(); }
+function removeMetric(id, i){ const s = getS(id); if (s.items.length > 1) { s.items.splice(i, 1); render(); } }
+function addRow(id)      { const s = getS(id); s.rows.push(s.headers.map(()=>'')); render(); }
+function removeRow(id, i){ const s = getS(id); if (s.rows.length > 1) { s.rows.splice(i, 1); render(); } }
+function addCol(id)      { const s = getS(id); s.headers.push('عمود'); s.rows.forEach(r => r.push('')); render(); }
+function setScCellValue(id, i, v) { getS(id).items[i].value = v; render(); }
+function setScCellMode(id, i, m)  { const c = getS(id).items[i]; c.mode = m; c.value = ''; render(); }
+function addScCell(id)            { getS(id).items.push({label:'',mode:'yesno',value:''}); render(); }
+function removeScCell(id, i)      { const s = getS(id); if (s.items.length > 1) { s.items.splice(i, 1); render(); } }
+function setStatusValue(id, v)    { getS(id).value = v; render(); }
+function addClItem(id)            { getS(id).items.push({text:'',status:''}); render(); }
+function removeClItem(id, i)      { const s = getS(id); if (s.items.length > 1) { s.items.splice(i, 1); render(); } }
+
+function moveSection(id, dir) {
+  const i = sections.findIndex(s => s.id === id);
+  if (i + dir < 0 || i + dir >= sections.length) return;
+  [sections[i], sections[i+dir]] = [sections[i+dir], sections[i]];
+  // reassign comments section_idx
+  comments.forEach(c => {
+    if (c.section_idx === i) c.section_idx = i + dir;
+    else if (c.section_idx === i + dir) c.section_idx = i;
+  });
+  render();
+  renderComments();
+}
+
+function deleteSection(id) {
+  if (sections.length <= 1) return showToast('لازم يكون في قسم واحد على الأقل', 'error');
+  if (!confirm('تحذف القسم ده؟')) return;
+  const idx = sections.findIndex(s => s.id === id);
+  sections = sections.filter(s => s.id !== id);
+  // أزل تعليقات هذا القسم وأعد ترقيم الباقي
+  comments = comments.filter(c => c.section_idx !== idx);
+  comments.forEach(c => { if (c.section_idx > idx) c.section_idx--; });
+  render();
+  renderComments();
+}
+
+function addSection(type) {
+  const defs = {
+    text:      { content: '' },
+    list:      { items: [''] },
+    metrics:   { items: [{ label:'', value:'', unit:'' }] },
+    table:     { headers: ['العمود 1','العمود 2'], rows: [['','']] },
+    scorecard: { items: [{ label:'', mode:'yesno', value:'' }] },
+    checklist: { status_options: ['🟢 منتظمة','🟡 تحتاج متابعة','🔴 مشكلة'], items: [{ text:'', status:'' }] },
+    status:    { options: [{value:'green',label:'🟢 ممتاز'},{value:'yellow',label:'🟡 متوسط'},{value:'red',label:'🔴 يحتاج تدخل'}], value:'', note:'' },
+  };
+  const names = { text:'قسم جديد', list:'قائمة', metrics:'مؤشرات', table:'جدول', scorecard:'Scorecard', checklist:'قائمة بحالة', status:'حالة الفريق' };
+  sections.push({ id: uid(), type, title: names[type], ...defs[type] });
+  render();
+  closeAddModal();
+}
+
+function openAddModal()  { document.getElementById('addModal').classList.add('open'); }
+function closeAddModal() { document.getElementById('addModal').classList.remove('open'); }
+
+// ── Comments ─────────────────────────────────────────────────────────────────
+function renderComments() {
+  document.getElementById('cmtCount').textContent = comments.length;
+  const list = document.getElementById('cmtList');
+  if (!comments.length) {
+    list.innerHTML = '<div class="cmt-empty">لا توجد تعليقات</div>';
+    return;
+  }
+  list.innerHTML = comments.map(c => {
+    const secRef = c.section_idx != null && sections[c.section_idx]
+      ? `<div class="sec-ref">📍 ${esc(sections[c.section_idx].title)}</div>` : '';
+    return `<div class="cmt-item">
+      ${secRef}
+      <div class="by">${esc(c.by)} <button class="del" onclick="deleteComment(${c.id})">🗑️</button></div>
+      <div class="text">${esc(c.text)}</div>
+      <div class="meta">${new Date(c.created_at).toLocaleString('ar-EG')}</div>
+    </div>`;
+  }).join('');
+}
+
+function openCommentModal(sectionIdx) {
+  activeSectionForComment = sectionIdx;
+  const ttl = sectionIdx != null && sections[sectionIdx]
+    ? `تعليق على: ${sections[sectionIdx].title}` : 'تعليق عام على التقرير';
+  document.getElementById('cmtModalTitle').textContent = ttl;
+  document.getElementById('cmtText').value = '';
+  document.getElementById('cmtModal').classList.add('open');
+  setTimeout(() => document.getElementById('cmtText').focus(), 100);
+}
+function closeCommentModal() { document.getElementById('cmtModal').classList.remove('open'); }
+
+async function submitComment() {
+  const text = document.getElementById('cmtText').value.trim();
+  if (!text) return showToast('اكتب نص التعليق', 'error');
+  const res = await fetch(`/api/admin/reports/${reportId}/comment`, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ section_idx: activeSectionForComment, text })
+  });
+  const data = await res.json();
+  if (data.error) return showToast(data.error, 'error');
+  comments.push(data.comment);
+  closeCommentModal();
+  render();
+  renderComments();
+  showToast('تمت إضافة التعليق', 'success');
+}
+
+async function deleteComment(commentId) {
+  if (!confirm('حذف التعليق؟')) return;
+  const res = await fetch(`/api/admin/reports/${reportId}/comment/${commentId}`, { method: 'DELETE' });
+  const data = await res.json();
+  if (data.error) return showToast(data.error, 'error');
+  comments = comments.filter(c => c.id !== commentId);
+  render();
+  renderComments();
+}
+
+// ── Versions ─────────────────────────────────────────────────────────────────
+async function openVersionsModal() {
+  const list = await fetch(`/api/admin/reports/${reportId}/versions`).then(r => r.json());
+  versions = list || [];
+  const cnt = document.getElementById('versionsList');
+  if (!versions.length) {
+    cnt.innerHTML = '<div class="cmt-empty">لا توجد نسخ سابقة</div>';
+  } else {
+    cnt.innerHTML = versions.map((v, i) => `
+      <div class="ver-item">
+        <div class="by">📌 ${esc(v.title)} — ${esc(v.week || '—')}</div>
+        <div class="meta">عدّل بواسطة: ${esc(v.edited_by)} · ${new Date(v.saved_at).toLocaleString('ar-EG')}</div>
+        <button class="restore-btn" onclick="restoreVersion(${i})">🔄 استعادة هذه النسخة</button>
+      </div>`).join('');
+  }
+  document.getElementById('versionsModal').classList.add('open');
+}
+function closeVersionsModal() { document.getElementById('versionsModal').classList.remove('open'); }
+
+async function restoreVersion(idx) {
+  if (!confirm('استعادة هذه النسخة؟ النسخة الحالية ستحفظ في النسخ السابقة.')) return;
+  const res = await fetch(`/api/admin/reports/${reportId}/restore/${idx}`, { method: 'POST' });
+  const data = await res.json();
+  if (data.error) return showToast(data.error, 'error');
+  closeVersionsModal();
+  showToast('تمت الاستعادة', 'success');
+  await loadReport();
+}
+
+// ── Save ─────────────────────────────────────────────────────────────────────
+async function saveReport() {
+  const title = document.getElementById('reportTitle').value.trim();
+  const week  = document.getElementById('reportWeek').value.trim();
+  if (!title) return Toast.warning('العنوان مطلوب');
+
+  const btn = document.getElementById('saveRptBtn');
+  btnLoading(btn);
+
+  // نظف sections من id المحلي قبل الإرسال
+  const cleanSections = sections.map(({ id, ...rest }) => rest);
+  const content = generateHTML(title, week, cleanSections);
+
+  try {
+    const res = await fetch(`/api/admin/reports/${reportId}`, {
+      method: 'PUT',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ title, week, sections: cleanSections, content })
+    });
+    const data = await res.json();
+    if (data.error) { btnReset(btn); return Toast.error(data.error); }
+    btnSuccess(btn);
+    Toast.success('تم حفظ التعديلات');
+    setTimeout(() => loadReport(), 500);
+  } catch (e) {
+    btnReset(btn);
+    Toast.error('فشل الحفظ');
+  }
+}
+
+// ── Generate HTML (نفس generateHTML من employee-new.html) ────────────────────
+function generateHTML(title, week, secs) {
+  const userName = reportData?.user_name || (document.getElementById('pageSubtitle').textContent.split('(')[0].trim()) || '';
+  const theme = reportData?.theme || 'standard';
+  const body = secs.map(s => {
+    if (s.type === 'text') {
+      const c = esc(s.content||'').replace(/\n/g,'<br>');
+      return `<section class="rs"><h2>${esc(s.title)}</h2><p>${c}</p></section>`;
+    }
+    if (s.type === 'list') {
+      const f = (s.items||[]).filter(Boolean);
+      if (!f.length) return '';
+      return `<section class="rs"><h2>${esc(s.title)}</h2><ul>${f.map(i=>`<li>${esc(i)}</li>`).join('')}</ul></section>`;
+    }
+    if (s.type === 'metrics') {
+      const cards = (s.items||[]).filter(m=>m.label||m.value).map(m=>`<div class="mc"><div class="mv">${esc(m.value)}</div><div class="mu">${esc(m.unit)}</div><div class="ml">${esc(m.label)}</div></div>`).join('');
+      if (!cards) return '';
+      return `<section class="rs"><h2>${esc(s.title)}</h2><div class="mr">${cards}</div></section>`;
+    }
+    if (s.type === 'table') {
+      const th = `<tr>${(s.headers||[]).map(h=>`<th>${esc(h)}</th>`).join('')}</tr>`;
+      const tb = (s.rows||[]).map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join('');
+      return `<section class="rs"><h2>${esc(s.title)}</h2><div class="tw"><table><thead>${th}</thead><tbody>${tb}</tbody></table></div></section>`;
+    }
+    if (s.type === 'scorecard') {
+      const VAL = { yes:'✅ نعم', no:'❌ لا', green:'🟢 أخضر', yellow:'🟡 أصفر', red:'🔴 أحمر' };
+      const cells = (s.items||[]).filter(c=>c.label).map(c=>{
+        const v = c.value ? VAL[c.value]||c.value : '— لم يُحدد —';
+        const cls = c.value==='yes'||c.value==='green' ? 'sc-good' : c.value==='no'||c.value==='red' ? 'sc-bad' : c.value==='yellow' ? 'sc-warn' : 'sc-none';
+        return `<div class="sc"><div class="scl">${esc(c.label)}</div><div class="scv ${cls}">${esc(v)}</div></div>`;
+      }).join('');
+      if (!cells) return '';
+      return `<section class="rs"><h2>${esc(s.title)}</h2><div class="scg">${cells}</div></section>`;
+    }
+    if (s.type === 'status') {
+      const opt = (s.options||[]).find(o=>o.value===s.value);
+      if (!opt && !s.note) return '';
+      const cls = s.value==='green'?'sc-good':s.value==='red'?'sc-bad':s.value==='yellow'?'sc-warn':'sc-none';
+      const note = s.note ? `<p style="margin-top:10px">${esc(s.note).replace(/\n/g,'<br>')}</p>` : '';
+      return `<section class="rs"><h2>${esc(s.title)}</h2><div class="st ${cls}">${esc(opt?opt.label:'— لم يُحدد —')}</div>${note}</section>`;
+    }
+    if (s.type === 'checklist') {
+      const items = (s.items||[]).filter(it => (typeof it==='object'&&it.text)||(typeof it==='string'&&it));
+      if (!items.length) return '';
+      const rows = items.map(it=>{
+        const t = typeof it==='object'?it.text:it;
+        const st = typeof it==='object'?it.status:'';
+        return `<tr><td>${esc(t)}</td><td style="text-align:center;font-weight:700">${esc(st||'—')}</td></tr>`;
+      }).join('');
+      return `<section class="rs"><h2>${esc(s.title)}</h2><div class="tw"><table><thead><tr><th>العنصر</th><th style="text-align:center">الحالة</th></tr></thead><tbody>${rows}</tbody></table></div></section>`;
+    }
+    return '';
+  }).join('');
+
+  const styles = `
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Cairo',sans-serif;padding:28px 16px;direction:rtl;color:var(--report-fg, #4B5563);background:var(--report-bg, #F4F6FA)}
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap');
+.rpt{max-width:780px;margin:0 auto;background:#fff;border-radius:16px;border:1.5px solid #E5E7EB;overflow:hidden;box-shadow:0 4px 20px rgba(29,47,95,.1)}
+.rh{background:var(--report-primary, #1D2F5F);padding:26px 30px;color:#fff}
+.rh h1{font-size:22px;font-weight:900;margin-bottom:12px}
+.rm{display:flex;gap:10px;flex-wrap:wrap}
+.rm span{background:rgba(255,255,255,.15);padding:4px 14px;border-radius:20px;font-size:12px;font-weight:600}
+.rs{padding:22px 30px;border-bottom:1.5px solid #E5E7EB}
+.rs:last-child{border-bottom:none}
+h2{font-size:14px;font-weight:900;color:var(--report-primary, #1D2F5F);margin-bottom:14px;padding-bottom:7px;border-bottom:2.5px solid var(--report-accent, #FF6B2B);display:inline-block}
+p{font-size:13px;line-height:1.9}
+ul{padding-right:18px}ul li{font-size:13px;line-height:1.9;margin-bottom:4px}
+.mr{display:flex;flex-wrap:wrap;gap:12px}
+.mc{background:#F4F6FA;border:1.5px solid #E5E7EB;border-radius:12px;padding:16px 18px;min-width:130px;text-align:center;flex:1}
+.mv{font-size:26px;font-weight:900;color:var(--report-primary, #1D2F5F);line-height:1.1}
+.mu{font-size:11px;color:#9CA3AF;margin:3px 0}.ml{font-size:12px;font-weight:700}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse}
+th{background:var(--report-primary, #1D2F5F);color:#fff;padding:9px 14px;text-align:right;font-size:12px;font-weight:700}
+td{padding:9px 14px;border-bottom:1px solid #E5E7EB;font-size:13px}
+tr:hover td{background:#FFF0EA}
+.scg{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.sc{background:#F4F6FA;border:1.5px solid #E5E7EB;border-radius:10px;padding:12px;text-align:center}
+.scl{font-size:11px;color:var(--report-primary, #1D2F5F);font-weight:700;margin-bottom:8px}
+.scv{font-size:13px;font-weight:800;padding:6px 12px;border-radius:7px;display:inline-block}
+.sc-good{background:#dcfce7;color:#16a34a}.sc-bad{background:#fee2e2;color:#dc2626}.sc-warn{background:#fef3c7;color:#d97706}.sc-none{background:#fff;color:#9CA3AF;border:1px solid #E5E7EB}
+.st{display:inline-block;padding:8px 18px;border-radius:10px;font-size:14px;font-weight:800}
+@media print{body{padding:0;background:#fff}.rpt{border:none;border-radius:0;box-shadow:none}}`;
+
+  return `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><title>${esc(title)}</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link href="/css/themes.css" rel="stylesheet">
+<style>${styles}</style>
+</head>
+<body class="theme-${theme}">
+<div class="rpt">
+  <div class="rh">
+    <h1>${esc(title)}</h1>
+    <div class="rm">
+      <span>📅 ${esc(week)}</span>
+      <span>👤 ${esc(userName)}</span>
+      <span>🕐 ${new Date().toLocaleDateString('ar-EG',{year:'numeric',month:'long',day:'numeric'})}</span>
+    </div>
+  </div>
+  ${body}
+</div>
+<script type="application/json" id="__rpt__">${JSON.stringify(secs).replace(/<\//g,'<\\/')}<\/script>
+</body>
+</html>`;
+}
+
+function showToast(msg, type='success') {
+  if (window.Toast) return Toast.show(msg, type === 'success' ? 'success' : type === 'error' ? 'error' : 'info');
+  const t = document.getElementById('toast');
+  if (t) { t.textContent = msg; t.className = `toast ${type} show`; setTimeout(() => t.classList.remove('show'), 2800); }
+}
+
+init();
+</script>
+</body>
+</html>

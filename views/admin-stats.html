@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الإحصائيات — لوحة الأدمن</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/components.css">
+<link rel="stylesheet" href="/css/dark-mode.css">
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="/js/app-shell.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --navy: #1D2F5F; --orange: #FF6B2B; --orange-soft: #FFF0EA;
+  --bg: #F4F6FA; --white: #FFFFFF; --gray: #4B5563;
+  --gray-light: #9CA3AF; --border: #E5E7EB;
+  --green: #16a34a; --green-soft: #dcfce7;
+  --yellow: #d97706; --yellow-soft: #fef3c7;
+  --red: #dc2626; --red-soft: #fee2e2;
+  --shadow: 0 2px 8px rgba(29,47,95,0.09);
+  --shadow-md: 0 4px 20px rgba(29,47,95,0.14);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--gray); direction: rtl; min-height: 100vh; }
+
+.header { background: var(--navy); border-bottom: 3px solid var(--orange); box-shadow: var(--shadow-md); position: sticky; top: 0; z-index: 100; }
+.header-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; gap: 14px; }
+.back-btn { display: flex; align-items: center; gap: 7px; padding: 8px 14px; background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,255,255,0.2); border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 700; color: #fff; cursor: pointer; text-decoration: none; }
+.back-btn:hover { background: rgba(255,255,255,0.2); }
+.htitle { font-size: 16px; font-weight: 900; color: #fff; }
+
+.body { max-width: 1200px; margin: 24px auto 80px; padding: 0 24px; }
+
+/* Stat cards */
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+@media (max-width: 768px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+.stat-card { background: var(--white); border-radius: 14px; border: 1.5px solid var(--border); padding: 20px; box-shadow: var(--shadow); }
+.stat-card .icon { font-size: 24px; margin-bottom: 8px; }
+.stat-card .num { font-size: 30px; font-weight: 900; color: var(--navy); line-height: 1.1; }
+.stat-card .label { font-size: 12px; color: var(--gray-light); margin-top: 6px; }
+.stat-card .badge { display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; margin-top: 8px; }
+.stat-card .badge-green { background: var(--green-soft); color: var(--green); }
+.stat-card .badge-yellow { background: var(--yellow-soft); color: var(--yellow); }
+.stat-card .badge-red { background: var(--red-soft); color: var(--red); }
+
+/* Cards */
+.card { background: var(--white); border-radius: 14px; border: 1.5px solid var(--border); box-shadow: var(--shadow); margin-bottom: 18px; overflow: hidden; }
+.card-head { padding: 14px 20px; border-bottom: 1.5px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.card-head h3 { font-size: 15px; font-weight: 800; color: var(--navy); }
+.card-body { padding: 20px; }
+
+.charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
+@media (max-width: 980px) { .charts-row { grid-template-columns: 1fr; } }
+
+table { width: 100%; border-collapse: collapse; }
+th { background: var(--bg); color: var(--navy); font-weight: 700; padding: 10px 14px; text-align: right; font-size: 12px; border-bottom: 1.5px solid var(--border); }
+td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 13px; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--orange-soft); }
+
+.empty { padding: 30px; text-align: center; color: var(--gray-light); font-size: 14px; }
+
+.compare-row { display: flex; gap: 12px; align-items: end; margin-bottom: 14px; flex-wrap: wrap; }
+.compare-row .fg { flex: 1; min-width: 180px; }
+.compare-row label { display: block; font-size: 12px; font-weight: 700; color: var(--navy); margin-bottom: 5px; }
+.compare-row select, .compare-row input { width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 13px; background: var(--bg); outline: none; }
+.compare-row button { padding: 9px 22px; background: var(--orange); color: #fff; border: none; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; }
+
+/* ── Compare Forms Enhanced Styling ──────────────────────────────── */
+.compare-section {
+  padding: 20px;
+}
+.compare-filters {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.compare-filters-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 160px;
+  flex: 1;
+}
+.filter-group.wide { flex: 2; }
+.filter-group label {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--navy);
+  letter-spacing: 0.2px;
+}
+.filter-group select,
+.filter-group input[type="date"],
+.filter-group input[type="text"] {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-family: 'Cairo', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--navy);
+  background: var(--bg);
+  outline: none;
+  transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left 12px center;
+  padding-left: 36px;
+}
+.filter-group input[type="date"] {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E");
+}
+.filter-group select:focus,
+.filter-group input[type="date"]:focus {
+  border-color: var(--navy);
+  background-color: var(--white);
+  box-shadow: 0 0 0 3px rgba(29,47,95,0.08);
+}
+.filter-group select:hover,
+.filter-group input[type="date"]:hover {
+  border-color: var(--gray-light);
+  background-color: var(--white);
+}
+.compare-btn {
+  padding: 10px 24px;
+  background: var(--orange);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Cairo', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.18s;
+  white-space: nowrap;
+  align-self: flex-end;
+  height: 43px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.compare-btn:hover {
+  background: #e85a1c;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255,107,43,0.3);
+}
+.compare-btn:active {
+  transform: scale(0.98);
+}
+.compare-divider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gray-light);
+  padding: 4px 0;
+}
+.compare-divider::before,
+.compare-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.compare-result {
+  margin-top: 16px;
+}
+.compare-result table {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.compare-result th {
+  background: var(--navy);
+  color: #fff;
+  padding: 10px 14px;
+  font-size: 12px;
+}
+.compare-result td {
+  font-size: 13px;
+  padding: 10px 14px;
+}
+
+/* Team checkboxes grid */
+.team-checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  max-height: 150px;
+  overflow-y: auto;
+}
+.team-check-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--navy);
+  transition: all 0.15s;
+  user-select: none;
+}
+.team-check-label:hover {
+  border-color: var(--orange);
+  background: var(--orange-soft);
+  color: var(--orange);
+}
+.team-check-label input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--orange);
+  cursor: pointer;
+}
+.team-check-label:has(input:checked) {
+  border-color: var(--orange);
+  background: var(--orange-soft);
+  color: var(--orange);
+}
+
+.diff-pos { color: var(--green); font-weight: 700; }
+.diff-neg { color: var(--red); font-weight: 700; }
+.diff-zero { color: var(--gray-light); font-weight: 500; }
+
+.late-row { background: var(--red-soft); }
+.late-row td { color: var(--red); }
+
+/* Heatmap */
+.heatmap-grid { overflow-x: auto; }
+.heatmap-row { display: flex; align-items: center; gap: 4px; margin-bottom: 4px; min-width: max-content; }
+.heatmap-team-name { min-width: 120px; max-width: 120px; font-size: 11px; font-weight: 700; color: var(--navy); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-shrink: 0; }
+.heatmap-week-label { width: 40px; text-align: center; font-size: 10px; color: var(--gray-light); font-weight: 600; flex-shrink: 0; }
+.heatmap-cell { width: 40px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; cursor: default; flex-shrink: 0; transition: transform 0.1s; }
+.heatmap-cell:hover { transform: scale(1.15); z-index: 1; position: relative; }
+.heatmap-legend { display: flex; align-items: center; gap: 6px; margin-top: 12px; font-size: 11px; color: var(--gray-light); }
+.heatmap-legend-cell { width: 20px; height: 12px; border-radius: 3px; display: inline-block; }
+</style>
+</head>
+<body>
+
+<header class="global-topbar">
+  <div class="brand-block">
+    <a href="/admin"><img src="/img/logo.jpg" alt="Marketing Experts" class="brand-logo"></a>
+  </div>
+  <a href="/admin" class="tb-ic-btn" title="لوحة التحكم" style="text-decoration:none;width:auto;padding:0 12px;gap:6px;font-size:12px;font-weight:700">
+    <span data-icon="arrow-right"></span> لوحة التحكم
+  </a>
+  <span style="flex:1;text-align:center;font-size:14px;font-weight:800;color:var(--navy)"><span data-icon="bar-chart-3"></span> الإحصائيات والتحليلات</span>
+  <div class="topbar-actions">
+    <button class="tb-ic-btn theme-toggle" onclick="toggleTheme()" title="الوضع الليلي" id="themeToggleBtn">🌙</button>
+  </div>
+</header>
+
+<div class="body">
+
+  <div class="stats-grid stagger-in">
+    <div class="stat-card">
+      <div class="icon">📋</div>
+      <div class="num" id="stat-total">—</div>
+      <div class="label">إجمالي التقارير</div>
+    </div>
+    <div class="stat-card">
+      <div class="icon">👥</div>
+      <div class="num" id="stat-users">—</div>
+      <div class="label">عدد الموظفين</div>
+    </div>
+    <div class="stat-card">
+      <div class="icon">📅</div>
+      <div class="num" id="stat-thisweek">—</div>
+      <div class="label">تقارير هذا الأسبوع</div>
+    </div>
+    <div class="stat-card">
+      <div class="icon">✅</div>
+      <div class="num" id="stat-rate">—</div>
+      <div class="label">معدل التسليم</div>
+      <span class="badge" id="stat-rate-badge"></span>
+    </div>
+  </div>
+
+  <div class="charts-row">
+    <div class="card">
+      <div class="card-head"><h3>📊 التقارير حسب الأسبوع</h3></div>
+      <div class="card-body" style="height:300px"><canvas id="chartByWeek"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h3>👥 التقارير حسب الموظف</h3></div>
+      <div class="card-body" style="height:300px"><canvas id="chartByUser"></canvas></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h3>🚨 الموظفون المتأخرون هذا الأسبوع</h3></div>
+    <div class="card-body" style="padding:0">
+      <table id="lateTable">
+        <thead><tr><th>الاسم</th><th>الإيميل</th><th>الحالة</th></tr></thead>
+        <tbody><tr><td colspan="3" class="empty">جاري التحميل...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h3>📈 متوسطات الـ Metrics</h3></div>
+    <div class="card-body" style="padding:0">
+      <table id="metricsTable">
+        <thead><tr><th>المؤشر</th><th>المتوسط</th><th>المجموع</th><th>أقل</th><th>أعلى</th><th>عدد القياسات</th></tr></thead>
+        <tbody><tr><td colspan="6" class="empty">جاري التحميل...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Heatmap (Add 5) -->
+  <div class="card">
+    <div class="card-head"><h3>🔥 Heatmap — معدل التسليم لكل فريق على آخر 12 أسبوع</h3></div>
+    <div class="card-body" style="padding:12px">
+      <div id="heatmap"><div class="empty">جاري التحميل...</div></div>
+      <div class="heatmap-legend">
+        <span>0%</span>
+        <span class="heatmap-legend-cell" style="background:#fee2e2"></span>
+        <span class="heatmap-legend-cell" style="background:#fef3c7"></span>
+        <span class="heatmap-legend-cell" style="background:#dcfce7"></span>
+        <span class="heatmap-legend-cell" style="background:#16a34a"></span>
+        <span>100%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Team Comparison مع فلاتر تاريخ/أسبوع -->
+  <div class="card">
+    <div class="card-head"><h3>⚖️ مقارنة بين فرق</h3></div>
+    <div class="compare-section">
+      <div class="compare-filters">
+        <div class="compare-filters-row">
+          <div class="filter-group wide">
+            <label>اختر فرقاً للمقارنة (2 → 4 فرق)</label>
+            <div id="teamCheckboxes" class="team-checks">جاري التحميل...</div>
+          </div>
+        </div>
+        <div class="compare-filters-row">
+          <div class="filter-group">
+            <label>الأسبوع</label>
+            <select id="cmpWeekFilter">
+              <option value="">كل الأسابيع</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>من تاريخ</label>
+            <input type="date" id="cmpFromDate">
+          </div>
+          <div class="filter-group">
+            <label>إلى تاريخ</label>
+            <input type="date" id="cmpToDate">
+          </div>
+          <button class="compare-btn" onclick="runTeamCompare()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            قارن
+          </button>
+        </div>
+      </div>
+      <div class="compare-result" id="teamCompareResult"></div>
+    </div>
+  </div>
+
+  <!-- Week Comparison محسّنة -->
+  <div class="card">
+    <div class="card-head"><h3>🔄 مقارنة بين أسبوعين</h3></div>
+    <div class="compare-section">
+      <div class="compare-filters">
+        <div class="compare-filters-row">
+          <div class="filter-group">
+            <label>الأسبوع الأول</label>
+            <select id="cmpWeek1"></select>
+          </div>
+          <div class="compare-divider">VS</div>
+          <div class="filter-group">
+            <label>الأسبوع الثاني</label>
+            <select id="cmpWeek2"></select>
+          </div>
+          <div class="filter-group">
+            <label>الفريق (اختياري)</label>
+            <select id="cmpTeamFilter">
+              <option value="">كل الفرق</option>
+            </select>
+          </div>
+          <button class="compare-btn" onclick="runCompare()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            قارن
+          </button>
+        </div>
+      </div>
+      <div class="compare-result" id="compareResult"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let overview = null;
+
+async function init() {
+  const session = await fetch('/api/session').then(r => r.json());
+  if (!session || session.role !== 'admin') return location.href = '/login';
+
+  overview = await fetch('/api/admin/stats/overview').then(r => r.json());
+  try { renderStats(); } catch(e) { console.error('renderStats error:', e); }
+  loadHeatmap();
+  loadTeamCheckboxes();
+  loadAvailableWeeks();
+  loadTeamsForFilter();
+
+  const cur = document.documentElement.getAttribute('data-theme') || 'light';
+  const tb = document.getElementById('themeToggleBtn');
+  if (tb) tb.textContent = cur === 'dark' ? '☀️' : '🌙';
+}
+
+// ── Heatmap ─────────────────────────────────────────────────────────────────
+async function loadHeatmap() {
+  const cnt = document.getElementById('heatmap');
+  try {
+    const data = await fetch('/api/admin/heatmap').then(r => r.json());
+    if (!data.grid || !data.grid.length) {
+      cnt.innerHTML = '<div class="empty">لا توجد بيانات — تأكد من وجود فرق وتقارير مرفوعة</div>';
+      return;
+    }
+    const headerRow = `<div class="heatmap-row" style="margin-bottom:6px">
+      <div style="min-width:120px"></div>${(data.weeks||[]).map(w => `<div class="heatmap-week-label">${w.num}</div>`).join('')}
+    </div>`;
+    const rows = data.grid.map(row => {
+      const cells = (row.cells||[]).map(c => {
+        const color = rateColor(c.rate);
+        return `<div class="heatmap-cell" style="background:${color};color:${c.rate > 50 ? '#fff' : '#374151'}" title="أسبوع ${c.week}: ${c.submitted}/${c.total} (${c.rate}%)">${c.rate}%</div>`;
+      }).join('');
+      return `<div class="heatmap-row">
+        <div class="heatmap-team-name" title="${escSafe(row.team)}">${escSafe(row.team)}</div>
+        ${cells}
+      </div>`;
+    }).join('');
+    cnt.innerHTML = `<div class="heatmap-grid">${headerRow}${rows}</div>`;
+  } catch(e) {
+    console.error('heatmap error:', e);
+    cnt.innerHTML = '<div class="empty">تعذّر تحميل الـ Heatmap</div>';
+  }
+}
+function rateColor(rate) {
+  if (rate === 0)        return '#fee2e2';
+  if (rate < 40)         return '#fecaca';
+  if (rate < 60)         return '#fef3c7';
+  if (rate < 80)         return '#bbf7d0';
+  if (rate < 100)        return '#86efac';
+  return '#16a34a';
+}
+
+// ── Team Comparison ─────────────────────────────────────────────────────────
+async function loadTeamCheckboxes() {
+  const cnt = document.getElementById('teamCheckboxes');
+  try {
+    let list = [];
+    const teamsRes = await fetch('/api/admin/teams');
+    if (teamsRes.ok) {
+      const teams = await teamsRes.json();
+      if (Array.isArray(teams) && teams.length) list = teams;
+    }
+    if (!list.length) {
+      const tmplRes = await fetch('/api/admin/templates');
+      if (tmplRes.ok) {
+        const tmpls = await tmplRes.json();
+        if (Array.isArray(tmpls)) list = tmpls;
+      }
+    }
+    if (!list.length) {
+      cnt.innerHTML = '<div style="font-size:12px;color:var(--gray-light)">لا توجد فرق — أضف فرقاً أولاً من لوحة التحكم</div>';
+      return;
+    }
+    cnt.innerHTML = list.map(t => `
+      <label class="team-check-label">
+        <input type="checkbox" name="team" value="${t.id}">
+        ${escSafe(t.name)}
+      </label>`).join('');
+  } catch(e) {
+    console.error('loadTeamCheckboxes error:', e);
+    cnt.innerHTML = '<div style="font-size:12px;color:var(--gray-light)">تعذّر تحميل الفرق</div>';
+  }
+}
+function escSafe(s){return String(s||'').replace(/</g,'&lt;')}
+
+async function loadAvailableWeeks() {
+  try {
+    const data = await fetch('/api/admin/available-weeks').then(r => r.json());
+    const weeks = Array.isArray(data.weeks) ? data.weeks : [];
+    ['cmpWeekFilter', 'cmpWeek1', 'cmpWeek2'].forEach(id => {
+      const sel = document.getElementById(id);
+      if (!sel) return;
+      const isOptional = id === 'cmpWeekFilter';
+      sel.innerHTML = (isOptional ? '<option value="">كل الأسابيع</option>' : '<option value="">— اختر أسبوعاً —</option>') +
+        weeks.map(w => `<option value="${escSafe(w)}">${escSafe(w)}</option>`).join('');
+    });
+    if (weeks.length >= 2) {
+      document.getElementById('cmpWeek1').value = weeks[1];
+      document.getElementById('cmpWeek2').value = weeks[0];
+    }
+  } catch(e) {
+    console.error('loadAvailableWeeks error:', e);
+  }
+}
+
+async function loadTeamsForFilter() {
+  const teams = await fetch('/api/admin/teams').then(r => r.json());
+  const sel = document.getElementById('cmpTeamFilter');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">كل الفرق</option>' +
+    teams.map(t => `<option value="${t.id}">${escSafe(t.name)}</option>`).join('');
+}
+
+function barCell(pct) {
+  const color = pct >= 80 ? '#16a34a' : pct >= 50 ? '#FF6B2B' : '#dc2626';
+  return `<div style="display:flex;align-items:center;gap:6px;justify-content:center">
+    <div style="width:60px;height:6px;background:var(--bg);border-radius:3px;overflow:hidden">
+      <div style="width:${pct}%;height:100%;background:${color}"></div>
+    </div>
+    <strong>${pct}%</strong>
+  </div>`;
+}
+
+async function runTeamCompare() {
+  const checked = Array.from(document.querySelectorAll('input[name=team]:checked')).map(c => c.value);
+  if (checked.length < 2) return Toast.warning('اختر فريقين على الأقل');
+  if (checked.length > 4) return Toast.warning('بحد أقصى 4 فرق');
+
+  const resultEl = document.getElementById('teamCompareResult');
+  resultEl.innerHTML = '<div class="empty">جاري المقارنة...</div>';
+
+  try {
+    const week = document.getElementById('cmpWeekFilter')?.value || '';
+    const from = document.getElementById('cmpFromDate')?.value || '';
+    const to   = document.getElementById('cmpToDate')?.value || '';
+
+    let url = '/api/admin/teams/compare?teams=' + checked.join(',');
+    if (week) url += '&week=' + encodeURIComponent(week);
+    if (from) url += '&from=' + from + 'T00:00:00.000Z';
+    if (to)   url += '&to='   + to   + 'T23:59:59.999Z';
+
+    const data = await fetch(url).then(r => r.json());
+    if (!data || data.error) {
+      resultEl.innerHTML = `<div class="empty">${data?.error || 'حدث خطأ'}</div>`;
+      return;
+    }
+
+    const teams = Array.isArray(data.teams) ? data.teams : [];
+    if (!teams.length) {
+      resultEl.innerHTML = '<div class="empty">لا توجد بيانات للفرق المختارة</div>';
+      return;
+    }
+
+    const allMetricLabels = new Set();
+    teams.forEach(t => Object.keys(t.avg_metrics || {}).forEach(l => allMetricLabels.add(l)));
+
+    const filters = data.filters || {};
+    const filterText = [
+      filters.week ? 'الأسبوع: ' + escSafe(filters.week) : null,
+      filters.from ? 'من ' + filters.from.slice(0,10) : null,
+      filters.to   ? 'إلى ' + filters.to.slice(0,10) : null,
+    ].filter(Boolean).join(' • ') || 'كل الفترات';
+
+    const html = `
+      <div style="background:var(--bg);padding:8px 14px;border-radius:8px;margin-bottom:10px;font-size:11px;color:var(--gray)">${filterText}</div>
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:13px">
+          <thead>
+            <tr style="background:var(--bg)">
+              <th style="text-align:right;padding:10px;border-bottom:2px solid var(--border)">المقياس</th>
+              ${teams.map(t => `<th style="text-align:center;padding:10px;border-bottom:2px solid var(--border);color:var(--navy)">${escSafe(t.name)}</th>`).join('')}
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td style="padding:10px;font-weight:700">عدد الأعضاء</td>${teams.map(t => `<td style="text-align:center;padding:10px">${t.total_members ?? '—'}</td>`).join('')}</tr>
+            <tr style="background:var(--bg)"><td style="padding:10px;font-weight:700">عدد التقارير</td>${teams.map(t => `<td style="text-align:center;padding:10px">${t.total_reports ?? '—'}</td>`).join('')}</tr>
+            <tr><td style="padding:10px;font-weight:700">معدل التسليم</td>${teams.map(t => `<td style="text-align:center;padding:10px">${barCell(t.submission_rate ?? 0)}</td>`).join('')}</tr>
+            <tr style="background:var(--bg)"><td style="padding:10px;font-weight:700">Scorecard ✓</td>${teams.map(t => `<td style="text-align:center;padding:10px">${barCell(t.scorecard_yes_rate ?? 0)}</td>`).join('')}</tr>
+            <tr><td style="padding:10px;font-weight:700">Traffic 🟢</td>${teams.map(t => `<td style="text-align:center;padding:10px">${barCell(t.traffic_green_rate ?? 0)}</td>`).join('')}</tr>
+            <tr style="background:var(--bg)"><td style="padding:10px;font-weight:700">متوسط التعليقات/تقرير</td>${teams.map(t => `<td style="text-align:center;padding:10px">${t.avg_comments ?? '—'}</td>`).join('')}</tr>
+            ${Array.from(allMetricLabels).map(label => `
+              <tr><td style="padding:10px;font-weight:600;color:var(--gray)">${escSafe(label)}</td>${teams.map(t => `<td style="text-align:center;padding:10px">${t.avg_metrics?.[label]?.value ?? '—'}</td>`).join('')}</tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+    resultEl.innerHTML = html;
+  } catch(e) {
+    console.error('runTeamCompare error:', e);
+    document.getElementById('teamCompareResult').innerHTML = '<div class="empty">حدث خطأ أثناء المقارنة</div>';
+  }
+}
+
+function renderStats() {
+  document.getElementById('stat-total').textContent = overview.totalReports;
+  document.getElementById('stat-users').textContent = overview.totalUsers;
+  document.getElementById('stat-thisweek').textContent = overview.thisWeekCount;
+  document.getElementById('stat-rate').textContent = overview.submissionRate + '%';
+
+  const rateBadge = document.getElementById('stat-rate-badge');
+  if (overview.submissionRate >= 80) { rateBadge.className = 'badge badge-green'; rateBadge.textContent = 'ممتاز'; }
+  else if (overview.submissionRate >= 50) { rateBadge.className = 'badge badge-yellow'; rateBadge.textContent = 'متوسط'; }
+  else { rateBadge.className = 'badge badge-red'; rateBadge.textContent = 'منخفض'; }
+
+  drawByWeekChart();
+  drawByUserChart();
+  renderLate();
+  renderMetrics();
+}
+
+function drawByWeekChart() {
+  const labels = Object.keys(overview.byWeek);
+  const data = labels.map(l => overview.byWeek[l]);
+  if (!labels.length) { document.getElementById('chartByWeek').parentElement.innerHTML = '<div class="empty">لا توجد بيانات</div>'; return; }
+  new Chart(document.getElementById('chartByWeek'), {
+    type: 'bar',
+    data: { labels, datasets: [{ label: 'تقارير', data, backgroundColor: '#FF6B2B', borderRadius: 6 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+  });
+}
+
+function drawByUserChart() {
+  const labels = Object.keys(overview.byUser);
+  const data = labels.map(l => overview.byUser[l]);
+  if (!labels.length) { document.getElementById('chartByUser').parentElement.innerHTML = '<div class="empty">لا توجد بيانات</div>'; return; }
+  new Chart(document.getElementById('chartByUser'), {
+    type: 'bar',
+    data: { labels, datasets: [{ label: 'تقارير', data, backgroundColor: '#1D2F5F', borderRadius: 6 }] },
+    options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+  });
+}
+
+function renderLate() {
+  const tbody = document.querySelector('#lateTable tbody');
+  if (!overview.lateUsers.length) {
+    tbody.innerHTML = '<tr><td colspan="3" class="empty">✅ كل الموظفين رفعوا تقاريرهم!</td></tr>';
+    return;
+  }
+  tbody.innerHTML = overview.lateUsers.map(u => `
+    <tr class="late-row">
+      <td><strong>${u.name}</strong></td>
+      <td dir="ltr" style="text-align:left">${u.email}</td>
+      <td>🔴 لم يرفع تقرير هذا الأسبوع</td>
+    </tr>`).join('');
+}
+
+function renderMetrics() {
+  const tbody = document.querySelector('#metricsTable tbody');
+  const entries = Object.values(overview.metricsAverages || {});
+  if (!entries.length) {
+    tbody.innerHTML = '<tr><td colspan="6" class="empty">لا توجد metrics بعد — ارفع تقارير تحتوي على أقسام من نوع Metrics</td></tr>';
+    return;
+  }
+  // Group by section
+  const bySection = {};
+  entries.forEach(m => {
+    const sec = m.section || 'Metrics';
+    if (!bySection[sec]) bySection[sec] = [];
+    bySection[sec].push(m);
+  });
+  const rows = [];
+  Object.entries(bySection).forEach(([section, metrics]) => {
+    rows.push(`<tr style="background:var(--bg)"><td colspan="6" style="padding:8px 14px;font-weight:800;color:var(--navy);font-size:12px">${escSafe(section)}</td></tr>`);
+    metrics.forEach(m => {
+      rows.push(`<tr>
+        <td><strong>${escSafe(m.label)}</strong>${m.unit ? ` <small style="color:var(--gray-light)">(${escSafe(m.unit)})</small>` : ''}</td>
+        <td>${m.avg}</td>
+        <td>${m.total}</td>
+        <td>${m.min}</td>
+        <td>${m.max}</td>
+        <td>${m.count}</td>
+      </tr>`);
+    });
+  });
+  tbody.innerHTML = rows.join('');
+}
+
+// runCompare → اسم legacy (للتوافق) — يستدعي runWeekCompare الجديدة
+async function runCompare() { return runWeekCompare(); }
+
+async function runWeekCompare() {
+  const week1 = document.getElementById('cmpWeek1').value;
+  const week2 = document.getElementById('cmpWeek2').value;
+  const teamId = document.getElementById('cmpTeamFilter')?.value || '';
+  if (!week1 || !week2) return Toast.warning('اختر الأسبوعين');
+  if (week1 === week2) return Toast.warning('الأسبوعين متطابقين');
+
+  const resultEl = document.getElementById('compareResult');
+  resultEl.innerHTML = '<div class="empty">جاري المقارنة...</div>';
+
+  try {
+    let url = `/api/admin/stats/compare?week1=${encodeURIComponent(week1)}&week2=${encodeURIComponent(week2)}`;
+    if (teamId) url += `&team_id=${teamId}`;
+
+    const data = await fetch(url).then(r => r.json());
+    if (!data || data.error) {
+      resultEl.innerHTML = `<div class="empty">${data?.error || 'حدث خطأ'}</div>`;
+      return;
+    }
+
+    const entries = Object.values(data.comparison || {});
+    if (!entries.length) {
+      resultEl.innerHTML = '<div style="padding:30px;text-align:center;color:var(--gray-light)">لا توجد metrics للمقارنة في هذين الأسبوعين</div>';
+      return;
+    }
+
+    const bySection = {};
+    entries.forEach(e => {
+      const sec = e.section || 'بدون قسم';
+      if (!bySection[sec]) bySection[sec] = [];
+      bySection[sec].push(e);
+    });
+
+    const html = `
+      <div style="background:var(--bg);padding:10px 14px;border-radius:8px;margin-bottom:14px;font-size:12px;color:var(--gray)">
+        <strong>${escSafe(data.week1)}</strong>: ${data.reports1_count ?? 0} تقرير
+        &nbsp;•&nbsp;
+        <strong>${escSafe(data.week2)}</strong>: ${data.reports2_count ?? 0} تقرير
+        ${data.team_id ? '&nbsp;•&nbsp;<strong>فريق محدد</strong>' : ''}
+      </div>
+      ${Object.entries(bySection).map(([section, metrics]) => `
+        <div style="margin-bottom:18px">
+          <div style="font-weight:800;color:var(--navy);font-size:13px;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border)">${escSafe(section)}</div>
+          <table style="width:100%;border-collapse:collapse;font-size:13px">
+            <thead>
+              <tr style="background:var(--bg)">
+                <th style="text-align:right;padding:8px 10px">المقياس</th>
+                <th style="text-align:center;padding:8px 10px">${escSafe(data.week1)}</th>
+                <th style="text-align:center;padding:8px 10px">${escSafe(data.week2)}</th>
+                <th style="text-align:center;padding:8px 10px">الفرق (متوسط)</th>
+                <th style="text-align:center;padding:8px 10px">% التغيير</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${metrics.map(m => {
+                const w1avg = m.week1?.avg ?? m.week1 ?? 0;
+                const w2avg = m.week2?.avg ?? m.week2 ?? 0;
+                const w1cnt = m.week1?.count ?? '';
+                const w2cnt = m.week2?.count ?? '';
+                const diff = typeof m.diff === 'number' ? m.diff : (w2avg - w1avg);
+                const change = typeof m.change === 'number' ? m.change : (w1avg !== 0 ? +((diff / w1avg) * 100).toFixed(1) : 0);
+                const upDown = change > 0 ? '▲' : change < 0 ? '▼' : '━';
+                const color = change > 0 ? '#16a34a' : change < 0 ? '#dc2626' : '#9CA3AF';
+                return `<tr style="border-bottom:1px solid var(--border)">
+                  <td style="padding:8px 10px;font-weight:600">${escSafe(m.label)}${m.unit ? ` <small style="color:var(--gray-light)">(${escSafe(m.unit)})</small>` : ''}</td>
+                  <td style="text-align:center;padding:8px 10px">${w1avg}${w1cnt !== '' ? ` <small style="color:var(--gray-light)">(n=${w1cnt})</small>` : ''}</td>
+                  <td style="text-align:center;padding:8px 10px">${w2avg}${w2cnt !== '' ? ` <small style="color:var(--gray-light)">(n=${w2cnt})</small>` : ''}</td>
+                  <td style="text-align:center;padding:8px 10px;color:${color};font-weight:700">${diff > 0 ? '+' : ''}${typeof diff === 'number' ? diff.toFixed(2) : diff}</td>
+                  <td style="text-align:center;padding:8px 10px;color:${color};font-weight:800">${upDown} ${Math.abs(change)}%</td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      `).join('')}
+    `;
+    resultEl.innerHTML = html;
+  } catch(e) {
+    console.error('runWeekCompare error:', e);
+    document.getElementById('compareResult').innerHTML = '<div class="empty">حدث خطأ أثناء المقارنة</div>';
+  }
+}
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تقاريري</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/components.css">
+<link rel="stylesheet" href="/css/dark-mode.css">
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="/js/app-shell.js"></script>
+<style>
+:root {
+  --navy: #1D2F5F; --navy-light: #263a75;
+  --orange: #FF6B2B; --orange-soft: #FFF0EA;
+  --bg: #F4F6FA; --white: #FFFFFF;
+  --gray: #4B5563; --gray-light: #9CA3AF; --border: #E5E7EB;
+  --green: #16a34a; --green-soft: #dcfce7;
+  --yellow: #d97706; --yellow-soft: #fef3c7;
+  --shadow: 0 2px 8px rgba(29,47,95,0.09);
+  --shadow-md: 0 4px 20px rgba(29,47,95,0.14);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--gray); direction: rtl; min-height: 100vh; }
+
+/* Old header removed — using global-topbar from components.css */
+
+/* .body styled inline now */
+
+.new-report-btn {
+  width: 100%; padding: 18px;
+  background: var(--navy); color: #fff;
+  border: none; border-radius: 14px;
+  font-family: 'Cairo', sans-serif; font-size: 16px; font-weight: 800;
+  cursor: pointer; transition: background .2s;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  margin-bottom: 28px; box-shadow: var(--shadow-md);
+}
+.new-report-btn:hover { background: var(--navy-light); }
+.new-report-btn svg { width: 22px; height: 22px; }
+
+.card {
+  background: var(--white); border-radius: 14px;
+  border: 1.5px solid var(--border); box-shadow: var(--shadow);
+  overflow: hidden; margin-bottom: 20px;
+}
+.card-head {
+  padding: 16px 20px; border-bottom: 1.5px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.card-head h3 { font-size: 15px; font-weight: 800; color: var(--navy); }
+.card-body { padding: 0; }
+
+table { width: 100%; border-collapse: collapse; }
+th { background: var(--bg); color: var(--navy); font-weight: 700; padding: 10px 16px; text-align: right; font-size: 12px; border-bottom: 1.5px solid var(--border); }
+td { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 13px; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--orange-soft); }
+
+.badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+.badge-green { background: var(--green-soft); color: var(--green); }
+.badge-yellow { background: var(--yellow-soft); color: var(--yellow); }
+.badge-navy { background: #e8ecf4; color: var(--navy); }
+.badge-red { background: #fee2e2; color: #dc2626; }
+
+/* Comments modal */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; display: none; align-items: center; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal { background: #fff; border-radius: 16px; padding: 22px; width: 540px; max-width: 95vw; max-height: 80vh; overflow-y: auto; box-shadow: 0 4px 30px rgba(0,0,0,0.25); border-top: 4px solid var(--orange); }
+.modal h3 { font-size: 16px; font-weight: 900; color: var(--navy); margin-bottom: 14px; }
+.cmt-list { display: flex; flex-direction: column; gap: 10px; }
+.cmt-item { background: var(--yellow-soft); border-right: 3px solid var(--yellow); border-radius: 8px; padding: 12px 14px; }
+.cmt-item .by { font-weight: 800; color: var(--navy); font-size: 13px; }
+.cmt-item .sec-ref { display: inline-block; padding: 2px 8px; background: #fff; border-radius: 5px; font-size: 11px; color: var(--navy); font-weight: 700; margin-bottom: 6px; }
+.cmt-item .text { margin: 6px 0; line-height: 1.7; font-size: 13px; }
+.cmt-item .meta { font-size: 11px; color: var(--gray-light); }
+.modal-foot { display: flex; gap: 10px; justify-content: flex-end; margin-top: 14px; }
+.modal-foot button { padding: 8px 16px; border-radius: 8px; border: none; font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; }
+.btn-modal-cancel { background: var(--bg); color: var(--gray); border: 1px solid var(--border); }
+
+.btn { padding: 6px 14px; border-radius: 8px; border: none; font-family: 'Cairo', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; transition: opacity .15s; }
+.btn:hover { opacity: 0.85; }
+.btn-primary { background: var(--navy); color: #fff; }
+.btn-orange { background: var(--orange); color: #fff; }
+.btn-ghost { background: var(--bg); color: var(--gray); border: 1.5px solid var(--border); }
+
+.empty-state { text-align: center; padding: 40px; color: var(--gray-light); }
+.empty-state .icon { font-size: 36px; margin-bottom: 10px; }
+
+.toast {
+  position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+  padding: 13px 28px; border-radius: 12px; font-size: 14px; font-weight: 700;
+  z-index: 9999; display: none; box-shadow: 0 4px 20px rgba(0,0,0,0.2); color: #fff;
+}
+.toast.show { display: block; animation: slideUp .3s ease; }
+.toast.success { background: var(--green); }
+.toast.info { background: var(--navy); }
+@keyframes slideUp { from { opacity:0; transform: translateX(-50%) translateY(10px); } to { opacity:1; transform: translateX(-50%) translateY(0); } }
+
+/* ── Leader Compare ──────────────────────────────────────────── */
+.lc-tab { padding: 6px 14px; border: 1.5px solid var(--border); background: var(--bg); color: var(--gray); border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.15s; }
+.lc-tab:hover { border-color: var(--orange); color: var(--orange); }
+.lc-tab.active { background: var(--orange); border-color: var(--orange); color: #fff; }
+.lc-pane { padding: 16px; }
+.lc-filters { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 14px; padding: 12px; background: var(--bg); border-radius: 10px; }
+.lc-fg { display: flex; flex-direction: column; gap: 4px; min-width: 140px; flex: 1; }
+.lc-fg label { font-size: 11px; font-weight: 800; color: var(--navy); }
+.lc-fg select, .lc-fg input[type="date"] {
+  padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 8px;
+  font-family: 'Cairo', sans-serif; font-size: 12px; font-weight: 600; color: var(--navy);
+  background: var(--white); outline: none; cursor: pointer;
+}
+.lc-fg select:focus, .lc-fg input[type="date"]:focus { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(29,47,95,0.08); }
+.lc-vs { flex: 0 0 auto; min-width: auto; align-items: center; justify-content: center; font-weight: 800; color: var(--gray-light); padding: 0 6px; padding-bottom: 8px; }
+.lc-btn { padding: 9px 22px; background: var(--orange); color: #fff; border: none; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 800; cursor: pointer; height: 38px; transition: all 0.18s; }
+.lc-btn:hover { background: #e85a1c; transform: translateY(-1px); }
+.lc-result { margin-top: 8px; }
+.lc-result table { width: 100%; border-collapse: collapse; font-size: 12px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.lc-result th { background: var(--navy); color: #fff; padding: 8px 10px; font-weight: 700; text-align: right; font-size: 11px; }
+.lc-result td { padding: 8px 10px; border-bottom: 1px solid var(--border); }
+.lc-result tr:last-child td { border-bottom: none; }
+.lc-result .lc-section-title { font-weight: 800; color: var(--navy); font-size: 12px; margin: 14px 0 6px; padding-bottom: 4px; border-bottom: 1px solid var(--border); }
+.lc-empty { padding: 24px; text-align: center; color: var(--gray-light); font-size: 13px; }
+.lc-pos { color: var(--green); font-weight: 800; }
+.lc-neg { color: var(--red); font-weight: 800; }
+.lc-zero { color: var(--gray-light); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<header class="global-topbar">
+  <div class="brand-block">
+    <a href="/employee"><img src="/img/logo.jpg" alt="Marketing Experts" class="brand-logo"></a>
+  </div>
+  <a href="/org" class="tb-ic-btn" title="الهيكل الإداري" style="text-decoration:none;width:auto;padding:0 12px;gap:6px;font-size:12px;font-weight:700">
+    <span data-icon="git-branch"></span> الهيكل الإداري
+  </a>
+  <div style="flex:1"></div>
+  <div class="topbar-actions">
+    <button class="tb-ic-btn" title="الإشعارات"><span data-icon="bell"></span></button>
+    <button class="tb-ic-btn theme-toggle" onclick="toggleTheme()" title="الوضع الليلي" id="themeToggleBtn">🌙</button>
+    <div class="user-avatar-tb" id="avatarInit">؟</div>
+    <span class="username" id="empName" style="font-size:13px;font-weight:700;color:var(--navy);margin: 0 4px">...</span>
+    <button onclick="location.href='/logout'" class="tb-ic-btn" title="خروج"><span data-icon="log-out"></span></button>
+  </div>
+</header>
+
+<div class="body" style="max-width:920px;margin:24px auto 60px;padding:0 24px">
+
+  <!-- Notification Banner -->
+  <div class="notif-banner" id="notifBanner" style="display:none">
+    🔔 فعّل التذكيرات لاستقبال إشعار قبل deadline التقرير الأسبوعي
+    <button onclick="enableNotifications()">فعّل الإشعارات</button>
+    <button class="close" onclick="dismissNotifBanner()">✕</button>
+  </div>
+
+  <!-- Daily Goal Banner -->
+  <div class="daily-goal" id="dailyGoal" style="display:none">
+    <div class="dg-icon">🎯</div>
+    <div class="dg-text" id="dgText">حدّد هدف اليوم</div>
+    <input type="text" id="dgInput" placeholder="مثال: اكمل قسم في 5 دقايق" maxlength="80" />
+    <button onclick="saveDailyGoal()">احفظ</button>
+    <button class="dg-close" onclick="dismissDailyGoal()">✕</button>
+  </div>
+
+  <!-- Hero Card -->
+  <div class="hero-card" id="heroCard">
+    <div class="hero-row">
+      <div class="hero-text">
+        <div class="hero-greet" id="heroGreet">السلام عليكم 👋</div>
+        <div class="hero-title" id="heroTitle">جاري التحميل...</div>
+        <div class="hero-sub" id="heroSub">—</div>
+      </div>
+      <a class="hero-cta" id="heroCta" href="/employee/new"><span>+</span> ابدأ التقرير</a>
+    </div>
+    <div class="progress-row">
+      <div class="prog-item">
+        <div class="prog-label">إنجازك هذا الأسبوع</div>
+        <div class="prog-value" id="weekDone">0 / 1</div>
+        <div class="prog-bar"><div id="weekBar" style="width:0%"></div></div>
+      </div>
+      <div class="prog-item">
+        <div class="prog-label">معدل التسليم</div>
+        <div class="prog-value" id="rateVal">—</div>
+        <div class="prog-bar"><div id="rateBar" style="width:0%;background:var(--green)"></div></div>
+      </div>
+      <div class="prog-item">
+        <div class="prog-label">تتابع التسليم 🔥</div>
+        <div class="prog-value" id="streakVal">—</div>
+        <div class="prog-bar"><div id="streakBar" style="width:0%;background:var(--orange)"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Week Strip -->
+  <div class="week-strip" id="weekStrip"></div>
+
+  <!-- Inline Feedback -->
+  <div class="feedback-card" id="latestFeedback" style="display:none">
+    <div class="fb-head">
+      <span class="fb-pill">💬 تعليق جديد من المدير</span>
+      <span class="fb-context" id="fbContext">—</span>
+    </div>
+    <div class="fb-text" id="fbText"></div>
+    <div class="fb-meta">
+      <span id="fbAuthor">—</span> · <span id="fbTime">—</span> ·
+      <a href="#" class="fb-action" id="fbLink">اضغط لعرض التقرير ←</a>
+    </div>
+  </div>
+
+  <div class="card" id="draftsCard" style="display:none">
+    <div class="card-head">
+      <h3>📝 مسودات غير مرسلة</h3>
+      <span id="draftsCount" class="badge badge-yellow">0</span>
+    </div>
+    <div class="card-body">
+      <table>
+        <thead><tr><th>العنوان</th><th>الأسبوع</th><th>آخر تعديل</th><th>إجراءات</th></tr></thead>
+        <tbody id="draftsBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <h3>التقارير المرسلة</h3>
+      <span id="submittedCount" class="badge badge-navy">0</span>
+    </div>
+    <div class="card-body">
+      <table>
+        <thead><tr><th>العنوان</th><th>الأسبوع</th><th>تاريخ الإرسال</th><th>عرض</th></tr></thead>
+        <tbody id="submittedBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Team Leader Section (يظهر لو is_team_leader=true) -->
+  <div class="card" id="leaderSection" style="display:none;margin-bottom:18px">
+    <div class="card-head">
+      <h3>👥 تقارير فريقي</h3>
+      <span class="badge badge-yellow" id="teamSize">— عضو</span>
+    </div>
+    <div id="teamReportsList" style="padding:0"></div>
+  </div>
+
+  <!-- Leader Compare Section (يظهر لو is_team_leader && can_compare_team) — آخر سيكشن في الصفحة -->
+  <div class="card" id="leaderCompareSection" style="display:none;margin-bottom:18px">
+    <div class="card-head">
+      <h3>📊 مقارنة الفريق</h3>
+      <div style="display:flex;gap:6px">
+        <button class="lc-tab active" data-tab="members" onclick="switchCompareTab('members')">بين الأعضاء</button>
+        <button class="lc-tab" data-tab="weeks" onclick="switchCompareTab('weeks')">بين أسبوعين</button>
+      </div>
+    </div>
+
+    <div id="lc-pane-members" class="lc-pane">
+      <div class="lc-filters">
+        <div class="lc-fg">
+          <label>الأسبوع</label>
+          <select id="lcWeek"><option value="">كل الأسابيع</option></select>
+        </div>
+        <div class="lc-fg">
+          <label>من تاريخ</label>
+          <input type="date" id="lcFrom">
+        </div>
+        <div class="lc-fg">
+          <label>إلى تاريخ</label>
+          <input type="date" id="lcTo">
+        </div>
+        <button class="lc-btn" onclick="runMemberCompare()">قارن</button>
+      </div>
+      <div id="lcMembersResult" class="lc-result"></div>
+    </div>
+
+    <div id="lc-pane-weeks" class="lc-pane" style="display:none">
+      <div class="lc-filters">
+        <div class="lc-fg">
+          <label>الأسبوع الأول</label>
+          <select id="lcWeek1"></select>
+        </div>
+        <div class="lc-fg lc-vs">VS</div>
+        <div class="lc-fg">
+          <label>الأسبوع الثاني</label>
+          <select id="lcWeek2"></select>
+        </div>
+        <button class="lc-btn" onclick="runWeeksCompare()">قارن</button>
+      </div>
+      <div id="lcWeeksResult" class="lc-result"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Comments Modal -->
+<div class="modal-overlay" id="cmtModal" onclick="if(event.target===this)closeCmtModal()">
+  <div class="modal">
+    <h3>💬 تعليقات الأدمن على التقرير</h3>
+    <div class="cmt-list" id="cmtList"></div>
+    <div class="modal-foot">
+      <button class="btn-modal-cancel" onclick="closeCmtModal()">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast success" id="toast"></div>
+
+<script>
+async function init() {
+  const msg = sessionStorage.getItem('reportMsg');
+  if (msg) { Toast.success(msg); sessionStorage.removeItem('reportMsg'); }
+
+  // Skeletons قبل التحميل
+  showSkeleton('weekStrip', 'card', 1);
+  showSkeleton('submittedBody', 'row', 3);
+
+  const [meData, streakData, weekData, fbData] = await Promise.all([
+    fetch('/api/employee/me').then(r => r.json()),
+    fetch('/api/employee/streak').then(r => r.json()),
+    fetch('/api/employee/week-history').then(r => r.json()),
+    fetch('/api/employee/latest-feedback').then(r => r.json()),
+  ]);
+
+  const { user, reports, drafts } = meData;
+
+  document.getElementById('empName').textContent = user.name;
+  document.getElementById('avatarInit').textContent = user.name.charAt(0);
+
+  renderHero(user, drafts, streakData);
+  renderWeekStrip(weekData.weeks);
+  renderFeedback(fbData.feedback);
+  initDailyGoal();
+  initNotifBanner();
+
+  // Team Leader: load team reports
+  const session = await fetch('/api/session').then(r => r.json());
+  if (session?.is_team_leader) loadTeamReports();
+  if (session?.is_team_leader && session?.can_compare_team) initLeaderCompare();
+  if (window.checkDeadlineReminder) window.checkDeadlineReminder();
+
+  // Theme toggle icon initial
+  const cur = document.documentElement.getAttribute('data-theme') || 'light';
+  const tb = document.getElementById('themeToggleBtn');
+  if (tb) tb.textContent = cur === 'dark' ? '☀️' : '🌙';
+
+  if (drafts && drafts.length > 0) {
+    document.getElementById('draftsCard').style.display = 'block';
+    document.getElementById('draftsCount').textContent = drafts.length;
+    document.getElementById('draftsBody').innerHTML = drafts.map(r => `
+      <tr>
+        <td><strong>${r.title}</strong></td>
+        <td><span class="badge badge-yellow">${r.week || '—'}</span></td>
+        <td style="color:var(--gray-light)">${new Date(r.updated_at || r.submitted_at).toLocaleDateString('ar-EG')}</td>
+        <td style="display:flex;gap:6px">
+          <button class="btn btn-primary" onclick="editDraft(${r.id})">تكملة</button>
+          <button class="btn btn-orange" onclick="sendDraft(${r.id}, '${escapeJs(r.title)}')">إرسال</button>
+        </td>
+      </tr>`).join('');
+  }
+
+  animateNumber(document.getElementById('submittedCount'), reports.length);
+  document.getElementById('submittedBody').innerHTML = reports.length
+    ? reports.map(r => {
+        const cmtCount = (r.comments && r.comments.length) || 0;
+        const unseen   = (r.comments || []).filter(c => !c.seen).length;
+        const cmtBadge = cmtCount > 0
+          ? `<button class="btn ${unseen ? 'btn-orange' : 'btn-ghost'}" onclick="showComments(${r.id})" style="margin-right:6px">💬 ${cmtCount}${unseen ? ' جديد' : ''}</button>`
+          : '';
+        const editedBadge = r.edited_by_admin ? '<span class="badge badge-yellow" style="margin-right:6px">✏️ معدّل</span>' : '';
+        return `
+        <tr>
+          <td><strong>${r.title}</strong>${editedBadge}</td>
+          <td><span class="badge badge-navy">${r.week || '—'}</span></td>
+          <td>${new Date(r.submitted_at).toLocaleDateString('ar-EG')}</td>
+          <td style="display:flex;gap:6px;flex-wrap:wrap">
+            <a href="/reports/view/${encodeURIComponent(r.filename)}" target="_blank" class="btn btn-ghost">عرض</a>
+            ${cmtBadge}
+          </td>
+        </tr>`;
+      }).join('')
+    : `<tr><td colspan="4">
+        <div class="empty-state-rich">
+          <div class="empty-illustration"><span data-icon="file-plus-2"></span></div>
+          <div class="empty-title">لم ترسل أي تقرير بعد</div>
+          <div class="empty-desc">ابدأ تقريرك الأول الآن — يأخذ دقائق فقط</div>
+          <button class="empty-action" onclick="location.href='/employee/new'">+ إنشاء أول تقرير</button>
+        </div>
+      </td></tr>`;
+  if (window.replaceEmojiIcons) setTimeout(replaceEmojiIcons, 50);
+}
+
+async function showComments(reportId) {
+  const comments = await fetch('/api/employee/reports/' + reportId + '/comments').then(r => r.json());
+  if (comments.error) return alert(comments.error);
+
+  const list = document.getElementById('cmtList');
+  if (!comments.length) {
+    list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--gray-light)">لا توجد تعليقات</div>';
+  } else {
+    list.innerHTML = comments.map(c => `
+      <div class="cmt-item">
+        ${c.section_idx != null ? `<div class="sec-ref">📍 قسم رقم ${c.section_idx + 1}</div>` : ''}
+        <div class="by">${c.by}</div>
+        <div class="text">${c.text.replace(/</g,'&lt;').replace(/\n/g,'<br>')}</div>
+        <div class="meta">${new Date(c.created_at).toLocaleString('ar-EG')}</div>
+      </div>`).join('');
+  }
+  document.getElementById('cmtModal').classList.add('open');
+
+  // علم التعليقات كمقروءة
+  fetch('/api/employee/reports/' + reportId + '/comments/seen', { method: 'POST' }).then(() => {
+    setTimeout(() => init(), 500);
+  });
+}
+
+function closeCmtModal() { document.getElementById('cmtModal').classList.remove('open'); }
+
+function editDraft(id) {
+  location.href = '/employee/new?draft=' + id;
+}
+
+async function sendDraft(id, title) {
+  if (!confirm(`إرسال "${title}" للمدير؟`)) return;
+  const res = await fetch('/api/employee/send/' + id, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({}) });
+  const data = await res.json();
+  if (data.error) return Toast.error(data.error);
+  sessionStorage.setItem('reportMsg', '✅ تم إرسال التقرير للمدير!');
+  location.reload();
+}
+
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+function escapeJs(str) {
+  return String(str).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+}
+
+function renderHero(user, drafts, streakData) {
+  const greet = document.getElementById('heroGreet');
+  const title = document.getElementById('heroTitle');
+  const sub   = document.getElementById('heroSub');
+  const cta   = document.getElementById('heroCta');
+
+  greet.textContent = `السلام عليكم ${user.name} 👋`;
+
+  const draftCount = (drafts || []).length;
+  const submittedThisWeek = streakData.submittedThisWeek;
+
+  if (submittedThisWeek) {
+    title.textContent = 'أحسنت! تقرير الأسبوع تم ✓';
+    cta.classList.remove('urgent');
+    cta.classList.add('secondary');
+    cta.innerHTML = '✓ تقرير جديد';
+    cta.href = '/employee/new';
+  } else if (draftCount > 0) {
+    title.textContent = 'كمل تقرير الأسبوع';
+    cta.classList.remove('urgent');
+    cta.innerHTML = '← كمل التقرير';
+    cta.href = '/employee/new?draft=' + drafts[0].id;
+  } else {
+    title.textContent = 'لسه ما عملتش تقرير الأسبوع';
+    cta.classList.add('urgent');
+    cta.innerHTML = '<span>+</span> ابدأ التقرير';
+    cta.href = '/employee/new';
+  }
+
+  sub.textContent = `آخر يوم للتسليم: الجمعة • ${streakData.currentWeek}`;
+
+  // Progress row
+  document.getElementById('weekDone').textContent = (submittedThisWeek ? 1 : 0) + ' / 1';
+  document.getElementById('weekBar').style.width = (submittedThisWeek ? 100 : 0) + '%';
+  if (submittedThisWeek) document.getElementById('weekBar').style.background = 'var(--green)';
+
+  document.getElementById('rateVal').textContent = streakData.submissionRate + '%';
+  document.getElementById('rateBar').style.width = streakData.submissionRate + '%';
+
+  document.getElementById('streakVal').textContent = streakData.streak + (streakData.streak === 1 ? ' أسبوع 🔥' : ' أسابيع 🔥');
+  document.getElementById('streakBar').style.width = Math.min(100, streakData.streak * 12) + '%';
+}
+
+function renderWeekStrip(weeks) {
+  const strip = document.getElementById('weekStrip');
+  strip.innerHTML = (weeks || []).map(w => {
+    const statusText = { done: '✓ تم', current: '⏳ حالي', late: '⚠️ متأخر', pending: 'قادم' }[w.status] || '';
+    return `<div class="week-item ${w.status}" data-filename="${w.filename || ''}">
+      <div class="week-num">${w.label}</div>
+      <div class="week-status">${statusText}</div>
+    </div>`;
+  }).join('');
+
+  strip.querySelectorAll('.week-item[data-filename]').forEach(el => {
+    const fn = el.getAttribute('data-filename');
+    if (fn) el.onclick = () => window.open('/reports/view/' + encodeURIComponent(fn), '_blank');
+  });
+}
+
+function renderFeedback(fb) {
+  if (!fb) return;
+  document.getElementById('latestFeedback').style.display = 'block';
+  document.getElementById('fbContext').textContent = `على ${fb.report_title}`;
+  document.getElementById('fbText').textContent = `"${fb.text}"`;
+  document.getElementById('fbAuthor').textContent = `من ${fb.by}`;
+  document.getElementById('fbTime').textContent = formatRelativeTime(fb.created_at);
+  document.getElementById('fbLink').onclick = (e) => {
+    e.preventDefault();
+    showComments(fb.report_id);
+  };
+}
+
+function formatRelativeTime(ts) {
+  const diff = (Date.now() - new Date(ts).getTime()) / 1000;
+  if (diff < 60) return 'الآن';
+  if (diff < 3600) return `منذ ${Math.floor(diff / 60)} دقيقة`;
+  if (diff < 86400) return `منذ ${Math.floor(diff / 3600)} ساعة`;
+  return `منذ ${Math.floor(diff / 86400)} يوم`;
+}
+
+// ── Daily Goals (Add 1) ───────────────────────────────────────────────────────
+function todayKey() { return 'me_dgoal_' + new Date().toISOString().slice(0,10); }
+function initDailyGoal() {
+  const k = todayKey();
+  const saved = localStorage.getItem(k);
+  if (localStorage.getItem(k + '_dismissed')) return;
+  document.getElementById('dailyGoal').style.display = 'flex';
+  if (saved) {
+    document.getElementById('dgText').innerHTML = `🎯 هدف اليوم: <strong>${saved}</strong>`;
+    document.getElementById('dgInput').style.display = 'none';
+    document.querySelector('#dailyGoal button:not(.dg-close)').style.display = 'none';
+  }
+}
+function saveDailyGoal() {
+  const v = document.getElementById('dgInput').value.trim();
+  if (!v) return;
+  localStorage.setItem(todayKey(), v);
+  initDailyGoal();
+}
+function dismissDailyGoal() {
+  localStorage.setItem(todayKey() + '_dismissed', '1');
+  document.getElementById('dailyGoal').style.display = 'none';
+}
+
+// ── Notifications (Add 2) ─────────────────────────────────────────────────────
+function initNotifBanner() {
+  if (!window.NotifManager) return;
+  if (NotifManager.shouldShowReminderBanner()) {
+    document.getElementById('notifBanner').style.display = 'flex';
+  }
+}
+async function enableNotifications() {
+  const r = await NotifManager.request();
+  document.getElementById('notifBanner').style.display = 'none';
+  if (r === 'granted') {
+    NotifManager.fire('✅ التذكيرات مفعّلة', 'هنبعتلك تذكير قبل deadline التقرير');
+  } else {
+    showToast('لم تفعّل الإشعارات — يمكنك ذلك من إعدادات المتصفح', 'info');
+  }
+}
+function dismissNotifBanner() {
+  localStorage.setItem('me_notif_asked', '1');
+  document.getElementById('notifBanner').style.display = 'none';
+}
+
+async function loadTeamReports() {
+  const data = await fetch('/api/leader/team-reports').then(r => r.json());
+  if (data.error) return;
+
+  document.getElementById('leaderSection').style.display = 'block';
+  document.getElementById('teamSize').textContent = `${data.team.member_ids.length} عضو`;
+
+  if (!data.reports.length) {
+    document.getElementById('teamReportsList').innerHTML =
+      '<div style="padding:24px;text-align:center;color:var(--gray-light)">الفريق لم يرسل أي تقارير بعد</div>';
+    return;
+  }
+
+  // Group by week
+  const byWeek = {};
+  data.reports.forEach(r => {
+    const w = r.week || '—';
+    if (!byWeek[w]) byWeek[w] = [];
+    byWeek[w].push(r);
+  });
+
+  document.getElementById('teamReportsList').innerHTML = Object.entries(byWeek).map(([week, reps]) => `
+    <div style="border-bottom:1px solid var(--border);padding:12px 16px">
+      <div style="font-weight:800;color:var(--navy);margin-bottom:8px;font-size:13px">${week}</div>
+      ${reps.map(r => `
+        <div style="display:flex;align-items:center;gap:10px;padding:7px 0">
+          <div style="width:30px;height:30px;border-radius:50%;background:var(--orange-soft);color:var(--orange);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px">${(r.user_name || '؟').charAt(0)}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12px;font-weight:700;color:var(--navy)">${r.user_name || '—'}</div>
+            <div style="font-size:11px;color:var(--gray-light);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.title || '—'}</div>
+          </div>
+          ${r.comments_count > 0 ? `<span class="badge badge-yellow">💬 ${r.comments_count}</span>` : ''}
+          <a href="/reports/view/${encodeURIComponent(r.filename)}" target="_blank" class="btn btn-ghost">عرض</a>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+// ── Leader Compare ──────────────────────────────────────────────────────────
+function lcEsc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+async function initLeaderCompare() {
+  document.getElementById('leaderCompareSection').style.display = 'block';
+  try {
+    const data = await fetch('/api/leader/available-weeks').then(r => r.json());
+    const weeks = Array.isArray(data.weeks) ? data.weeks : [];
+    const wkSel = document.getElementById('lcWeek');
+    wkSel.innerHTML = '<option value="">كل الأسابيع</option>' + weeks.map(w => `<option value="${lcEsc(w)}">${lcEsc(w)}</option>`).join('');
+    ['lcWeek1', 'lcWeek2'].forEach((id, i) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = '<option value="">— اختر —</option>' + weeks.map(w => `<option value="${lcEsc(w)}">${lcEsc(w)}</option>`).join('');
+      if (weeks.length >= 2) sel.value = i === 0 ? weeks[1] : weeks[0];
+    });
+  } catch(e) { console.error('initLeaderCompare:', e); }
+}
+
+function switchCompareTab(tab) {
+  document.querySelectorAll('.lc-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.getElementById('lc-pane-members').style.display = tab === 'members' ? '' : 'none';
+  document.getElementById('lc-pane-weeks').style.display   = tab === 'weeks'   ? '' : 'none';
+}
+
+async function runMemberCompare() {
+  const week = document.getElementById('lcWeek').value;
+  const from = document.getElementById('lcFrom').value;
+  const to   = document.getElementById('lcTo').value;
+  const resEl = document.getElementById('lcMembersResult');
+  resEl.innerHTML = '<div class="lc-empty">جاري المقارنة...</div>';
+
+  try {
+    const params = new URLSearchParams();
+    if (week) params.set('week', week);
+    if (from) params.set('from', from + 'T00:00:00.000Z');
+    if (to)   params.set('to',   to   + 'T23:59:59.999Z');
+    const url = '/api/leader/compare/members' + (params.toString() ? '?' + params : '');
+
+    const data = await fetch(url).then(r => r.json());
+    if (data.error) { resEl.innerHTML = `<div class="lc-empty">${lcEsc(data.error)}</div>`; return; }
+
+    const members = Array.isArray(data.members) ? data.members : [];
+    if (!members.length) { resEl.innerHTML = '<div class="lc-empty">لا يوجد أعضاء فى الفريق</div>'; return; }
+
+    // اجمع كل الـ metrics keys من كل الأعضاء
+    const allKeys = new Set();
+    members.forEach(m => Object.keys(m.metrics || {}).forEach(k => allKeys.add(k)));
+
+    const filterTxt = [
+      data.filters.week ? 'الأسبوع: ' + lcEsc(data.filters.week) : null,
+      data.filters.from ? 'من ' + data.filters.from.slice(0,10) : null,
+      data.filters.to   ? 'إلى ' + data.filters.to.slice(0,10)   : null,
+    ].filter(Boolean).join(' • ') || 'كل الفترات';
+
+    // اجمع الـ keys حسب الـ section
+    const keysBySection = {};
+    Array.from(allKeys).forEach(k => {
+      const ref = members.find(m => m.metrics && m.metrics[k]);
+      const sec = ref?.metrics[k]?.section || 'Metrics';
+      if (!keysBySection[sec]) keysBySection[sec] = [];
+      keysBySection[sec].push(k);
+    });
+
+    let html = `<div style="background:var(--bg);padding:8px 12px;border-radius:8px;margin-bottom:10px;font-size:11px;color:var(--gray)">${filterTxt}</div>`;
+    html += `<div style="overflow-x:auto"><table>
+      <thead><tr>
+        <th>المقياس</th>
+        ${members.map(m => `<th style="text-align:center">${lcEsc(m.name)}</th>`).join('')}
+      </tr></thead>
+      <tbody>
+        <tr><td><strong>عدد التقارير</strong></td>${members.map(m => `<td style="text-align:center">${m.reports_count}</td>`).join('')}</tr>
+        <tr><td><strong>Scorecard ✓</strong></td>${members.map(m => `<td style="text-align:center">${m.scorecard_rate}%</td>`).join('')}</tr>
+        <tr><td><strong>Traffic 🟢</strong></td>${members.map(m => `<td style="text-align:center">${m.traffic_green_rate}%</td>`).join('')}</tr>
+        <tr><td><strong>Checklist ✓</strong></td>${members.map(m => `<td style="text-align:center">${m.checklist_rate}%</td>`).join('')}</tr>`;
+
+    Object.entries(keysBySection).forEach(([sec, keys]) => {
+      html += `<tr><td colspan="${members.length+1}" style="background:var(--bg);font-weight:800;color:var(--navy);padding:6px 10px">${lcEsc(sec)}</td></tr>`;
+      keys.forEach(k => {
+        const ref = members.find(m => m.metrics && m.metrics[k])?.metrics[k];
+        const label = ref?.label || k;
+        const unit = ref?.unit ? ` (${lcEsc(ref.unit)})` : '';
+        html += `<tr><td>${lcEsc(label)}<small style="color:var(--gray-light)">${unit}</small></td>${
+          members.map(m => `<td style="text-align:center">${m.metrics?.[k]?.avg ?? '—'}</td>`).join('')
+        }</tr>`;
+      });
+    });
+
+    html += `</tbody></table></div>`;
+    resEl.innerHTML = html;
+  } catch(e) {
+    console.error('runMemberCompare:', e);
+    resEl.innerHTML = '<div class="lc-empty">حدث خطأ أثناء المقارنة</div>';
+  }
+}
+
+async function runWeeksCompare() {
+  const w1 = document.getElementById('lcWeek1').value;
+  const w2 = document.getElementById('lcWeek2').value;
+  const resEl = document.getElementById('lcWeeksResult');
+  if (!w1 || !w2) { Toast.warning('اختر الأسبوعين'); return; }
+  if (w1 === w2)  { Toast.warning('الأسبوعين متطابقين'); return; }
+  resEl.innerHTML = '<div class="lc-empty">جاري المقارنة...</div>';
+
+  try {
+    const url = `/api/leader/compare/weeks?week1=${encodeURIComponent(w1)}&week2=${encodeURIComponent(w2)}`;
+    const data = await fetch(url).then(r => r.json());
+    if (data.error) { resEl.innerHTML = `<div class="lc-empty">${lcEsc(data.error)}</div>`; return; }
+
+    const entries = Object.values(data.comparison || {});
+    if (!entries.length) {
+      resEl.innerHTML = '<div class="lc-empty">لا توجد metrics للمقارنة فى هذين الأسبوعين</div>';
+      return;
+    }
+
+    const bySection = {};
+    entries.forEach(e => {
+      const sec = e.section || 'Metrics';
+      if (!bySection[sec]) bySection[sec] = [];
+      bySection[sec].push(e);
+    });
+
+    let html = `<div style="background:var(--bg);padding:8px 12px;border-radius:8px;margin-bottom:10px;font-size:11px;color:var(--gray)">
+      <strong>${lcEsc(data.week1)}</strong>: ${data.reports1_count} تقرير • <strong>${lcEsc(data.week2)}</strong>: ${data.reports2_count} تقرير
+    </div>`;
+
+    Object.entries(bySection).forEach(([sec, metrics]) => {
+      html += `<div class="lc-section-title">${lcEsc(sec)}</div>`;
+      html += `<table>
+        <thead><tr>
+          <th>المقياس</th>
+          <th style="text-align:center">${lcEsc(data.week1)}</th>
+          <th style="text-align:center">${lcEsc(data.week2)}</th>
+          <th style="text-align:center">الفرق</th>
+          <th style="text-align:center">% التغيير</th>
+        </tr></thead><tbody>`;
+      metrics.forEach(m => {
+        const cls = m.change > 0 ? 'lc-pos' : m.change < 0 ? 'lc-neg' : 'lc-zero';
+        const arrow = m.change > 0 ? '▲' : m.change < 0 ? '▼' : '━';
+        html += `<tr>
+          <td><strong>${lcEsc(m.label)}</strong>${m.unit ? ` <small style="color:var(--gray-light)">(${lcEsc(m.unit)})</small>` : ''}</td>
+          <td style="text-align:center">${m.week1.avg} <small style="color:var(--gray-light)">(n=${m.week1.count})</small></td>
+          <td style="text-align:center">${m.week2.avg} <small style="color:var(--gray-light)">(n=${m.week2.count})</small></td>
+          <td style="text-align:center" class="${cls}">${m.diff > 0 ? '+' : ''}${m.diff}</td>
+          <td style="text-align:center" class="${cls}">${arrow} ${Math.abs(m.change)}%</td>
+        </tr>`;
+      });
+      html += `</tbody></table>`;
+    });
+    resEl.innerHTML = html;
+  } catch(e) {
+    console.error('runWeeksCompare:', e);
+    resEl.innerHTML = '<div class="lc-empty">حدث خطأ أثناء المقارنة</div>';
+  }
+}
+
+init();
+</script>
+</body>
+</html>
