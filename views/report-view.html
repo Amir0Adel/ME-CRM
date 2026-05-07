@@ -83,10 +83,62 @@ body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--gra
 
 /* Comments inline list */
 .comments-block { background: var(--yellow-soft); border-radius: 10px; padding: 10px 14px; margin-top: 10px; border-right: 3px solid var(--yellow); }
-.cmt-line { font-size: 12px; color: var(--gray); padding: 6px 0; border-bottom: 1px dashed rgba(217,119,6,0.2); }
-.cmt-line:last-child { border-bottom: none; }
-.cmt-line .by { font-weight: 800; color: var(--navy); }
-.cmt-line .meta { font-size: 10px; color: var(--gray-light); margin-top: 2px; }
+.cmt-thread { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(29,47,95,0.04); }
+.cmt-line { font-size: 12.5px; color: var(--gray); padding: 8px 0; border-bottom: 1px dashed rgba(217,119,6,0.15); }
+.cmt-line:last-of-type { border-bottom: none; }
+.cmt-line.is-reply { padding-right: 18px; border-right: 3px solid var(--orange-soft); margin: 6px 0 6px 0; background: rgba(255,107,43,0.04); border-radius: 8px; padding: 8px 12px; }
+.cmt-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 5px; }
+.cmt-head .by { font-weight: 800; color: var(--navy); font-size: 12px; }
+.cmt-head .meta { font-size: 10.5px; color: var(--gray-light); }
+.cmt-body { font-size: 12.5px; color: var(--gray); line-height: 1.7; }
+.cmt-badge { font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 10px; }
+.cmt-badge-admin { background: var(--navy); color: #fff; }
+.cmt-badge-emp { background: var(--green-soft); color: var(--green); }
+.cmt-reply-btn { margin-top: 8px; padding: 5px 12px; background: var(--bg); color: var(--navy); border: 1.5px dashed var(--border); border-radius: 7px; font-family: 'Cairo', sans-serif; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.15s; }
+.cmt-reply-btn:hover { border-color: var(--orange); color: var(--orange); background: var(--orange-soft); }
+
+/* Previous reports list (sidebar) */
+.prev-report-link { display: block; padding: 9px 11px; background: var(--bg); border: 1.5px solid var(--border); border-radius: 9px; margin-bottom: 6px; text-decoration: none; transition: all 0.15s; }
+.prev-report-link:hover { border-color: var(--orange); background: var(--orange-soft); transform: translateX(-2px); }
+.prev-report-link .prev-week { font-size: 11px; font-weight: 800; color: var(--navy); display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.prev-report-link .prev-title { font-size: 11px; color: var(--gray); margin-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.prev-report-link .prev-date { font-size: 10px; color: var(--gray-light); margin-top: 2px; }
+
+/* Project View Tabs (multi-project mode) */
+.proj-view-tabs { display: flex; gap: 6px; flex-wrap: wrap; padding: 14px 18px; background: linear-gradient(135deg, var(--white), rgba(255,107,43,0.04) 200%); border: 2px solid var(--orange); border-radius: 14px; margin-bottom: 18px; box-shadow: var(--shadow); }
+.proj-view-tab { padding: 9px 16px; background: var(--white); border: 1.5px solid var(--border); border-radius: 9px; font-family: 'Cairo', sans-serif; font-size: 12.5px; font-weight: 800; color: var(--gray); cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+.proj-view-tab:hover { border-color: var(--orange); color: var(--orange); }
+.proj-view-tab.active { background: var(--orange); border-color: var(--orange); color: #fff; box-shadow: 0 4px 12px rgba(255,107,43,0.3); }
+.proj-tab-count { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; border-radius: 11px; background: rgba(255,255,255,0.25); font-size: 10px; font-weight: 800; padding: 0 6px; }
+.proj-view-tab:not(.active) .proj-tab-count { background: var(--bg); color: var(--gray-light); }
+
+/* Project banner inside view */
+.project-banner { background: linear-gradient(135deg, var(--navy), var(--orange)) !important; color: #fff !important; padding: 18px 30px !important; margin-bottom: 0 !important; border-radius: 14px 14px 0 0 !important; }
+
+/* Comment button — clear and prominent */
+.add-comment-btn {
+  margin-top: 12px;
+  padding: 8px 16px;
+  background: var(--orange-soft);
+  color: var(--orange);
+  border: 1.5px dashed var(--orange);
+  border-radius: 9px;
+  font-family: 'Cairo', sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.18s;
+}
+.add-comment-btn:hover {
+  background: var(--orange);
+  color: #fff;
+  border-style: solid;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(255,107,43,0.3);
+}
 
 @media (max-width: 768px) {
   .tb-title { display: none; }
@@ -99,8 +151,8 @@ body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--gra
   <div class="brand-block">
     <a href="javascript:history.back()"><img src="/img/logo.jpg" alt="Marketing Experts" class="brand-logo"></a>
   </div>
-  <a href="/admin" class="tb-ic-btn" title="لوحة التحكم" style="text-decoration:none;width:auto;padding:0 12px;gap:6px;font-size:12px;font-weight:700">
-    <span data-icon="arrow-right"></span> لوحة التحكم
+  <a href="/admin" id="tbBackLink" class="tb-ic-btn" title="لوحة التحكم" style="text-decoration:none;width:auto;padding:0 12px;gap:6px;font-size:12px;font-weight:700">
+    <span data-icon="arrow-right"></span> <span id="tbBackText">لوحة التحكم</span>
   </a>
   <span class="tb-title" id="tbTitle" style="flex:1;text-align:center;font-size:13px;font-weight:800;color:var(--navy);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">جاري التحميل...</span>
   <div class="topbar-actions">
@@ -119,6 +171,9 @@ body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--gra
 
     <div class="toc-pills" id="tocPills"></div>
 
+    <!-- General Comments (always visible if any) -->
+    <div id="generalCommentsBlock" style="display:none;margin-bottom:18px"></div>
+
     <div id="sectionsContent"></div>
 
     <!-- Child Reports (لو is_team_report) -->
@@ -134,11 +189,11 @@ body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--gra
   <aside class="rv-sidebar">
     <div class="sb-section">
       <div class="sb-title">إجراءات سريعة</div>
-      <a class="sb-action primary" id="actEdit"><span class="ico">✏️</span> تعديل التقرير</a>
-      <button class="sb-action" onclick="openCommentModal()"><span class="ico">💬</span> إضافة تعليق</button>
+      <a class="sb-action primary admin-only" id="actEdit"><span class="ico">✏️</span> تعديل التقرير</a>
+      <button class="sb-action" onclick="openCommentModal()"><span class="ico">💬</span> إضافة تعليق عام</button>
       <button class="sb-action" onclick="downloadPDF()"><span class="ico">📥</span> تحميل PDF</button>
       <button class="sb-action" onclick="shareLink()"><span class="ico">📤</span> مشاركة الرابط</button>
-      <a class="sb-action" id="actVersions"><span class="ico">📜</span> النسخ السابقة (<span id="verCount">0</span>)</a>
+      <button class="sb-action" onclick="openVersionsModal()"><span class="ico">📜</span> تعديلات الأدمن السابقة (<span id="verCount">0</span>)</button>
     </div>
 
     <div class="sb-section">
@@ -147,8 +202,14 @@ body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--gra
     </div>
 
     <div class="sb-section">
-      <div class="sb-title">مقارنة بالأسبوع السابق</div>
+      <div class="sb-title">مقارنة بالتقرير السابق</div>
+      <div id="comparisonContext" style="font-size:11px;color:var(--gray-light);padding:0 0 8px;border-bottom:1px dashed var(--border);margin-bottom:8px"></div>
       <div id="comparison"><div style="font-size:11px;color:var(--gray-light);text-align:center;padding:8px">—</div></div>
+    </div>
+
+    <div class="sb-section" id="previousReportsSection" style="display:none">
+      <div class="sb-title">📚 التقارير السابقة</div>
+      <div id="previousReportsList"></div>
     </div>
   </aside>
 </div>
@@ -161,6 +222,32 @@ body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--gra
     <div class="modal-foot">
       <button class="btn-modal-cancel" onclick="closeCommentModal()">إلغاء</button>
       <button class="btn-modal-save" onclick="submitComment()">حفظ التعليق</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reply Modal -->
+<div class="modal-overlay" id="replyModal" onclick="if(event.target===this)closeReplyModal()">
+  <div class="modal">
+    <h3 id="replyTitle">رد على تعليق</h3>
+    <textarea id="replyText" placeholder="اكتب ردك..." dir="rtl"></textarea>
+    <div class="modal-foot">
+      <button class="btn-modal-cancel" onclick="closeReplyModal()">إلغاء</button>
+      <button class="btn-modal-save" onclick="submitReply()">إرسال الرد</button>
+    </div>
+  </div>
+</div>
+
+<!-- Versions Modal -->
+<div class="modal-overlay" id="versionsModal" onclick="if(event.target===this)closeVersionsModal()">
+  <div class="modal" style="max-width:560px">
+    <h3>📜 تعديلات الأدمن السابقة</h3>
+    <p style="font-size:12px;color:var(--gray);margin-bottom:14px">
+      دى نسخ من <strong>هذا التقرير بالظبط</strong> اتحفظت لما الأدمن عمل تعديل عليه. مش تقارير لموظفين تانيين.
+    </p>
+    <div id="versionsList" style="max-height:400px;overflow-y:auto"><div class="cmt-empty">جارى التحميل...</div></div>
+    <div class="modal-foot">
+      <button class="btn-modal-cancel" onclick="closeVersionsModal()">إغلاق</button>
     </div>
   </div>
 </div>
@@ -178,13 +265,21 @@ const TYPE_ICONS = {
 };
 
 async function init() {
-  const m = location.pathname.match(/\/admin\/report\/(\d+)/);
+  // Detect viewer route — admin uses /admin/report/:id, employee uses /employee/report/:id
+  const adminMatch = location.pathname.match(/\/admin\/report\/(\d+)/);
+  const empMatch   = location.pathname.match(/\/employee\/report\/(\d+)/);
+  const m = adminMatch || empMatch;
   if (!m) return;
   reportId = parseInt(m[1]);
+  const isEmpRoute = !!empMatch;
+  const apiPath = isEmpRoute
+    ? '/api/employee/reports/' + reportId + '/full'
+    : '/api/admin/reports/' + reportId + '/full';
 
-  const data = await fetch('/api/admin/reports/' + reportId + '/full').then(r => r.json());
+  const data = await fetch(apiPath).then(r => r.json());
   if (data.error) return showToast(data.error, 'error');
   reportData = data;
+  const isEmployee = data.viewer_role !== 'admin';
 
   document.getElementById('tbTitle').textContent = data.report.title || '—';
   document.getElementById('rvTitle').textContent = data.report.title || '—';
@@ -195,16 +290,53 @@ async function init() {
     ${data.report.edited_by_admin ? '<span style="background:var(--orange);padding:2px 10px;border-radius:10px">✏️ معدّل</span>' : ''}
   `;
 
-  document.getElementById('tbEdit').href   = '/admin/report/' + reportId + '/edit';
-  document.getElementById('actEdit').href  = '/admin/report/' + reportId + '/edit';
-  document.getElementById('actVersions').href = '/admin/report/' + reportId + '/edit';
+  // Show edit-by-admin banner for employees if their report was edited
+  if (isEmployee && data.report.edited_by_admin) {
+    const banner = document.createElement('div');
+    banner.style.cssText = 'background:linear-gradient(135deg,#FFF8F0,#FFEEE0);border:2px solid var(--orange);border-radius:14px;padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;gap:12px';
+    const editTime = data.report.last_edited_at ? new Date(data.report.last_edited_at).toLocaleString('ar-EG') : '';
+    banner.innerHTML = `
+      <span style="font-size:24px">✏️</span>
+      <div style="flex:1">
+        <div style="font-weight:900;color:var(--orange);font-size:14px">تم تعديل التقرير من قِبل الإدارة</div>
+        <div style="font-size:12px;color:var(--gray);margin-top:2px">${editTime ? 'آخر تعديل: ' + editTime : 'تم إجراء تعديلات على المحتوى'}</div>
+      </div>`;
+    const main = document.querySelector('.rv-content');
+    if (main) main.insertBefore(banner, main.firstChild);
+  }
+
+  // Hide ONLY edit-related actions for employees (comments stay enabled)
+  if (isEmployee) {
+    document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+    const tbEdit = document.getElementById('tbEdit');
+    const actEdit = document.getElementById('actEdit');
+    if (tbEdit) tbEdit.style.display = 'none';
+    if (actEdit) actEdit.style.display = 'none';
+    const back = document.getElementById('tbBackLink');
+    const backTxt = document.getElementById('tbBackText');
+    if (back) back.href = '/employee';
+    if (backTxt) backTxt.textContent = 'الصفحة الرئيسية';
+  } else {
+    document.getElementById('tbEdit').href   = '/admin/report/' + reportId + '/edit';
+    document.getElementById('actEdit').href  = '/admin/report/' + reportId + '/edit';
+  }
   document.getElementById('verCount').textContent = data.versionsCount || 0;
 
-  renderSections(data.report.sections || []);
-  renderTOC(data.report.sections || []);
+  // Multi-project mode: render each project as a grouped block
+  const isMultiProject = Array.isArray(data.report.projects) && data.report.projects.length > 0;
+  if (isMultiProject) {
+    renderMultiProjectSections(data.report.projects);
+    // Use first project's sections for TOC
+    renderTOC(data.report.projects[0]?.sections || []);
+  } else {
+    renderSections(data.report.sections || []);
+    renderTOC(data.report.sections || []);
+  }
   renderMeta(data);
   renderComparison(data.comparison || {});
   renderChildReports(data.child_reports || []);
+  renderGeneralComments();
+  renderPreviousReports(data.previousReports || [], isEmployee);
 }
 
 function renderChildReports(children) {
@@ -250,9 +382,18 @@ function renderCompactContent(s) {
     ).join('')}</div>`;
   }
   if (s.type === 'text') {
-    const txt = (s.content || '').slice(0, 200);
+    let raw = '';
+    if (Array.isArray(s.blocks) && s.blocks.length) {
+      raw = s.blocks
+        .filter(b => (b.heading || b.text || '').trim())
+        .map(b => (b.heading ? `【${b.heading}】 ` : '') + (b.text || ''))
+        .join(' • ');
+    } else {
+      raw = s.content || '';
+    }
+    const txt = raw.slice(0, 200);
     if (!txt) return '<div style="font-size:10px;color:var(--gray-light)">—</div>';
-    return `<div style="font-size:11px;color:var(--gray);line-height:1.7">${esc(txt)}${(s.content?.length || 0) > 200 ? '…' : ''}</div>`;
+    return `<div style="font-size:11px;color:var(--gray);line-height:1.7">${esc(txt)}${raw.length > 200 ? '…' : ''}</div>`;
   }
   if (s.type === 'list' && s.items) {
     const items = s.items.filter(Boolean).slice(0, 4);
@@ -283,27 +424,137 @@ function renderCompactContent(s) {
 
 function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
+// Multi-project view state
+let activeProjectView = 'all'; // 'all' or numeric project index
+
+function renderMultiProjectSections(projects) {
+  const container = document.getElementById('sectionsContent');
+  if (!projects.length) { container.innerHTML = '<div class="rs" style="text-align:center;color:var(--gray-light)">لا توجد مشاريع</div>'; return; }
+
+  // Project tabs
+  const tabsHTML = `
+    <div class="proj-view-tabs">
+      <button class="proj-view-tab ${activeProjectView === 'all' ? 'active' : ''}" onclick="switchProjectView('all')">
+        📊 نظرة شاملة
+        <span class="proj-tab-count">${projects.length}</span>
+      </button>
+      ${projects.map((p, pi) => `
+        <button class="proj-view-tab ${activeProjectView == pi ? 'active' : ''}" onclick="switchProjectView(${pi})">
+          🗂️ ${esc(p.name || 'مشروع ' + (pi + 1))}
+        </button>
+      `).join('')}
+    </div>`;
+
+  const projectsToShow = activeProjectView === 'all' ? projects : [projects[activeProjectView]];
+  const startIdx = activeProjectView === 'all' ? 0 : Number(activeProjectView);
+
+  const html = projectsToShow.map((p, displayIdx) => {
+    const pi = activeProjectView === 'all' ? displayIdx : startIdx;
+    const sections = p.sections || [];
+    const projHeader = `
+      <div class="rs project-banner">
+        <div style="font-size:11px;font-weight:700;opacity:0.85;letter-spacing:0.5px">المشروع ${pi + 1} من ${projects.length}</div>
+        <div style="font-size:18px;font-weight:900;margin-top:3px">🗂️ ${esc(p.name || 'بدون اسم')}</div>
+      </div>`;
+    const sectionsHTML = renderSectionsForProject(sections, pi, p.name);
+    return projHeader + sectionsHTML;
+  }).join('');
+  container.innerHTML = tabsHTML + html;
+}
+
+// ── Comments helpers ───────────────────────────────────────────────────────
+function renderCommentThread(parentComment, allComments) {
+  // Find replies to this comment
+  const replies = allComments.filter(c => c.parent_id === parentComment.id);
+  const isFromAdmin = parentComment.by_role === 'admin' || (!parentComment.by_role && parentComment.by === 'المدير');
+  const repliesHTML = replies.map(r => renderCommentLine(r, true)).join('');
+  return `
+    <div class="cmt-thread">
+      ${renderCommentLine(parentComment, false)}
+      ${repliesHTML}
+      <button class="cmt-reply-btn" onclick="openReplyModal(${parentComment.id}, '${esc(parentComment.by)}')">↩ رد على هذا التعليق</button>
+    </div>
+  `;
+}
+
+function renderCommentLine(c, isReply) {
+  const isFromAdmin = c.by_role === 'admin' || (!c.by_role && c.by === 'المدير');
+  const badge = isFromAdmin
+    ? '<span class="cmt-badge cmt-badge-admin">👤 الإدارة</span>'
+    : '<span class="cmt-badge cmt-badge-emp">🧑‍💼 الموظف</span>';
+  return `
+    <div class="cmt-line ${isReply ? 'is-reply' : ''}">
+      <div class="cmt-head">${badge} <span class="by">${esc(c.by)}</span> <span class="meta">${new Date(c.created_at).toLocaleString('ar-EG')}</span></div>
+      <div class="cmt-body">${esc(c.text).replace(/\n/g,'<br>')}</div>
+    </div>`;
+}
+
+function getCommentsForSection(sectionIdx) {
+  const all = (reportData.report.comments || []);
+  // Top-level comments for this section (parent_id is null/undefined)
+  const tops = all.filter(c => !c.parent_id && (c.section_idx === sectionIdx || (sectionIdx === 0 && c.section_idx === '0')));
+  return tops;
+}
+
+function renderCommentsBlock(sectionIdx, sectionLabel) {
+  const all = reportData.report.comments || [];
+  const tops = all.filter(c => !c.parent_id && c.section_idx === sectionIdx);
+  if (!tops.length) return '';
+  return `
+    <div class="comments-block">
+      <div style="font-size:11px;font-weight:800;color:var(--yellow);margin-bottom:10px">💬 ${tops.length} تعليق على هذا القسم</div>
+      ${tops.map(c => renderCommentThread(c, all)).join('')}
+    </div>`;
+}
+
+function renderGeneralComments() {
+  const all = reportData.report.comments || [];
+  const tops = all.filter(c => !c.parent_id && (c.section_idx == null || c.section_idx === ''));
+  const block = document.getElementById('generalCommentsBlock');
+  if (!block) return;
+  if (!tops.length) { block.style.display = 'none'; return; }
+  const isEmployee = reportData.viewer_role !== 'admin';
+  block.style.display = 'block';
+  block.innerHTML = `
+    <div class="comments-block" style="background:linear-gradient(135deg,var(--yellow-soft),#fff);border-right:4px solid var(--yellow);padding:14px 18px">
+      <div style="font-size:13px;font-weight:900;color:var(--navy);margin-bottom:12px;display:flex;align-items:center;gap:8px">
+        💬 تعليقات عامة على التقرير
+        <span style="font-size:11px;background:var(--yellow);color:#fff;padding:2px 9px;border-radius:10px">${tops.length}</span>
+      </div>
+      ${tops.map(c => renderCommentThread(c, all)).join('')}
+    </div>
+  `;
+}
+
+function renderSectionsForProject(sections, pi, projName) {
+  return sections.map((s, i) => {
+    const sectionKey = `p${pi}_s${i}`;
+    const cmtBlock = renderCommentsBlock(sectionKey, projName + ' — ' + (s.title || ''));
+    const addBtn = `<button onclick="openCommentModal('${sectionKey}', '${esc(projName)} — ${esc(s.title || '')}')" class="add-comment-btn">💬 أضف تعليق على هذا القسم</button>`;
+    return `<div class="rs section-block" data-section-idx="${sectionKey}" id="sec-${sectionKey}">
+      ${renderSectionBody(s)}
+      ${cmtBlock}
+      ${addBtn}
+    </div>`;
+  }).join('');
+}
+
+function switchProjectView(view) {
+  activeProjectView = view;
+  renderMultiProjectSections(reportData.report.projects || []);
+}
+
 function renderSections(sections) {
   const container = document.getElementById('sectionsContent');
   if (!sections.length) { container.innerHTML = '<div class="rs" style="text-align:center;color:var(--gray-light)">لا توجد أقسام في هذا التقرير</div>'; return; }
 
-  const allComments = reportData.report.comments || [];
   container.innerHTML = sections.map((s, i) => {
-    const sectionComments = allComments.filter(c => c.section_idx === i);
-    const cmtBlock = sectionComments.length ? `
-      <div class="comments-block">
-        <div style="font-size:11px;font-weight:800;color:var(--yellow);margin-bottom:6px">💬 ${sectionComments.length} تعليق على هذا القسم</div>
-        ${sectionComments.map(c => `
-          <div class="cmt-line">
-            <div><span class="by">${esc(c.by)}:</span> ${esc(c.text).replace(/\n/g,'<br>')}</div>
-            <div class="meta">${new Date(c.created_at).toLocaleString('ar-EG')}</div>
-          </div>`).join('')}
-      </div>` : '';
-
+    const cmtBlock = renderCommentsBlock(i, s.title || '');
+    const addBtn = `<button onclick="openCommentModal(${i})" class="add-comment-btn">💬 أضف تعليق على هذا القسم</button>`;
     return `<div class="rs section-block" data-section-idx="${i}" id="sec-${i}">
       ${renderSectionBody(s)}
       ${cmtBlock}
-      <button onclick="openCommentModal(${i})" style="margin-top:10px;padding:6px 14px;background:var(--orange-soft);color:var(--orange);border:1px dashed var(--orange);border-radius:8px;font-family:'Cairo',sans-serif;font-size:11px;font-weight:700;cursor:pointer">💬 أضف تعليق على هذا القسم</button>
+      ${addBtn}
     </div>`;
   }).join('');
 }
@@ -311,7 +562,19 @@ function renderSections(sections) {
 function renderSectionBody(s) {
   const title = `<h2>${TYPE_ICONS[s.type] || '📄'} ${esc(s.title || '')}</h2>`;
 
-  if (s.type === 'text') return `${title}<p>${esc(s.content || '—').replace(/\n/g,'<br>')}</p>`;
+  if (s.type === 'text') {
+    if (Array.isArray(s.blocks) && s.blocks.length) {
+      const inner = s.blocks
+        .filter(b => (b.heading || '').trim() || (b.text || '').trim())
+        .map(b => {
+          const h = (b.heading || '').trim() ? `<h4 style="margin:10px 0 4px;color:var(--navy);font-size:14px;font-weight:800">${esc(b.heading)}</h4>` : '';
+          const t = `<p style="margin-bottom:6px">${esc(b.text || '').replace(/\n/g,'<br>')}</p>`;
+          return h + t;
+        }).join('');
+      return `${title}${inner || '<p>—</p>'}`;
+    }
+    return `${title}<p>${esc(s.content || '—').replace(/\n/g,'<br>')}</p>`;
+  }
 
   if (s.type === 'list') {
     const items = (s.items || []).filter(Boolean);
@@ -414,7 +677,20 @@ function renderMeta(d) {
 function renderComparison(comp) {
   const keys = Object.keys(comp);
   const el = document.getElementById('comparison');
-  if (!keys.length) { el.innerHTML = '<div style="font-size:11px;color:var(--gray-light);text-align:center;padding:8px">لا توجد metrics</div>'; return; }
+  const ctxEl = document.getElementById('comparisonContext');
+  // Make the previous report header clickable so user can jump to it
+  if (ctxEl && reportData?.previousReportId) {
+    const isEmployee = reportData.viewer_role !== 'admin';
+    const link = (isEmployee ? '/employee/report/' : '/admin/report/') + reportData.previousReportId;
+    ctxEl.innerHTML = `<a href="${link}" style="text-decoration:none;color:inherit;display:block">
+      <div>📅 <strong>التقرير السابق:</strong> ${esc(reportData.previousReportWeek || '—')}</div>
+      <div style="margin-top:3px;color:var(--gray);font-size:11px">${esc(reportData.previousReportTitle || '—')}</div>
+      <div style="margin-top:4px;font-size:10px;color:var(--orange);font-weight:800">→ افتح التقرير السابق</div>
+    </a>`;
+  } else if (ctxEl) {
+    ctxEl.innerHTML = '<em>أول تقرير لهذا الموظف — لا يوجد تقرير سابق للمقارنة</em>';
+  }
+  if (!keys.length) { el.innerHTML = '<div style="font-size:11px;color:var(--gray-light);text-align:center;padding:8px">لا توجد metrics للمقارنة</div>'; return; }
   el.innerHTML = keys.slice(0, 8).map(k => {
     const c = comp[k];
     const cls = c.trend;
@@ -427,6 +703,25 @@ function renderComparison(comp) {
   }).join('');
 }
 
+function renderPreviousReports(list, isEmployee) {
+  const sec = document.getElementById('previousReportsSection');
+  const cnt = document.getElementById('previousReportsList');
+  if (!sec || !cnt) return;
+  if (!list || !list.length) { sec.style.display = 'none'; return; }
+  sec.style.display = 'block';
+  const basePath = isEmployee ? '/employee/report/' : '/admin/report/';
+  cnt.innerHTML = list.map(r => {
+    const dateStr = r.submitted_at ? new Date(r.submitted_at).toLocaleDateString('ar-EG') : '';
+    const editedBadge = r.edited_by_admin ? '<span style="font-size:9px;background:var(--orange);color:#fff;padding:1px 6px;border-radius:6px;margin-right:4px">✏️</span>' : '';
+    const cmtBadge = r.comments_count > 0 ? `<span style="font-size:9px;background:var(--yellow);color:#fff;padding:1px 6px;border-radius:6px;margin-right:4px">💬 ${r.comments_count}</span>` : '';
+    return `<a href="${basePath}${r.id}" class="prev-report-link">
+      <div class="prev-week">${esc(r.week || '—')} ${editedBadge}${cmtBadge}</div>
+      <div class="prev-title">${esc(r.title || '—')}</div>
+      <div class="prev-date">${dateStr}</div>
+    </a>`;
+  }).join('');
+}
+
 function formatRelativeTime(ts) {
   if (!ts) return '—';
   const diff = (Date.now() - new Date(ts).getTime()) / 1000;
@@ -436,10 +731,16 @@ function formatRelativeTime(ts) {
   return `منذ ${Math.floor(diff / 86400)} يوم`;
 }
 
-function openCommentModal(sectionIdx) {
+function openCommentModal(sectionIdx, customTitle) {
   activeSectionForCmt = sectionIdx == null ? null : sectionIdx;
-  const t = sectionIdx != null && reportData?.report?.sections?.[sectionIdx]
-    ? `تعليق على: ${reportData.report.sections[sectionIdx].title}` : 'تعليق عام على التقرير';
+  let t;
+  if (customTitle) {
+    t = `تعليق على: ${customTitle}`;
+  } else if (sectionIdx != null && typeof sectionIdx === 'number' && reportData?.report?.sections?.[sectionIdx]) {
+    t = `تعليق على: ${reportData.report.sections[sectionIdx].title}`;
+  } else {
+    t = 'تعليق عام على التقرير';
+  }
   document.getElementById('cmtTitle').textContent = t;
   document.getElementById('cmtText').value = '';
   document.getElementById('cmtModal').classList.add('open');
@@ -450,7 +751,7 @@ function closeCommentModal() { document.getElementById('cmtModal').classList.rem
 async function submitComment() {
   const text = document.getElementById('cmtText').value.trim();
   if (!text) return showToast('اكتب نص التعليق', 'error');
-  const res = await fetch(`/api/admin/reports/${reportId}/comment`, {
+  const res = await fetch(`/api/reports/${reportId}/comment`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ section_idx: activeSectionForCmt, text })
@@ -462,8 +763,137 @@ async function submitComment() {
   setTimeout(() => init(), 400);
 }
 
+let replyParentId = null;
+function openReplyModal(parentId, parentBy) {
+  replyParentId = parentId;
+  document.getElementById('replyTitle').textContent = `رد على تعليق ${parentBy || ''}`;
+  document.getElementById('replyText').value = '';
+  document.getElementById('replyModal').classList.add('open');
+  setTimeout(() => document.getElementById('replyText').focus(), 100);
+}
+function closeReplyModal() { document.getElementById('replyModal').classList.remove('open'); }
+
+async function submitReply() {
+  const text = document.getElementById('replyText').value.trim();
+  if (!text) return showToast('اكتب نص الرد', 'error');
+  const res = await fetch(`/api/reports/${reportId}/comment`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ parent_id: replyParentId, text })
+  });
+  const data = await res.json();
+  if (data.error) return showToast(data.error, 'error');
+  closeReplyModal();
+  showToast('✓ تم إضافة الرد', 'success');
+  setTimeout(() => init(), 400);
+}
+
+async function openVersionsModal() {
+  const modal = document.getElementById('versionsModal');
+  const cnt = document.getElementById('versionsList');
+  modal.classList.add('open');
+  cnt.innerHTML = '<div class="cmt-empty">جارى التحميل...</div>';
+  try {
+    const versions = await fetch(`/api/admin/reports/${reportId}/versions`).then(r => r.json());
+    if (!versions || !versions.length) {
+      cnt.innerHTML = '<div class="cmt-empty" style="text-align:center;padding:24px;color:var(--gray-light)">📭 لا توجد تعديلات سابقة من الأدمن على هذا التقرير</div>';
+      return;
+    }
+    cnt.innerHTML = versions.map((v, i) => `
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:10px">
+        <div style="font-size:13px;font-weight:800;color:var(--navy)">📌 ${esc(v.title || '—')}</div>
+        <div style="font-size:11px;color:var(--gray);margin-top:4px">📅 ${esc(v.week || '—')}</div>
+        <div style="font-size:11px;color:var(--gray-light);margin-top:4px">عدّل بواسطة: <strong>${esc(v.edited_by || '—')}</strong></div>
+        <div style="font-size:10px;color:var(--gray-light);margin-top:2px">${v.saved_at ? new Date(v.saved_at).toLocaleString('ar-EG') : '—'}</div>
+      </div>`).join('');
+  } catch(e) {
+    cnt.innerHTML = '<div class="cmt-empty">حدث خطأ أثناء التحميل</div>';
+  }
+}
+function closeVersionsModal() { document.getElementById('versionsModal').classList.remove('open'); }
+
 function downloadPDF() {
-  window.open('/api/admin/reports/' + reportId + '/pdf', '_blank');
+  // Browser-based PDF (works everywhere — no puppeteer needed)
+  const w = window.open('', '_blank');
+  if (!w) return showToast('السماح بالنوافذ المنبثقة لتحميل الـ PDF', 'error');
+  const docHtml = `<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>${esc(reportData.report.title || 'تقرير')}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Cairo', sans-serif; padding: 24px; direction: rtl; color: #333; line-height: 1.7; }
+    h1 { color: #1D2F5F; border-bottom: 3px solid #FF6B2B; padding-bottom: 8px; margin-bottom: 14px; }
+    h2 { color: #1D2F5F; border-bottom: 2px solid #FF6B2B; padding-bottom: 6px; margin: 24px 0 12px; display: inline-block; }
+    h3 { color: #1D2F5F; margin: 14px 0 6px; }
+    .meta { color: #666; font-size: 13px; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #eee; }
+    .meta span { margin-left: 14px; }
+    p { margin-bottom: 8px; }
+    ul { padding-right: 22px; margin-bottom: 8px; }
+    .project-banner { background: linear-gradient(135deg,#1D2F5F,#FF6B2B); color: #fff; padding: 14px 18px; border-radius: 10px; margin-top: 24px; }
+    .project-banner h2 { color: #fff; border-color: #fff; }
+    .metric-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(150px,1fr)); gap: 10px; margin-bottom: 12px; }
+    .metric { background: #f5f5f5; padding: 10px; border-radius: 8px; text-align: center; }
+    .metric-value { font-size: 20px; font-weight: 800; color: #1D2F5F; }
+    .metric-label { font-size: 11px; color: #666; margin-top: 4px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
+    th { background: #1D2F5F; color: #fff; padding: 8px; text-align: right; }
+    td { padding: 8px; border-bottom: 1px solid #eee; }
+    .comment { background: #fef3c7; border-right: 3px solid #d97706; padding: 8px 12px; margin: 6px 0; border-radius: 6px; }
+    @media print { body { padding: 12px; } }
+    .print-btn { position: fixed; top: 14px; left: 14px; padding: 10px 18px; background: #FF6B2B; color: #fff; border: none; border-radius: 8px; font-family: 'Cairo', sans-serif; font-weight: 800; cursor: pointer; }
+    @media print { .print-btn { display: none; } }
+  </style></head><body>
+    <button class="print-btn" onclick="window.print()">🖨️ طباعة / حفظ PDF</button>
+    <h1>${esc(reportData.report.title || '')}</h1>
+    <div class="meta">
+      <span>📅 ${esc(reportData.report.week || '—')}</span>
+      <span>👤 ${esc(reportData.user?.name || '—')}</span>
+      <span>📨 ${new Date(reportData.report.submitted_at).toLocaleDateString('ar-EG')}</span>
+    </div>
+    ${buildPdfBody()}
+  </body></html>`;
+  w.document.write(docHtml);
+  w.document.close();
+  setTimeout(() => w.print(), 800);
+}
+
+function buildPdfBody() {
+  const r = reportData.report;
+  const isMP = Array.isArray(r.projects) && r.projects.length > 0;
+  if (isMP) {
+    return r.projects.map((p, pi) => `
+      <div class="project-banner"><h2>🗂️ المشروع ${pi + 1}: ${esc(p.name || '')}</h2></div>
+      ${(p.sections || []).map(s => sectionToPdfHtml(s)).join('')}
+    `).join('');
+  }
+  return (r.sections || []).map(s => sectionToPdfHtml(s)).join('');
+}
+
+function sectionToPdfHtml(s) {
+  const title = `<h2>${esc(s.title || '')}</h2>`;
+  if (s.type === 'text') {
+    if (Array.isArray(s.blocks) && s.blocks.length) {
+      const inner = s.blocks.filter(b => (b.heading || b.text || '').trim()).map(b => {
+        const h = b.heading ? `<h3>${esc(b.heading)}</h3>` : '';
+        return `${h}<p>${esc(b.text || '').replace(/\n/g,'<br>')}</p>`;
+      }).join('');
+      return `${title}${inner || '<p>—</p>'}`;
+    }
+    return `${title}<p>${esc(s.content || '—').replace(/\n/g,'<br>')}</p>`;
+  }
+  if (s.type === 'list') return `${title}<ul>${(s.items||[]).filter(Boolean).map(i => `<li>${esc(i)}</li>`).join('')}</ul>`;
+  if (s.type === 'metrics') return `${title}<div class="metric-grid">${(s.items||[]).map(m => `<div class="metric"><div class="metric-value">${esc(m.value || '—')}${m.unit ? ' ' + esc(m.unit) : ''}</div><div class="metric-label">${esc(m.label || '')}</div></div>`).join('')}</div>`;
+  if (s.type === 'table') {
+    const headers = (s.headers||[]).map(h => `<th>${esc(h)}</th>`).join('');
+    const rows = (s.rows||[]).map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('');
+    return `${title}<table><thead><tr>${headers}</tr></thead><tbody>${rows}</tbody></table>`;
+  }
+  if (s.type === 'checklist') {
+    return `${title}<ul>${(s.items||[]).map(it => {
+      const t = typeof it === 'object' ? it.text : it;
+      const st = typeof it === 'object' ? it.status : '';
+      return `<li>${esc(t)}${st ? ` <strong style="color:#d97706">(${esc(st)})</strong>` : ''}</li>`;
+    }).join('')}</ul>`;
+  }
+  return `${title}<p>—</p>`;
 }
 
 function shareLink() {

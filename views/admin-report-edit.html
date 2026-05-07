@@ -69,7 +69,24 @@ body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--gra
 .section-body { padding: 16px; }
 
 .tx-area { width: 100%; min-height: 90px; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 13px; color: var(--gray); background: var(--bg); outline: none; resize: vertical; direction: rtl; line-height: 1.8; }
+
+/* Multi-block text section */
+.text-blocks { display: flex; flex-direction: column; gap: 12px; margin-bottom: 10px; }
+.text-block { display: flex; flex-direction: column; gap: 6px; padding: 10px; border: 1px dashed var(--border); border-radius: 10px; background: rgba(29,47,95,0.02); }
+.text-block:focus-within { border-color: var(--navy); background: #fff; }
+.text-block-head { display: flex; align-items: center; gap: 8px; }
+.text-block-heading { flex: 1; padding: 7px 11px; border: 1.5px solid var(--border); border-radius: 7px; font-family: 'Cairo', sans-serif; font-size: 12.5px; font-weight: 700; color: var(--navy); background: #fff; outline: none; }
+.text-block-heading::placeholder { color: var(--gray-light); font-weight: 500; }
+.text-block-heading:focus { border-color: var(--orange); }
 .tx-area:focus { border-color: var(--navy); background: #fff; }
+
+/* Multi-project edit tabs */
+.proj-edit-tabs { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 14px 18px; background: linear-gradient(135deg, var(--white), rgba(255,107,43,0.04) 200%); border: 2px solid var(--orange); border-radius: 14px; margin-bottom: 18px; box-shadow: var(--shadow); }
+.proj-edit-label { font-size: 12px; font-weight: 800; color: var(--navy); }
+.proj-edit-tabs-list { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; }
+.proj-edit-tab { padding: 7px 14px; background: var(--white); border: 1.5px solid var(--border); border-radius: 9px; font-family: 'Cairo', sans-serif; font-size: 12px; font-weight: 700; color: var(--gray); cursor: pointer; transition: all 0.15s; }
+.proj-edit-tab:hover { border-color: var(--orange); color: var(--orange); }
+.proj-edit-tab.active { background: var(--orange); border-color: var(--orange); color: #fff; box-shadow: 0 4px 12px rgba(255,107,43,0.3); }
 
 .list-items { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
 .list-row { display: flex; align-items: center; gap: 8px; }
@@ -278,6 +295,10 @@ let versions = [];
 let reportId = null;
 let reportData = null;
 let activeSectionForComment = null;
+// Multi-project state
+let projects = [];
+let activeProjectIdx = 0;
+let isMultiProject = false;
 
 const TYPE_LABELS = { text:'📝 نص', list:'📋 قائمة', metrics:'📊 أرقام', table:'📑 جدول', scorecard:'✅ Scorecard', checklist:'🗂️ قائمة بحالة', status:'🚦 حالة' };
 
@@ -300,12 +321,23 @@ async function loadReport() {
   reportData.user_name = data.user_name;
   reportData.user_email = data.user_email;
   reportData.theme = (data.template && data.template.visual_theme) || 'standard';
-  sections = data.report.sections || [];
   comments = data.report.comments || [];
   versions = data.report.versions || [];
 
-  // أعطِ كل قسم id محلي للمتعامل معه
-  sections.forEach(s => { if (!s.id) s.id = uid(); });
+  // Detect multi-project mode
+  isMultiProject = Array.isArray(data.report.projects) && data.report.projects.length > 0;
+  if (isMultiProject) {
+    projects = data.report.projects.map(p => ({
+      ...p,
+      id: p.id || uid(),
+      sections: (p.sections || []).map(s => ({ ...s, id: s.id || uid() }))
+    }));
+    activeProjectIdx = 0;
+    sections = projects[0].sections;
+  } else {
+    sections = data.report.sections || [];
+    sections.forEach(s => { if (!s.id) s.id = uid(); });
+  }
 
   document.getElementById('reportTitle').value = data.report.title || '';
   document.getElementById('reportWeek').value  = data.report.week  || '';
@@ -327,8 +359,35 @@ function esc(s)   { return String(s == null ? '' : s).replace(/&/g,'&amp;').repl
 
 // ── Render ────────────────────────────────────────────────────────────────────
 function render() {
-  document.getElementById('sectionsContainer').innerHTML =
+  let projectTabsHTML = '';
+  if (isMultiProject && projects.length) {
+    projectTabsHTML = `
+      <div class="proj-edit-tabs">
+        <div class="proj-edit-label">🗂️ المشاريع:</div>
+        <div class="proj-edit-tabs-list">
+          ${projects.map((p, i) => `
+            <button class="proj-edit-tab ${i === activeProjectIdx ? 'active' : ''}" onclick="switchEditProject(${i})" ondblclick="renameEditProject(${i})" title="مزدوج للتعديل">
+              <span>${esc(p.name || 'مشروع ' + (i + 1))}</span>
+            </button>`).join('')}
+        </div>
+      </div>`;
+  }
+  document.getElementById('sectionsContainer').innerHTML = projectTabsHTML +
     sections.map((s, i) => renderCard(s, i)).join('');
+}
+
+function switchEditProject(idx) {
+  if (!isMultiProject || idx < 0 || idx >= projects.length) return;
+  activeProjectIdx = idx;
+  sections = projects[idx].sections;
+  render();
+}
+
+function renameEditProject(idx) {
+  const newName = prompt('اسم المشروع الجديد:', projects[idx].name);
+  if (!newName || !newName.trim()) return;
+  projects[idx].name = newName.trim();
+  render();
 }
 
 function renderCard(s, i) {
@@ -355,7 +414,27 @@ function renderCard(s, i) {
 
 function renderBody(s) {
   if (s.type === 'text') {
-    return `<textarea class="tx-area" placeholder="اكتب هنا..." oninput="onTextChange('${s.id}', this.value)">${esc(s.content || '')}</textarea>`;
+    if (!Array.isArray(s.blocks)) {
+      s.blocks = (s.content && s.content.trim())
+        ? [{ heading: '', text: s.content }]
+        : [{ heading: '', text: '' }];
+    }
+    const blocksHTML = s.blocks.map((b, i) => `
+      <div class="text-block">
+        <div class="text-block-head">
+          <input class="text-block-heading" placeholder="عنوان الفقرة (اختياري)"
+                 value="${esc(b.heading || '')}"
+                 oninput="onTextBlockChange('${s.id}', ${i}, 'heading', this.value)">
+          ${s.blocks.length > 1 ? `<button class="ic-btn del" onclick="removeTextBlock('${s.id}', ${i})">✕</button>` : ''}
+        </div>
+        <textarea class="tx-area" placeholder="اكتب هنا..."
+                  oninput="onTextBlockChange('${s.id}', ${i}, 'text', this.value)">${esc(b.text || '')}</textarea>
+      </div>
+    `).join('');
+    return `
+      <div class="text-blocks">${blocksHTML}</div>
+      <button class="add-btn" onclick="addTextBlock('${s.id}')">+ إضافة فقرة جديدة</button>
+    `;
   }
   if (s.type === 'list') {
     const rows = (s.items || ['']).map((item, i) => `
@@ -452,6 +531,24 @@ function renderBody(s) {
 // ── Mutators (no re-render) ──────────────────────────────────────────────────
 function onTitleChange(id, v)        { getS(id).title = v; }
 function onTextChange(id, v)         { getS(id).content = v; }
+function onTextBlockChange(id, i, field, v) {
+  const s = getS(id);
+  if (!Array.isArray(s.blocks)) s.blocks = [];
+  if (!s.blocks[i]) s.blocks[i] = { heading: '', text: '' };
+  s.blocks[i][field] = v;
+}
+function addTextBlock(id) {
+  const s = getS(id);
+  if (!Array.isArray(s.blocks)) s.blocks = [];
+  s.blocks.push({ heading: '', text: '' });
+  render();
+}
+function removeTextBlock(id, i) {
+  const s = getS(id);
+  if (!Array.isArray(s.blocks) || s.blocks.length <= 1) return;
+  s.blocks.splice(i, 1);
+  render();
+}
 function onItemChange(id, i, v)      { getS(id).items[i] = v; }
 function onMetricChange(id, i, f, v) { getS(id).items[i][f] = v; }
 function onHeaderChange(id, i, v)    { getS(id).headers[i] = v; }
@@ -620,13 +717,20 @@ async function saveReport() {
 
   // نظف sections من id المحلي قبل الإرسال
   const cleanSections = sections.map(({ id, ...rest }) => rest);
+  const cleanProjects = isMultiProject ? projects.map(p => ({
+    id: p.id, name: p.name,
+    sections: (p.sections || []).map(({ id, ...rest }) => rest)
+  })) : null;
   const content = generateHTML(title, week, cleanSections);
+
+  const body = { title, week, sections: cleanSections, content };
+  if (cleanProjects) body.projects = cleanProjects;
 
   try {
     const res = await fetch(`/api/admin/reports/${reportId}`, {
       method: 'PUT',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ title, week, sections: cleanSections, content })
+      body: JSON.stringify(body)
     });
     const data = await res.json();
     if (data.error) { btnReset(btn); return Toast.error(data.error); }
@@ -645,8 +749,17 @@ function generateHTML(title, week, secs) {
   const theme = reportData?.theme || 'standard';
   const body = secs.map(s => {
     if (s.type === 'text') {
-      const c = esc(s.content||'').replace(/\n/g,'<br>');
-      return `<section class="rs"><h2>${esc(s.title)}</h2><p>${c}</p></section>`;
+      const blocks = Array.isArray(s.blocks) && s.blocks.length
+        ? s.blocks
+        : [{ heading: '', text: s.content || '' }];
+      const inner = blocks
+        .filter(b => (b.heading || '').trim() || (b.text || '').trim())
+        .map(b => {
+          const h = (b.heading || '').trim() ? `<h3 class="rs-sub">${esc(b.heading)}</h3>` : '';
+          const t = esc(b.text || '').replace(/\n/g,'<br>');
+          return `${h}<p>${t}</p>`;
+        }).join('');
+      return `<section class="rs"><h2>${esc(s.title)}</h2>${inner || '<p>—</p>'}</section>`;
     }
     if (s.type === 'list') {
       const f = (s.items||[]).filter(Boolean);

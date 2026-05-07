@@ -55,6 +55,16 @@ body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--gra
 .section-card { background: var(--white); border-radius: 14px; border: 1.5px solid var(--border); box-shadow: var(--shadow); margin-bottom: 12px; overflow: hidden; transition: box-shadow .2s; }
 .section-card:hover { box-shadow: var(--shadow-md); }
 .section-head { display: flex; align-items: center; gap: 10px; padding: 11px 16px; background: var(--bg); border-bottom: 1.5px solid var(--border); }
+
+/* Subtitle (under section title — read-only for employee) */
+.section-subtitle { padding: 6px 16px 10px; background: var(--bg); border-bottom: 1.5px solid var(--border); font-size: 12px; color: var(--gray); font-weight: 600; line-height: 1.6; }
+.wiz-step-subtitle { font-size: 13px; color: var(--gray); font-weight: 600; margin-top: 4px; line-height: 1.6; }
+
+/* Section note (after body — employee writes here) */
+.section-note { padding: 14px 16px; background: rgba(255,107,43,0.04); border-top: 1px dashed var(--border); }
+.section-note-label { display: block; font-size: 12px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.section-note textarea { width: 100%; min-height: 60px; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 13px; color: var(--gray); background: #fff; outline: none; resize: vertical; direction: rtl; line-height: 1.7; }
+.section-note textarea:focus { border-color: var(--orange); }
 .type-badge { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 10px; background: var(--navy); color: #fff; white-space: nowrap; flex-shrink: 0; }
 .section-title-in { flex: 1; border: none; background: transparent; font-family: 'Cairo', sans-serif; font-size: 14px; font-weight: 800; color: var(--navy); outline: none; min-width: 0; }
 .section-title-in::placeholder { color: var(--gray-light); font-weight: 400; }
@@ -68,6 +78,32 @@ body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--gra
 /* Text */
 .tx-area { width: 100%; min-height: 90px; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 13px; color: var(--gray); background: var(--bg); outline: none; resize: vertical; direction: rtl; line-height: 1.8; transition: border-color .2s; }
 .tx-area:focus { border-color: var(--navy); background: #fff; }
+
+/* Multi-block text section */
+.text-blocks { display: flex; flex-direction: column; gap: 12px; margin-bottom: 10px; }
+.text-block { display: flex; flex-direction: column; gap: 6px; padding: 10px; border: 1px dashed var(--border); border-radius: 10px; background: rgba(29,47,95,0.02); transition: border-color .15s; }
+.text-block:focus-within { border-color: var(--navy); background: #fff; }
+.text-block-head { display: flex; align-items: center; gap: 8px; }
+.text-block-heading { flex: 1; padding: 7px 11px; border: 1.5px solid var(--border); border-radius: 7px; font-family: 'Cairo', sans-serif; font-size: 12.5px; font-weight: 700; color: var(--navy); background: var(--white, #fff); outline: none; transition: border-color .15s; }
+.text-block-heading::placeholder { color: var(--gray-light); font-weight: 500; }
+.text-block-heading:focus { border-color: var(--orange); }
+.text-block-heading-locked { flex: 1; padding: 7px 11px; border: 1.5px solid transparent; border-radius: 7px; font-family: 'Cairo', sans-serif; font-size: 12.5px; font-weight: 800; color: var(--navy); background: var(--orange-soft); display: flex; align-items: center; gap: 6px; }
+.text-block-heading-locked::before { content: '🔒'; font-size: 11px; opacity: 0.6; }
+
+/* Multi-Project Bar */
+.projects-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 14px 18px; background: linear-gradient(135deg, var(--white), rgba(255,107,43,0.04) 200%); border: 2px solid var(--orange); border-radius: 14px; margin-bottom: 18px; box-shadow: var(--shadow); }
+.projects-label { font-size: 12px; font-weight: 800; color: var(--navy); }
+.projects-tabs { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; min-width: 0; }
+.proj-tab { display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px; background: var(--white); border: 1.5px solid var(--border); border-radius: 9px; font-size: 12px; font-weight: 700; color: var(--gray); cursor: pointer; transition: all 0.15s; user-select: none; }
+.proj-tab:hover { border-color: var(--orange); color: var(--orange); }
+.proj-tab.active { background: var(--orange); border-color: var(--orange); color: #fff; box-shadow: 0 4px 12px rgba(255,107,43,0.3); }
+.proj-tab .proj-name { max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.proj-close { width: 16px; height: 16px; border-radius: 50%; background: rgba(255,255,255,0.2); display: inline-flex; align-items: center; justify-content: center; font-size: 10px; line-height: 1; transition: background 0.15s; }
+.proj-tab.active .proj-close:hover { background: rgba(255,255,255,0.4); }
+.proj-tab:not(.active) .proj-close { background: var(--bg); color: var(--gray-light); }
+.proj-tab:not(.active) .proj-close:hover { background: var(--red, #dc2626); color: #fff; }
+.proj-add { padding: 7px 14px; background: var(--navy); color: #fff; border: none; border-radius: 9px; font-family: 'Cairo', sans-serif; font-size: 12px; font-weight: 800; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
+.proj-add:hover { background: var(--navy-light, #263a75); transform: translateY(-1px); }
 
 /* List */
 .list-items { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
@@ -221,7 +257,9 @@ body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--gra
       </div>
       <div class="fg">
         <label>الأسبوع</label>
-        <input type="text" id="reportWeek" oninput="persist()" autocomplete="off">
+        <select id="reportWeek" onchange="onWeekChange()" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;color:var(--gray);background:var(--bg);outline:none;cursor:pointer">
+          <!-- Filled by JS -->
+        </select>
       </div>
     </div>
   </div>
@@ -306,6 +344,10 @@ let currentStep = 0;          // active step in wizard
 let lastSavedAt = null;       // for save status display
 let saveStatusTimer = null;
 let templateTheme = 'standard';
+let multiProjectMode = false;     // template flag — multiple projects per report
+let projects = [];                // [{ id, name, sections: [...] }]
+let activeProjectIdx = 0;
+let templateSectionsBlueprint = null; // saved scaffold for cloning when adding new projects
 const LS_KEY = 'rpt_session_draft';
 
 const TYPE_ICONS = {
@@ -325,14 +367,21 @@ async function init() {
   if (session.is_team_leader) loadTeamMembersForMerge();
 
   const now = new Date();
-  const wn  = Math.ceil(((now - new Date(now.getFullYear(),0,1)) / 86400000 + new Date(now.getFullYear(),0,1).getDay()+1) / 7);
-  document.getElementById('reportWeek').value = `الأسبوع ${wn} - ${now.getFullYear()}`;
-  document.getElementById('reportTitle').placeholder = `تقرير ${session.name} — الأسبوع ${wn}`;
+  const year = now.getFullYear();
+  const wn  = Math.ceil(((now - new Date(year,0,1)) / 86400000 + new Date(year,0,1).getDay()+1) / 7);
+  // Populate week dropdown: from current week down 12 weeks + up 4 future weeks
+  populateWeekDropdown(wn, year);
+  // Allow ?week=X URL param to preselect a specific week
+  const urlWeek = new URLSearchParams(location.search).get('week');
+  const defaultWeek = urlWeek || `الأسبوع ${wn} - ${year}`;
+  setReportWeek(defaultWeek);
+  document.getElementById('reportTitle').placeholder = `تقرير ${session.name} — ${defaultWeek}`;
 
   // جلب إعدادات القالب الخاص بالموظف
   const tplRes = await fetch('/api/employee/template').then(r => r.json());
   canEditStructure = tplRes.can_edit !== false; // true إذا لا يوجد قالب أو لديه صلاحية
   if (tplRes.template && tplRes.template.visual_theme) templateTheme = tplRes.template.visual_theme;
+  multiProjectMode = !!(tplRes.template && tplRes.template.multi_project);
 
   if (!canEditStructure) {
     // wizard mode للموظف العادي
@@ -358,17 +407,15 @@ async function init() {
   } else {
     // إذا يوجد قالب مخصص، استخدم أقسامه
     if (tplRes.template && tplRes.template.sections && tplRes.template.sections.length) {
-      sections = (tplRes.template.sections || []).filter(s => s && typeof s === 'object' && s.type).map(s => {
-        const base = { ...s, id: uid() };
-        if (s.type === 'text')      { base.content = ''; }
-        if (s.type === 'list')      { base.items = (s.items || ['']).map(() => ''); }
-        if (s.type === 'metrics')   { base.items = (s.items || []).map(it => ({ label: it.label || '', value: '', unit: it.unit || '' })); }
-        if (s.type === 'table')     { base.headers = s.headers || []; base.rows = (s.rows || [['']]).map(r => r.map(() => '')); }
-        if (s.type === 'scorecard') { base.items = (s.items || []).map(it => ({ label: it.label || '', mode: it.mode || 'yesno', value: '' })); }
-        if (s.type === 'status')    { base.options = s.options || []; base.value = ''; base.note = ''; }
-        if (s.type === 'checklist') { base.status_options = s.status_options || []; base.items = (s.items || [{ text: '', status: '' }]).map(it => ({ text: typeof it === 'object' ? it.text || '' : '', status: '' })); }
-        return base;
-      });
+      const built = buildSectionsFromTemplate(tplRes.template.sections);
+      templateSectionsBlueprint = tplRes.template.sections; // remember for when user adds another project
+      if (multiProjectMode) {
+        projects = [{ id: uid(), name: 'المشروع الأول', sections: built }];
+        activeProjectIdx = 0;
+        sections = projects[0].sections;
+      } else {
+        sections = built;
+      }
       render();
     } else {
       // اقترح استمرار مسودة محلية
@@ -378,7 +425,7 @@ async function init() {
           const d = JSON.parse(saved);
           if (d.sections && d.sections.length && confirm('عندك مسودة غير محفوظة — تكملها؟')) {
             if (d.title) document.getElementById('reportTitle').value = d.title;
-            if (d.week)  document.getElementById('reportWeek').value  = d.week;
+            if (d.week)  setReportWeek(d.week);
             sections = d.sections;
             render(); return;
           }
@@ -401,15 +448,30 @@ async function loadDraft(id) {
 
   currentDraftId = draft.id;
   document.getElementById('reportTitle').value = draft.title || '';
-  document.getElementById('reportWeek').value  = draft.week  || '';
+  setReportWeek(draft.week || '');
   document.getElementById('pageTitle').textContent = 'تكملة التقرير';
 
   // استخرج الأقسام من الـ HTML المحفوظ
   try {
     const res  = await fetch(`/reports/view/${encodeURIComponent(draft.filename)}`);
     const html = await res.text();
+    const projMatch = html.match(/<script type="application\/json" id="__projects__">([\s\S]*?)<\/script>/);
     const m    = html.match(/<script type="application\/json" id="__rpt__">([\s\S]*?)<\/script>/);
-    if (m) { sections = JSON.parse(m[1]); render(); return; }
+    if (projMatch && multiProjectMode) {
+      try {
+        projects = JSON.parse(projMatch[1]).map(p => ({
+          ...p,
+          id: p.id || uid(),
+          sections: (p.sections || []).map(s => ({ ...s, id: s.id || uid() }))
+        }));
+        if (!projects.length) projects = [{ id: uid(), name: 'المشروع الأول', sections: defaultSections() }];
+        activeProjectIdx = 0;
+        sections = projects[0].sections;
+        render();
+        return;
+      } catch(e) {}
+    }
+    if (m) { sections = JSON.parse(m[1]).map(s => ({ ...s, id: s.id || uid() })); render(); return; }
   } catch(e) {}
 
   sections = defaultSections();
@@ -426,7 +488,138 @@ function defaultSections() {
   ];
 }
 
+// Build a fresh fillable copy of the template sections (for new draft / new project)
+function buildSectionsFromTemplate(tplSections) {
+  return (tplSections || []).filter(s => s && typeof s === 'object' && s.type).map(s => {
+    const base = { ...s, id: uid() };
+    // carry over subtitle + note config; reset note value for fresh fill
+    base.subtitle   = s.subtitle || '';
+    base.has_note   = !!s.has_note;
+    base.note_label = s.note_label || '';
+    base.note_value = '';
+    if (s.type === 'text') {
+      if (Array.isArray(s.blocks) && s.blocks.length) {
+        base.blocks = s.blocks.map(b => ({
+          heading: b.heading || '',
+          text: '',
+          _scaffold: !!b.heading || !!b.placeholder,
+          _placeholder: b.placeholder || ''
+        }));
+      } else {
+        base.content = '';
+        base.blocks = [{ heading: '', text: '' }];
+      }
+    }
+    if (s.type === 'list')      { base.items = (s.items || ['']).map(() => ''); }
+    if (s.type === 'metrics')   { base.items = (s.items || []).map(it => ({ label: it.label || '', value: '', unit: it.unit || '' })); }
+    if (s.type === 'table')     { base.headers = s.headers || []; base.rows = (s.rows || [['']]).map(r => r.map(() => '')); }
+    if (s.type === 'scorecard') { base.items = (s.items || []).map(it => ({ label: it.label || '', mode: it.mode || 'yesno', value: '' })); }
+    if (s.type === 'status')    { base.options = s.options || []; base.value = ''; base.note = ''; }
+    if (s.type === 'checklist') { base.status_options = s.status_options || []; base.items = (s.items || [{ text: '', status: '' }]).map(it => ({ text: typeof it === 'object' ? it.text || '' : '', status: '' })); }
+    return base;
+  });
+}
+
+// ── Multi-Project Functions ─────────────────────────────────────────────────
+function addProject() {
+  if (!multiProjectMode) return;
+  const name = prompt('اسم المشروع/العميل الجديد:', `المشروع ${projects.length + 1}`);
+  if (!name || !name.trim()) return;
+  const newSecs = templateSectionsBlueprint
+    ? buildSectionsFromTemplate(templateSectionsBlueprint)
+    : defaultSections();
+  projects.push({ id: uid(), name: name.trim(), sections: newSecs });
+  activeProjectIdx = projects.length - 1;
+  sections = projects[activeProjectIdx].sections;
+  render(); persist();
+}
+
+function removeProject(idx) {
+  if (!multiProjectMode || projects.length <= 1) return;
+  if (!confirm(`تأكيد حذف "${projects[idx].name}"؟ كل بياناته هتضيع.`)) return;
+  projects.splice(idx, 1);
+  if (activeProjectIdx >= projects.length) activeProjectIdx = projects.length - 1;
+  sections = projects[activeProjectIdx].sections;
+  render(); persist();
+}
+
+function switchProject(idx) {
+  if (!multiProjectMode || idx < 0 || idx >= projects.length) return;
+  activeProjectIdx = idx;
+  sections = projects[idx].sections;
+  render();
+}
+
+function renameProject(idx) {
+  const newName = prompt('الاسم الجديد للمشروع:', projects[idx].name);
+  if (!newName || !newName.trim()) return;
+  projects[idx].name = newName.trim();
+  render(); persist();
+}
+
+function renderProjectsBar() {
+  if (!multiProjectMode) return '';
+  const tabs = projects.map((p, i) => {
+    const isActive = i === activeProjectIdx;
+    const closeBtn = projects.length > 1
+      ? `<span class="proj-close" onclick="event.stopPropagation();removeProject(${i})">✕</span>`
+      : '';
+    return `<div class="proj-tab ${isActive ? 'active' : ''}" onclick="switchProject(${i})" ondblclick="renameProject(${i})" title="مزدوج للتعديل">
+      <span class="proj-name">${esc(p.name)}</span>
+      ${closeBtn}
+    </div>`;
+  }).join('');
+  return `
+    <div class="projects-bar">
+      <div class="projects-label">🗂️ المشاريع:</div>
+      <div class="projects-tabs">${tabs}</div>
+      <button class="proj-add" onclick="addProject()">+ مشروع جديد</button>
+    </div>
+  `;
+}
+
 function uid() { return Math.random().toString(36).slice(2, 9); }
+
+// Populate the week dropdown with a range of weeks around current
+function populateWeekDropdown(currentWn, year) {
+  const sel = document.getElementById('reportWeek');
+  if (!sel || sel.tagName !== 'SELECT') return;
+  const opts = [];
+  // 12 weeks back, current, and up to 4 weeks ahead
+  for (let i = 12; i >= -4; i--) {
+    const wn = currentWn - i;
+    if (wn < 1) continue;
+    const label = `الأسبوع ${wn} - ${year}`;
+    let suffix = '';
+    if (i === 0) suffix = ' (الحالى)';
+    else if (i < 0) suffix = ' (قادم)';
+    opts.push(`<option value="${label}">${label}${suffix}</option>`);
+  }
+  sel.innerHTML = opts.join('');
+}
+
+function onWeekChange() {
+  persist();
+  const w = document.getElementById('reportWeek').value;
+  if (sessionData) {
+    document.getElementById('reportTitle').placeholder = `تقرير ${sessionData.name} — ${w}`;
+  }
+}
+
+// Safely set week dropdown value — adds the option if not already in the list
+function setReportWeek(weekStr) {
+  if (!weekStr) return;
+  const sel = document.getElementById('reportWeek');
+  if (!sel) return;
+  // If the value isn't in the dropdown, prepend it
+  if (!Array.from(sel.options).some(o => o.value === weekStr)) {
+    const opt = document.createElement('option');
+    opt.value = weekStr;
+    opt.textContent = weekStr;
+    sel.insertBefore(opt, sel.firstChild);
+  }
+  sel.value = weekStr;
+}
 
 // ── Render ─────────────────────────────────────────────────────────────────────
 function render() {
@@ -434,6 +627,7 @@ function render() {
     renderWizard();
   } else {
     document.getElementById('sectionsContainer').innerHTML =
+      renderProjectsBar() +
       sections.map((s, i) => renderCard(s, i)).join('');
   }
 }
@@ -455,22 +649,37 @@ function renderWizard() {
     const line = i < sections.length - 1 ? `<div class="${lineCls}"></div>` : '';
     return `<button class="${cls}" onclick="goToStep(${i})" title="${esc(s.title || '')}"><span class="num">${content}</span></button>${line}`;
   }).join('');
-  document.getElementById('wizStepper').innerHTML = stepperHTML;
+  // Inject projects bar above stepper if multi-project mode
+  const stepperEl = document.getElementById('wizStepper');
+  let projectsBarHtml = renderProjectsBar();
+  // Find or create container for projects bar
+  let projBarEl = document.getElementById('wizProjectsBar');
+  if (!projBarEl && projectsBarHtml) {
+    projBarEl = document.createElement('div');
+    projBarEl.id = 'wizProjectsBar';
+    stepperEl.parentNode.insertBefore(projBarEl, stepperEl);
+  }
+  if (projBarEl) projBarEl.innerHTML = projectsBarHtml;
+  stepperEl.innerHTML = stepperHTML;
 
   // Progress bar
   const pct = ((currentStep + 1) / sections.length) * 100;
   document.getElementById('wizProgressBar').style.width = pct + '%';
 
   // Section header
+  const wizSub = sec.subtitle
+    ? `<div class="wiz-step-subtitle">${esc(sec.subtitle)}</div>`
+    : '';
   document.getElementById('wizStepHeader').innerHTML = `
     <div class="wiz-step-icon">${TYPE_ICONS[sec.type] || '📄'}</div>
-    <div>
+    <div style="flex:1;min-width:0">
       <h2>${esc(sec.title || '')}</h2>
       <div class="wiz-step-meta">القسم ${currentStep + 1} من ${sections.length}</div>
+      ${wizSub}
     </div>`;
 
-  // Section body
-  document.getElementById('wizSectionBody').innerHTML = renderBody(sec);
+  // Section body + optional note
+  document.getElementById('wizSectionBody').innerHTML = renderBody(sec) + renderSectionNote(sec);
 
   // Nav buttons
   const prevBtn = document.getElementById('wizPrevBtn');
@@ -541,6 +750,10 @@ function renderCard(s, i) {
     acts = `<div class="section-acts">${upBtn}${downBtn}<button class="ic-btn del" onclick="deleteSection('${s.id}')" title="حذف">✕</button></div>`;
   }
 
+  const subtitleEl = s.subtitle
+    ? `<div class="section-subtitle">${esc(s.subtitle)}</div>`
+    : '';
+
   return `
     <div class="section-card" id="sc_${s.id}">
       <div class="section-head">
@@ -548,14 +761,64 @@ function renderCard(s, i) {
         ${titleEl}
         ${acts}
       </div>
+      ${subtitleEl}
       <div class="section-body">${renderBody(s)}</div>
+      ${renderSectionNote(s)}
+    </div>`;
+}
+
+function renderSectionNote(s) {
+  if (!s.has_note) return '';
+  const label = s.note_label || `ملاحظة على ${s.title || 'القسم'}`;
+  return `
+    <div class="section-note">
+      <label class="section-note-label">${esc(label)}</label>
+      <textarea placeholder="اكتب ملاحظتك هنا..."
+        oninput="onSectionNoteChange('${s.id}', this.value)">${esc(s.note_value || '')}</textarea>
     </div>`;
 }
 
 function renderBody(s) {
   if (!s || typeof s !== 'object') return '<div style="color:var(--gray-light);padding:14px;text-align:center">⚠️ قسم غير صالح</div>';
   if (s.type === 'text') {
-    return `<textarea class="tx-area" placeholder="اكتب هنا..." oninput="onTextChange('${s.id}', this.value)">${esc(s.content || '')}</textarea>`;
+    // Migrate legacy single-content → blocks array (one-time)
+    if (!Array.isArray(s.blocks)) {
+      s.blocks = (s.content && s.content.trim())
+        ? [{ heading: '', text: s.content }]
+        : [{ heading: '', text: '' }];
+    }
+    const blocksHTML = s.blocks.map((b, i) => {
+      // If scaffolded by admin, lock the heading + delete (unless employee can edit structure)
+      const isScaffold = !!b._scaffold;
+      const lockHeading = isScaffold && !canEditStructure;
+      const lockDelete  = isScaffold && !canEditStructure;
+      const headingInput = lockHeading
+        ? `<div class="text-block-heading text-block-heading-locked">${esc(b.heading || '(بدون عنوان)')}</div>`
+        : `<input class="text-block-heading" placeholder="عنوان الفقرة (اختياري)"
+                  value="${esc(b.heading || '')}"
+                  oninput="onTextBlockChange('${s.id}', ${i}, 'heading', this.value)">`;
+      const delBtn = (s.blocks.length > 1 && !lockDelete)
+        ? `<button class="ic-btn del" onclick="removeTextBlock('${s.id}', ${i})" title="حذف الفقرة">✕</button>`
+        : '';
+      const placeholderText = b._placeholder || 'اكتب هنا...';
+      return `
+        <div class="text-block">
+          <div class="text-block-head">
+            ${headingInput}
+            ${delBtn}
+          </div>
+          <textarea class="tx-area" placeholder="${esc(placeholderText)}"
+                    oninput="onTextBlockChange('${s.id}', ${i}, 'text', this.value)">${esc(b.text || '')}</textarea>
+        </div>
+      `;
+    }).join('');
+    const addBtn = canEditStructure
+      ? `<button class="add-btn" onclick="addTextBlock('${s.id}')">+ إضافة فقرة جديدة</button>`
+      : '';
+    return `
+      <div class="text-blocks">${blocksHTML}</div>
+      ${addBtn}
+    `;
   }
 
   if (s.type === 'list') {
@@ -680,6 +943,25 @@ function renderBody(s) {
 // بدون re-render (لتغييرات النص)
 function onTitleChange(id, v) { getS(id).title = v; persist(); }
 function onTextChange(id, v)  { getS(id).content = v; persist(); }
+function onTextBlockChange(id, i, field, v) {
+  const s = getS(id);
+  if (!Array.isArray(s.blocks)) s.blocks = [];
+  if (!s.blocks[i]) s.blocks[i] = { heading: '', text: '' };
+  s.blocks[i][field] = v;
+  persist();
+}
+function addTextBlock(id) {
+  const s = getS(id);
+  if (!Array.isArray(s.blocks)) s.blocks = [];
+  s.blocks.push({ heading: '', text: '' });
+  render(); persist();
+}
+function removeTextBlock(id, i) {
+  const s = getS(id);
+  if (!Array.isArray(s.blocks) || s.blocks.length <= 1) return;
+  s.blocks.splice(i, 1);
+  render(); persist();
+}
 function onItemChange(id, i, v) { getS(id).items[i] = v; persist(); }
 function onMetricChange(id, i, f, v) { getS(id).items[i][f] = v; persist(); }
 function onHeaderChange(id, i, v) { getS(id).headers[i] = v; persist(); }
@@ -693,6 +975,9 @@ function removeMetric(id, i) { const s = getS(id); if (s.items.length > 1) { s.i
 function addRow(id) { const s = getS(id); s.rows.push(s.headers.map(() => '')); render(); persist(); }
 function removeRow(id, i) { const s = getS(id); if (s.rows.length > 1) { s.rows.splice(i, 1); render(); persist(); } }
 function addCol(id) { const s = getS(id); s.headers.push('عمود جديد'); s.rows.forEach(r => r.push('')); render(); persist(); }
+
+// section-level note (employee fills)
+function onSectionNoteChange(id, v) { const s = getS(id); if (s) { s.note_value = v; persist(); } }
 
 // scorecard
 function setScCellValue(id, i, v) { getS(id).items[i].value = v; render(); persist(); }
@@ -723,6 +1008,7 @@ function deleteSection(id) {
   if (sections.length <= 1) { showToast('لازم يكون في قسم واحد على الأقل', 'error'); return; }
   if (!confirm('تحذف القسم ده؟')) return;
   sections = sections.filter(s => s.id !== id);
+  if (multiProjectMode && projects[activeProjectIdx]) projects[activeProjectIdx].sections = sections;
   render(); persist();
 }
 
@@ -811,11 +1097,13 @@ function closeModal() { document.getElementById('addModal').classList.remove('op
 
 // ── LocalStorage + Auto-save ──────────────────────────────────────────────────
 function persist() {
-  localStorage.setItem(LS_KEY, JSON.stringify({
+  const payload = {
     title: document.getElementById('reportTitle').value,
     week:  document.getElementById('reportWeek').value,
     sections
-  }));
+  };
+  if (multiProjectMode) { payload.multiProjectMode = true; payload.projects = projects; payload.activeProjectIdx = activeProjectIdx; }
+  localStorage.setItem(LS_KEY, JSON.stringify(payload));
   scheduleSilentSave();
 }
 
@@ -872,15 +1160,34 @@ function updateSavedDisplay() {
 }
 
 // ── Generate HTML ──────────────────────────────────────────────────────────────
-function generateHTML() {
-  const title = document.getElementById('reportTitle').value.trim();
-  const week  = document.getElementById('reportWeek').value.trim();
-  const name  = sessionData?.name || '';
-
-  const body = sections.map(s => {
+function renderSectionsAsHTML(secs) {
+  const enhance = (s, html) => {
+    if (!html) return html;
+    let out = html;
+    if (s.subtitle) {
+      out = out.replace(/<\/h2>/, '</h2>' + `<div class="rs-sub">${esc(s.subtitle)}</div>`);
+    }
+    if (s.has_note && (s.note_value || '').trim()) {
+      const label = s.note_label || `ملاحظة على ${s.title || 'القسم'}`;
+      const noteEl = `<div class="rs-note"><div class="rs-note-l">${esc(label)}</div><p>${esc(s.note_value).replace(/\n/g, '<br>')}</p></div>`;
+      out = out.replace(/<\/section>(?!.*<\/section>)/s, noteEl + '</section>');
+    }
+    return out;
+  };
+  return secs.map(s => enhance(s, (() => {
     if (s.type === 'text') {
-      const content = esc(s.content || '').replace(/\n/g, '<br>');
-      return `<section class="rs"><h2>${esc(s.title)}</h2><p>${content}</p></section>`;
+      // Prefer new multi-block format; fall back to legacy s.content
+      const blocks = Array.isArray(s.blocks) && s.blocks.length
+        ? s.blocks
+        : [{ heading: '', text: s.content || '' }];
+      const inner = blocks
+        .filter(b => (b.heading || '').trim() || (b.text || '').trim())
+        .map(b => {
+          const heading = (b.heading || '').trim() ? `<h3 class="rs-sub">${esc(b.heading)}</h3>` : '';
+          const text = esc(b.text || '').replace(/\n/g, '<br>');
+          return `${heading}<p>${text}</p>`;
+        }).join('');
+      return `<section class="rs"><h2>${esc(s.title)}</h2>${inner || '<p>—</p>'}</section>`;
     }
     if (s.type === 'list') {
       const filtered = (s.items || []).filter(Boolean);
@@ -926,7 +1233,27 @@ function generateHTML() {
       return `<section class="rs"><h2>${esc(s.title)}</h2><div class="tw"><table><thead><tr><th>العنصر</th><th style="text-align:center">الحالة</th></tr></thead><tbody>${rows}</tbody></table></div></section>`;
     }
     return '';
-  }).join('');
+  })())).join('');
+}
+
+function generateHTML() {
+  const title = document.getElementById('reportTitle').value.trim();
+  const week  = document.getElementById('reportWeek').value.trim();
+  const name  = sessionData?.name || '';
+
+  let body;
+  if (multiProjectMode && projects.length) {
+    // Render each project as a grouped block with project name as header
+    body = projects.map((p, idx) => {
+      const projHeader = `<div class="rs project-header" style="background:linear-gradient(135deg,var(--report-primary,#1D2F5F),var(--report-accent,#FF6B2B));color:#fff;padding:18px 30px;border:none">
+        <div style="font-size:11px;font-weight:700;opacity:0.85;letter-spacing:0.5px">المشروع ${idx + 1} من ${projects.length}</div>
+        <div style="font-size:18px;font-weight:900;margin-top:3px">🗂️ ${esc(p.name)}</div>
+      </div>`;
+      return projHeader + renderSectionsAsHTML(p.sections || []);
+    }).join('');
+  } else {
+    body = renderSectionsAsHTML(sections);
+  }
 
   const styles = `
 *{box-sizing:border-box;margin:0;padding:0}
@@ -940,6 +1267,9 @@ body{font-family:'Cairo',sans-serif;padding:28px 16px;direction:rtl;color:var(--
 .rs{padding:22px 30px;border-bottom:1.5px solid #E5E7EB}
 .rs:last-child{border-bottom:none}
 h2{font-size:14px;font-weight:900;color:var(--report-primary, #1D2F5F);margin-bottom:14px;padding-bottom:7px;border-bottom:2.5px solid var(--report-accent, #FF6B2B);display:inline-block}
+.rs-sub{display:block;font-size:12px;color:#6B7280;font-weight:600;margin:-6px 0 12px 0;line-height:1.6}
+.rs-note{margin-top:14px;padding-top:12px;border-top:1px dashed #E5E7EB}
+.rs-note-l{font-size:12px;font-weight:700;color:var(--report-primary, #1D2F5F);margin-bottom:6px}
 p{font-size:13px;line-height:1.9}
 ul{padding-right:18px}
 ul li{font-size:13px;line-height:1.9;margin-bottom:4px}
@@ -985,6 +1315,7 @@ tr:hover td{background:#FFF0EA}
   ${body}
 </div>
 <script type="application/json" id="__rpt__">${JSON.stringify(sections).replace(/<\//g,'<\\/')}<\/script>
+${multiProjectMode ? `<script type="application/json" id="__projects__">${JSON.stringify(projects).replace(/<\//g,'<\\/')}<\/script>` : ''}
 <script type="application/json" id="__theme__">${JSON.stringify(templateTheme)}<\/script>
 </body>
 </html>`;
@@ -1019,6 +1350,13 @@ async function doSave() {
   const content = generateHTML();
   const sectionsClean = sections.map(({ id, ...rest }) => rest);
   const body    = { title, week, content, sections: sectionsClean };
+  if (multiProjectMode) {
+    body.projects = projects.map(p => ({
+      id: p.id,
+      name: p.name,
+      sections: (p.sections || []).map(({ id, ...rest }) => rest)
+    }));
+  }
   if (currentDraftId) body.draft_id = currentDraftId;
   try {
     const res  = await fetch('/api/employee/draft', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
@@ -1033,11 +1371,15 @@ async function sendReport() {
   const title = document.getElementById('reportTitle').value.trim();
   if (!title) return Toast.warning('اكتب عنوان التقرير');
 
-  const hasContent = sections.some(s =>
+  const checkSectionContent = (secs) => secs.some(s =>
     s.content?.trim() ||
+    s.blocks?.some(b => (b.heading || b.text || '').toString().trim()) ||
     s.items?.some(i => typeof i === 'string' ? i.trim() : (i.label || i.value)) ||
     s.rows?.some(r => r.some(Boolean))
   );
+  const hasContent = multiProjectMode
+    ? projects.some(p => checkSectionContent(p.sections || []))
+    : checkSectionContent(sections);
   if (!hasContent) return Toast.warning('أضف محتوى لأي قسم أولاً');
 
   if (!confirm(`إرسال التقرير "${title}" للمدير؟`)) return;
@@ -1058,13 +1400,19 @@ async function sendReport() {
     const isLeader = sessionData?.is_team_leader && mergeChk && mergeChk.checked;
 
     const sectionsClean = sections.map(({ id, ...rest }) => rest);
+    const projectsClean = multiProjectMode ? projects.map(p => ({
+      id: p.id, name: p.name,
+      sections: (p.sections || []).map(({ id, ...rest }) => rest)
+    })) : null;
 
     if (isLeader) {
       const memberIds = Array.from(document.querySelectorAll('.merge-member:checked')).map(c => parseInt(c.value));
+      const mergedBody = { include_member_ids: memberIds, title: title2, week, content, sections: sectionsClean };
+      if (projectsClean) mergedBody.projects = projectsClean;
       const res = await fetch('/api/leader/submit-merged/' + currentDraftId, {
         method: 'POST',
         headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ include_member_ids: memberIds, title: title2, week, content, sections: sectionsClean })
+        body: JSON.stringify(mergedBody)
       });
       const data = await res.json();
       if (data.error) { btnReset(btn); return Toast.error(data.error); }
@@ -1075,7 +1423,9 @@ async function sendReport() {
       return;
     }
 
-    const res  = await fetch('/api/employee/send/' + currentDraftId, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ title: title2, week, content, sections: sectionsClean }) });
+    const sendBody = { title: title2, week, content, sections: sectionsClean };
+    if (projectsClean) sendBody.projects = projectsClean;
+    const res  = await fetch('/api/employee/send/' + currentDraftId, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(sendBody) });
     const data = await res.json();
     if (data.error) { btnReset(btn); return Toast.error(data.error); }
     btnSuccess(btn);
