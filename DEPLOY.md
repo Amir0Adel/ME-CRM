@@ -9,7 +9,7 @@
 | العنصر | الحالة |
 |---|---|
 | **Node.js** | نسخة 18 أو 20 (يدعمها أغلب hosts) |
-| **قاعدة بيانات** | ❌ **مفيش** — البيانات فى ملف `data/db.json` |
+| **قاعدة بيانات** | SQLite (better-sqlite3) — ملف `data/data.db` يتولّد لوحده |
 | **Sessions** | SQLite ملف صغير يتولّد لوحده |
 | **PDF Export (puppeteer)** | ❌ مش هيشتغل على shared hosting (سيبه optional) |
 | **HTTPS** | فعّل Let's Encrypt من cPanel — مجانى |
@@ -30,16 +30,18 @@
 
 ## 🗄️ قبل ما نبدأ — افهم الـ "Database"
 
-**مفيش MySQL ولا phpMyAdmin ولا أى database setup.** كل بياناتك فى ملف JSON واحد:
+**مفيش MySQL ولا phpMyAdmin ولا أى database setup.** كل بياناتك فى ملف SQLite واحد:
 
 ```
-data/db.json   ← كل الموظفين، التقارير، الفرق، القوالب (~130KB)
+data/data.db   ← كل الموظفين، التقارير، الفرق، القوالب (~250KB)
 ```
+
+> 💡 **مهم:** المشروع كان بيستخدم `lowdb` (ملف JSON) فى الإصدارات السابقة. لو لسه عندك `data/db.json` على السيرفر، شوف قسم **"Migration من النسخة القديمة"** فى الأخر.
 
 **عندك 3 سيناريوهات:**
 
 ### 🅰️ ابدأ نظيف (الأبسط)
-متترفعش `data/` خالص. أول ما السيرفر يشتغل، هيتولّد ملف `db.json` جديد ببيانات افتراضية:
+متترفعش `data/` خالص. أول ما السيرفر يشتغل، هيتولّد ملف `data.db` جديد ببيانات افتراضية:
 - Admin: `admin@reports.com` / `admin123`
 - 13 موظف افتراضى: `[name]@reports.com` / `pass123`
 - 13 فريق + 13 قالب جاهزين
@@ -47,12 +49,12 @@ data/db.json   ← كل الموظفين، التقارير، الفرق، ال�
 **اختاره لو:** بدأت من الصفر ومش محتاج البيانات الحالية.
 
 ### 🅱️ ارفع بياناتك الحالية
-ضمّن `data/db.json` فى الـ ZIP — هتلاقى كل موظفينك وتقاريرك زى ما هى محلياً.
+ضمّن `data/data.db` فى الـ ZIP — هتلاقى كل موظفينك وتقاريرك زى ما هى محلياً.
 
 **اختاره لو:** عندك بيانات حقيقية عايز تنقلها.
 
 ### 🅲️ ابدأ نظيف ثم استورد
-ارفع بدون `data/`، اتأكد إن كل حاجة شغالة، ثم استبدل `db.json` يدوياً عبر File Manager.
+ارفع بدون `data/`، اتأكد إن كل حاجة شغالة، ثم استبدل `data.db` يدوياً عبر File Manager.
 
 **اختاره لو:** عايز تختبر على البرود الأول قبل ما تخسر بياناتك الأصلية.
 
@@ -81,14 +83,14 @@ cd c:/laragon/www/ME-dashboard
 | `package.json` | قائمة الـ dependencies |
 | `package-lock.json` | لتثبيت نفس النسخ بالظبط |
 | `.env.example` | قالب متغيرات البيئة (للمرجع فقط) |
-| `data/db.json` | **فقط لو سيناريو B** — بياناتك |
+| `data/data.db` | **فقط لو سيناريو B** — بياناتك |
 
 #### ❌ استبعد من الـ ZIP:
 | ملف/مجلد | السبب |
 |---|---|
 | `node_modules/` | هينزل على السيرفر بـ `npm install` (وزنه كبير) |
 | `data/sessions.sqlite` | جلسات الدخول الحالية، يتولّد لوحده |
-| `data/db.json` | **لو سيناريو A** — هيتولّد لوحده |
+| `data/data.db` | **لو سيناريو A** — هيتولّد لوحده |
 | `.env` | متغيرات سرّية، هتحطها على cPanel UI |
 | `*.rar`, `*.zip` | ملفات الباك أب القدام |
 | `doc/` | المستندات المرجعية، مش محتاجها على البرود |
@@ -178,6 +180,19 @@ npm install --production --omit=optional
 
 ⏳ ممكن ياخد 1-3 دقائق على حسب سرعة السيرفر.
 
+#### ⚠️ مهم لـ better-sqlite3 على CentOS 7 / CloudLinux 7
+
+السيرفرات اللى بـ GLIBC قديم (2.17) محتاجة نسخة معينة من `better-sqlite3`. لو ظهر error زى:
+```
+GLIBC_2.29 not found
+```
+شغّل الأمر ده **بعد npm install**:
+```bash
+npm install better-sqlite3@7.6.2 --save-exact
+```
+
+النسخة 7.6.2 هى آخر نسخة بتدعم GLIBC القديم. الـ API نفسه متطابق فى الكود، فمش هيحتاج أى تعديل.
+
 ---
 
 ### 6) شغّل التطبيق
@@ -233,7 +248,7 @@ npm install --production --omit=optional
 ## 💾 النسخ الاحتياطى (Backup)
 
 ### إيه اللى يحتاج backup؟
-- **`data/db.json`** ← كل بياناتك (موظفين، تقارير، فرق، قوالب).
+- **`data/data.db`** ← كل بياناتك (موظفين، تقارير، فرق، قوالب).
 - **`public/reports/submitted/`** ← ملفات HTML للتقارير المرفوعة.
 
 ### إيه اللى متحتاجش backup؟
@@ -245,7 +260,7 @@ npm install --production --omit=optional
 ```bash
 # من cPanel terminal:
 cd ~/reports-dashboard
-tar -czf ~/backup-$(date +%Y%m%d).tar.gz data/db.json public/reports/submitted/
+tar -czf ~/backup-$(date +%Y%m%d).tar.gz data/data.db public/reports/submitted/
 
 # تنزيل الباك أب من File Manager → home → اسحب الملف لجهازك
 ```
@@ -256,7 +271,7 @@ tar -czf ~/backup-$(date +%Y%m%d).tar.gz data/db.json public/reports/submitted/
 
 | Schedule | Command |
 |---|---|
-| `0 3 * * 0` (كل أحد 3 صباحاً) | `cd ~/reports-dashboard && tar -czf ~/backups/backup-$(date +\%Y\%m\%d).tar.gz data/db.json public/reports/submitted/` |
+| `0 3 * * 0` (كل أحد 3 صباحاً) | `cd ~/reports-dashboard && tar -czf ~/backups/backup-$(date +\%Y\%m\%d).tar.gz data/data.db public/reports/submitted/` |
 
 (اعمل مجلد `~/backups/` الأول)
 
@@ -273,7 +288,7 @@ tar -xzf ~/backup-2026-05-06.tar.gz
 ## 🔄 إزاى أعمل Update لتحديث جديد؟
 
 1. ارفع الملفات الجديدة (File Manager Upload أو git pull).
-2. **متستبدلش** `data/db.json` ← ده بياناتك الحقيقية!
+2. **متستبدلش** `data/data.db` ← ده بياناتك الحقيقية!
 3. لو فى dependencies جديدة فى `package.json`:
    ```bash
    cd ~/reports-dashboard
@@ -287,10 +302,12 @@ tar -xzf ~/backup-2026-05-06.tar.gz
 ## ❓ الأسئلة الشائعة
 
 ### "هل أحتاج MySQL أو phpMyAdmin؟"
-**لا.** المشروع بيستخدم **lowdb** اللى بيخزن البيانات فى ملف JSON واحد (`data/db.json`). شغال على cPanel من غير أى إعداد database.
+**لا.** المشروع بيستخدم **SQLite** (better-sqlite3) اللى بيخزن البيانات فى ملف واحد (`data/data.db`). شغال على cPanel من غير أى إعداد database.
 
 ### "إزاى أنقل البيانات من جهازى للسيرفر؟"
-ببساطة **ارفع `data/db.json`** عبر File Manager، أو ضمّنه فى الـ ZIP الأصلى. مفيش `mysqldump` ولا `import wizard`.
+ببساطة **ارفع `data/data.db`** عبر File Manager، أو ضمّنه فى الـ ZIP الأصلى. مفيش `mysqldump` ولا `import wizard`.
+
+⚠️ **ملاحظة:** SQLite ملف binary، فلازم تنقله بـ **binary mode** (وضع UPLOAD العادى فى File Manager بيعمل ده تلقائياً). لو نقلته بـ FTP، تأكد إن الوضع `binary` مش `ascii`.
 
 ### "هل هينفع PDF Export؟"
 **على shared hosting: لا.** Puppeteer محتاج Chromium browser ومكتبات نظام (libnss3, libxss...) مش متاحة على shared hosting. الـ endpoint موجود لكن هيرجع 503.
@@ -301,12 +318,12 @@ tar -xzf ~/backup-2026-05-06.tar.gz
 - لو عندك VPS بدل shared hosting، puppeteer هيشتغل عادى.
 
 ### "هل فى حد أقصى لعدد الموظفين/التقارير؟"
-lowdb مناسب لـ:
-- ✅ ≤ 100 موظف
-- ✅ ≤ 5,000 تقرير
-- ✅ ≤ 50 concurrent user
+SQLite مناسب لـ:
+- ✅ ≤ 10,000 موظف (حتى أكتر)
+- ✅ ≤ 100,000 تقرير
+- ✅ Concurrent reads بدون مشاكل، Concurrent writes آمنة (single-writer)
 
-لو هتزيد عن كده بكتير، فكّر تنقل لـ MySQL (cPanel بيدعمه مجاناً، لكن هيحتاج تعديلات فى الكود).
+عملياً، المشروع ده هيشتغل على SQLite لسنين من غير مشكلة. لو وصلت لمرحلة multi-server أو SaaS متعدد الشركات، وقتها تفكر فى Postgres/MySQL — لكن ده بعيد جداً للمشروع الحالى.
 
 ### "السيرفر بيقع كل فترة؟"
 - لو الذاكرة قليلة، cPanel بيوقف الـ process. زود **Memory Limit** من إعدادات الـ Node.js App.
@@ -317,15 +334,24 @@ lowdb مناسب لـ:
 **لا** لأن المشروع بيستخدم **SQLite session store** — الـ sessions بتفضل محفوظة فى `data/sessions.sqlite`. الموظفين هيفضلوا مسجّلين دخول حتى بعد restart السيرفر.
 
 ### "نسيت الـ admin password؟"
-1. افتح `data/db.json` عبر File Manager.
-2. روح لـ `users[0]` (الـ admin).
-3. غيّر `password` لـ:
-   ```
-   "$2a$10$2BQIVXxEniuISE2PvUx8UOgVphksPB/oeS15jAPXDjhoKbd2fXE0y"
-   ```
-   (ده bcrypt hash لـ `admin123`).
-4. **Restart** الـ Node app.
-5. ادخل بـ `admin@reports.com / admin123` وغيّرها فوراً.
+SQLite ملف binary مش JSON، فمش هتقدر تعدله بـ File Manager مباشرة. الحل عبر Terminal:
+
+```bash
+cd ~/reports-dashboard
+source /home/USERNAME/nodevenv/reports-dashboard/18/bin/activate
+node -e "
+const { createDB } = require('./server/db');
+const bcrypt = require('bcryptjs');
+const db = createDB('./data/data.db');
+db.get('users').find({ role: 'admin' }).assign({
+  password: bcrypt.hashSync('admin123', 10)
+}).write();
+console.log('Admin password reset to: admin123');
+db._close();
+"
+```
+
+ثم اعمل **Restart** للـ Node app، وادخل بـ `admin@reports.com / admin123` وغيّرها فوراً.
 
 ### "أنا فى cPanel hosting لكن مفيش 'Setup Node.js App'؟"
 - اطلب الدعم الفنى يفعّل لك **CloudLinux Node.js Selector**.
@@ -339,9 +365,9 @@ lowdb مناسب لـ:
 2. ✅ غيّر كلمات السرّ الافتراضية فوراً.
 3. ✅ فعّل HTTPS (Let's Encrypt).
 4. ✅ خلّى الـ Application Root **خارج** `public_html`.
-5. ✅ اعمل backup أسبوعى لـ `data/db.json`.
+5. ✅ اعمل backup أسبوعى لـ `data/data.db`.
 6. ✅ خلّى `NODE_ENV=production`.
-7. ❌ متفتحش `data/db.json` للعامة — ده فيه password hashes.
+7. ❌ متفتحش `data/data.db` للعامة — ده فيه password hashes.
 
 ---
 
@@ -393,13 +419,66 @@ tail -f ~/reports-dashboard/stderr.log
 │   ├── js/
 │   ├── img/logo.jpg        ← الشعار
 │   └── reports/submitted/  ← التقارير المرفوعة (يتولّد لوحده)
+├── scripts/
+│   └── migrate-from-lowdb.js ← Migration tool (lowdb → SQLite)
 ├── data/
-│   ├── db.json             ← قاعدة البيانات (يتولّد لوحده)
+│   ├── data.db             ← قاعدة البيانات SQLite (يتولّد لوحده)
+│   ├── data.db-wal         ← WAL log (مؤقت)
+│   ├── data.db-shm         ← Shared memory (مؤقت)
 │   └── sessions.sqlite     ← الجلسات (يتولّد لوحده)
 ├── node_modules/           ← (يتولّد بـ npm install)
 ├── stderr.log              ← Errors
 ├── stdout.log              ← Console output
 └── .env                    ← Environment vars (cPanel UI managed)
+```
+
+---
+
+## 🔄 Migration من النسخة القديمة (lowdb → SQLite)
+
+لو السيرفر بتاعك شغّال بنسخة قديمة فيها `data/db.json` (lowdb)، الترقية بسيطة:
+
+### 1) ارفع الكود الجديد عبر git pull أو File Manager
+
+### 2) ثبّت الـ dependencies الجديدة
+```bash
+cd ~/reports-dashboard
+source /home/USERNAME/nodevenv/reports-dashboard/18/bin/activate
+npm install --production --omit=optional
+
+# لو على CentOS 7 / GLIBC قديم:
+npm install better-sqlite3@7.6.2 --save-exact
+```
+
+### 3) شغّل migration script
+```bash
+node scripts/migrate-from-lowdb.js
+```
+
+هيقرأ `data/db.json` ويولّد `data/data.db` نظيف. السكريبت بيعمل verify تلقائى للتأكد إن كل البيانات اتنقلت صح.
+
+النتيجة المتوقعة:
+```
+✅ users: 43 record migrated
+✅ reports: 22 record migrated
+✅ templates: 15 record migrated
+✅ teams: 8 record migrated
+✅ notifications: 23 record migrated
+─── Verification ───
+✅ users: source=43, target=43
+...
+✅ Migration ناجح
+```
+
+### 4) اعمل Restart للـ Node app
+
+### 5) ⚠️ **متحذفش `data/db.json`** فوراً
+خلّيه كـ backup لمدة أسبوع على الأقل. لو حصلت أى مشكلة، تقدر تشغّل migration تانى.
+
+### 6) لو كل حاجة شغالة بعد أسبوع
+احذف `data/db.json` (أو احتفظ بيه مضغوط):
+```bash
+gzip data/db.json   # يبقى data/db.json.gz كنسخة احتياطية مضغوطة
 ```
 
 ---
@@ -418,7 +497,7 @@ tail -f ~/reports-dashboard/stderr.log
 - [ ] اختبرت login من admin + employee
 - [ ] اختبرت رفع تقرير
 - [ ] إعداد cron job للـ backup الأسبوعى
-- [ ] حفظت أول backup للـ `data/db.json` على جهازك
+- [ ] حفظت أول backup للـ `data/data.db` على جهازك
 
 ---
 

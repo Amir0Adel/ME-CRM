@@ -1,23 +1,23 @@
 require('dotenv').config();
 
 const express = require('express');
+const emailService = require('./email-service');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
-const low = require('lowdb');
-const FileSync = require('lowdb/adapters/FileSync');
+const { createDB } = require('./db');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ── Database (lowdb JSON) ─────────────────────────────────────────────────────
+// ── Database (SQLite via lowdb-compatible adapter) ────────────────────────────
 const dataDir = path.join(__dirname, '../data');
 if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
 
-const adapter = new FileSync(path.join(dataDir, 'db.json'));
-const db = low(adapter);
+const db = createDB(path.join(dataDir, 'data.db'));
+console.log('💾 DB: SQLite (data.db) via lowdb-compatible adapter');
 
 db.defaults({
   users: [], reports: [], notifications: [], templates: [], teams: [],
@@ -599,9 +599,12 @@ for (const [email, templateName] of Object.entries(TEMPLATE_USER_MAP)) {
 }
 
 // ── Middleware ────────────────────────────────────────────────────────────────
+// Trust the reverse proxy (cPanel/Passenger/Nginx) — must be first for req.protocol + secure cookies
+app.set('trust proxy', 1);
+
 // Force HTTPS redirect
 app.use((req, res, next) => {
-  if (req.header('x-forwarded-proto') !== 'https' && req.header('host')?.includes('marketingexperts.com.sa')) {
+  if (req.protocol !== 'https' && req.header('host')?.includes('marketingexperts.com.sa')) {
     return res.redirect(301, `https://${req.header('host')}${req.originalUrl}`);
   }
   next();
@@ -617,9 +620,6 @@ app.get('/favicon.ico', (req, res) => {
   if (fs.existsSync(icoPath)) return res.sendFile(icoPath);
   res.redirect(302, '/favicon.svg');
 });
-
-// Trust the reverse proxy (cPanel/Passenger/Nginx) — needed for secure cookies + req.ip
-app.set('trust proxy', 1);
 
 // Persistent session store via SQLite (auto-creates data/sessions.sqlite)
 let sessionStore;
@@ -778,6 +778,26 @@ app.delete('/api/admin/users/:id', requireAdmin, (req, res) => {
 
 // Helper: compute completion % by comparing report sections to the base template
 function computeCompletionPct(report, template) {
+  // Multi-project mode: average completion across all projects
+  if (Array.isArray(report.projects) && report.projects.length) {
+    const tmplSections = template && Array.isArray(template.sections) ? template.sections.filter(s => s && s.type) : [];
+    const projectPcts = report.projects.map(p => {
+      const projSections = (p.sections || []).filter(s => s && s.type);
+      if (!projSections.length) return 0;
+      if (tmplSections.length) {
+        let filled = 0;
+        tmplSections.forEach((ts, idx) => {
+          const rs = projSections.find(s => s.title === ts.title) || projSections[idx];
+          if (rs && sectionHasContent(rs)) filled++;
+        });
+        return Math.round((filled / tmplSections.length) * 100);
+      }
+      const filled = projSections.filter(s => sectionHasContent(s)).length;
+      return Math.round((filled / projSections.length) * 100);
+    });
+    if (!projectPcts.length) return 0;
+    return Math.round(projectPcts.reduce((a, b) => a + b, 0) / projectPcts.length);
+  }
   const reportSections = (report.sections || []).filter(s => s && s.type);
   const tmplSections = template && Array.isArray(template.sections) ? template.sections.filter(s => s && s.type) : [];
 
@@ -818,7 +838,11 @@ function computeCompletionPct(report, template) {
 function sectionHasContent(s) {
   if (!s || !s.type) return false;
   switch (s.type) {
-    case 'text':      return !!(s.content && String(s.content).trim());
+    case 'text':
+      if (Array.isArray(s.blocks) && s.blocks.length) {
+        return s.blocks.some(b => ((b && (b.heading || b.text)) || '').toString().trim());
+      }
+      return !!(s.content && String(s.content).trim());
     case 'list':      return Array.isArray(s.items) && s.items.some(i => (i && (i.text || i.content || '').toString().trim()));
     case 'metrics':   return Array.isArray(s.items) && s.items.some(i => i && i.value !== undefined && i.value !== null && String(i.value).trim() !== '');
     case 'scorecard': return Array.isArray(s.items) && s.items.some(i => i && (i.answer || i.value));
@@ -852,6 +876,9 @@ app.get('/api/admin/reports', requireAdmin, (req, res) => {
       }
       const tmpl = u && u.template_id ? allTemplates.find(t => t.id === u.template_id) : null;
       const completion_pct = computeCompletionPct(r, tmpl);
+      const commentsArr = Array.isArray(r.comments) ? r.comments : [];
+      // Count unread admin replies = comments from employees that admin hasn't seen
+      const unreadEmpComments = commentsArr.filter(c => c.by_role === 'employee' && !c.seen_by_admin).length;
       return {
         ...r,
         user_name: u?.name || '—',
@@ -860,7 +887,11 @@ app.get('/api/admin/reports', requireAdmin, (req, res) => {
         leader_name,
         completion_pct,
         is_team_report: !!r.is_team_report,
-        child_count: Array.isArray(r.child_reports) ? r.child_reports.length : 0
+        child_count: Array.isArray(r.child_reports) ? r.child_reports.length : 0,
+        is_multi_project: Array.isArray(r.projects) && r.projects.length > 0,
+        project_count: Array.isArray(r.projects) ? r.projects.length : 0,
+        comments_count: commentsArr.length,
+        unread_emp_comments: unreadEmpComments
       };
     })
     .sort((a, b) => b.submitted_at.localeCompare(a.submitted_at));
@@ -914,7 +945,7 @@ app.get('/api/admin/reports/:id', requireAdmin, (req, res) => {
 
 app.put('/api/admin/reports/:id', requireAdmin, (req, res) => {
   const id = parseInt(req.params.id);
-  const { title, week, sections, content } = req.body;
+  const { title, week, sections, content, projects } = req.body;
 
   const report = db.get('reports').find({ id }).value();
   if (!report) return res.status(404).json({ error: 'التقرير مش موجود' });
@@ -922,6 +953,7 @@ app.put('/api/admin/reports/:id', requireAdmin, (req, res) => {
   // احفظ النسخة القديمة في versions (max 5)
   const oldVersion = {
     sections: report.sections || [],
+    projects: report.projects || [],
     title: report.title,
     week: report.week,
     saved_at: new Date().toISOString(),
@@ -939,6 +971,7 @@ app.put('/api/admin/reports/:id', requireAdmin, (req, res) => {
     last_edited_at: new Date().toISOString(),
     versions
   };
+  if (Array.isArray(projects)) update.projects = projects;
 
   if (content) {
     const dir = path.join(__dirname, '../public/reports/submitted');
@@ -991,20 +1024,83 @@ app.post('/api/admin/reports/:id/restore/:versionIdx', requireAdmin, (req, res) 
 });
 
 // ── Inline Comments (Dev 3) ───────────────────────────────────────────────────
+// Unified comment endpoint — both admin and employee (the report owner) can post
+app.post('/api/reports/:id/comment', requireLogin, (req, res) => {
+  const id = parseInt(req.params.id);
+  const { section_idx, text, parent_id } = req.body;
+  if (!text || !text.trim()) return res.status(400).json({ error: 'النص فاضي' });
+
+  const report = db.get('reports').find({ id }).value();
+  if (!report) return res.status(404).json({ error: 'مش موجود' });
+
+  // Authorization: admin can comment on any; employee only on their own
+  if (req.session.user.role !== 'admin' && report.user_id !== req.session.user.id) {
+    return res.status(403).json({ error: 'غير مسموح' });
+  }
+
+  const comments = report.comments || [];
+  let normalizedIdx = null;
+  if (section_idx != null && section_idx !== '') {
+    if (typeof section_idx === 'number') normalizedIdx = section_idx;
+    else if (typeof section_idx === 'string' && /^\d+$/.test(section_idx)) normalizedIdx = parseInt(section_idx);
+    else normalizedIdx = section_idx;
+  }
+  const comment = {
+    id: Date.now(),
+    section_idx: normalizedIdx,
+    text: text.trim(),
+    by: req.session.user.name,
+    by_role: req.session.user.role,
+    parent_id: parent_id ? parseInt(parent_id) : null,
+    created_at: new Date().toISOString(),
+    seen: false
+  };
+  comments.push(comment);
+  db.get('reports').find({ id }).assign({ comments }).write();
+
+  // Notify the relevant party
+  if (req.session.user.role === 'admin') {
+    addNotif(report.user_id, `الأدمن أضاف تعليق على تقرير: ${report.title}`);
+    (async () => {
+      const user = db.get('users').find({ id: report.user_id }).value();
+      if (user && emailService) {
+        const emailTemplate = emailService.adminCommentTemplate(req.session.user.name, text.trim());
+        await emailService.sendEmail(user.email, emailTemplate.subject, emailTemplate.html);
+      }
+    })().catch(err => console.error('Email error:', err));
+  } else {
+    // Employee replied — notify all admins
+    db.get('users').filter({ role: 'admin' }).value().forEach(admin => {
+      addNotif(admin.id, `${req.session.user.name} رد على تعليق فى تقريره: ${report.title}`);
+    });
+  }
+
+  res.json({ success: true, comment });
+});
+
+// Legacy admin-only endpoint — still works, points to the new logic
 app.post('/api/admin/reports/:id/comment', requireAdmin, (req, res) => {
   const id = parseInt(req.params.id);
-  const { section_idx, text } = req.body;
+  const { section_idx, text, parent_id } = req.body;
   if (!text || !text.trim()) return res.status(400).json({ error: 'النص فاضي' });
 
   const report = db.get('reports').find({ id }).value();
   if (!report) return res.status(404).json({ error: 'مش موجود' });
 
   const comments = report.comments || [];
+  let normalizedIdx = null;
+  if (section_idx != null && section_idx !== '') {
+    if (typeof section_idx === 'number') normalizedIdx = section_idx;
+    else if (typeof section_idx === 'string' && /^\d+$/.test(section_idx)) normalizedIdx = parseInt(section_idx);
+    else normalizedIdx = section_idx;
+  }
   const comment = {
     id: Date.now(),
-    section_idx: section_idx == null ? null : parseInt(section_idx),
+    section_idx: normalizedIdx,
     text: text.trim(),
     by: req.session.user.name,
+    by_role: 'admin',
+    parent_id: parent_id ? parseInt(parent_id) : null,
     created_at: new Date().toISOString(),
     seen: false
   };
@@ -1012,6 +1108,15 @@ app.post('/api/admin/reports/:id/comment', requireAdmin, (req, res) => {
   db.get('reports').find({ id }).assign({ comments }).write();
 
   addNotif(report.user_id, `الأدمن أضاف تعليق على تقرير: ${report.title}`);
+
+  (async () => {
+    const user = db.get('users').find({ id: report.user_id }).value();
+    if (user && emailService) {
+      const emailTemplate = emailService.adminCommentTemplate(req.session.user.name, text.trim());
+      await emailService.sendEmail(user.email, emailTemplate.subject, emailTemplate.html);
+    }
+  })().catch(err => console.error('Email error:', err));
+
   res.json({ success: true, comment });
 });
 
@@ -1074,7 +1179,7 @@ app.get('/api/admin/templates/:id', requireAdmin, (req, res) => {
 
 app.put('/api/admin/templates/:id', requireAdmin, (req, res) => {
   const id = parseInt(req.params.id);
-  const { name, description, sections, visual_theme, instructions } = req.body;
+  const { name, description, sections, visual_theme, instructions, multi_project } = req.body;
   if (!name || !sections) return res.status(400).json({ error: 'بيانات ناقصة' });
   const update = {
     name,
@@ -1084,6 +1189,7 @@ app.put('/api/admin/templates/:id', requireAdmin, (req, res) => {
   };
   if (visual_theme) update.visual_theme = visual_theme;
   if (instructions !== undefined) update.instructions = instructions;
+  if (multi_project !== undefined) update.multi_project = !!multi_project;
   db.get('templates').find({ id }).assign(update).write();
   res.json({ success: true });
 });
@@ -2192,9 +2298,131 @@ app.get('/api/admin/team-progress', requireAdmin, (req, res) => {
   res.json({ teams });
 });
 
+// ── Helpers for report comparison ─────────────────────────────────────────────
+function extractMetricsFromReport(report) {
+  const m = {};
+  const collectFromSections = (secs) => {
+    (secs || []).forEach(s => {
+      if (s && s.type === 'metrics' && Array.isArray(s.items)) {
+        s.items.forEach(it => {
+          if (it.value && !isNaN(parseFloat(it.value)) && it.label) {
+            const key = `${s.title || 'Metrics'}::${it.label}`;
+            m[key] = (m[key] || 0) + parseFloat(it.value);
+          }
+        });
+      }
+    });
+  };
+  // Both top-level sections AND project sections (sum across projects)
+  collectFromSections(report.sections);
+  if (Array.isArray(report.projects)) {
+    report.projects.forEach(p => collectFromSections(p.sections));
+  }
+  return m;
+}
+
+function buildComparison(report, prevReport) {
+  if (!prevReport) return {};
+  const cur = extractMetricsFromReport(report);
+  const prv = extractMetricsFromReport(prevReport);
+  const comparison = {};
+  Object.keys(cur).forEach(k => {
+    const c = cur[k];
+    const p = prv[k] || 0;
+    const label = k.includes('::') ? k.split('::')[1] : k;
+    comparison[label] = {
+      current: c, previous: p, diff: +(c - p).toFixed(2),
+      trend: c > p ? 'up' : c < p ? 'down' : 'same',
+      change: p ? Math.round(((c - p) / p) * 100) : 0
+    };
+  });
+  return comparison;
+}
+
+function getUserPreviousReports(userId, currentReportId, limit = 6) {
+  return db.get('reports')
+    .filter(r => r.user_id === userId && r.status === 'submitted' && !r.seeded && r.id !== currentReportId)
+    .value()
+    .sort((a, b) => (b.submitted_at || '').localeCompare(a.submitted_at || ''))
+    .slice(0, limit)
+    .map(r => ({
+      id: r.id,
+      title: r.title,
+      week: r.week,
+      submitted_at: r.submitted_at,
+      edited_by_admin: !!r.edited_by_admin,
+      comments_count: (r.comments || []).length
+    }));
+}
+
 // ── Report View Full Data (Imp 4) ─────────────────────────────────────────────
 app.get('/admin/report/:id', requireAdmin, (req, res) => {
   res.sendFile(path.join(__dirname, '../views/report-view.html'));
+});
+
+// Employee-facing report viewer (read-only). Same UI, ownership-checked.
+app.get('/employee/report/:id', requireLogin, (req, res) => {
+  const id = parseInt(req.params.id);
+  const report = db.get('reports').find({ id }).value();
+  if (!report) return res.status(404).send('التقرير مش موجود');
+  // Employees can only view their own reports; admins can view any
+  if (req.session.user.role !== 'admin' && report.user_id !== req.session.user.id) {
+    return res.status(403).send('مش مسموحلك تشوف هذا التقرير');
+  }
+  res.sendFile(path.join(__dirname, '../views/report-view.html'));
+});
+
+// Employee-accessible full data endpoint — same payload but ownership-checked
+app.get('/api/employee/reports/:id/full', requireLogin, (req, res) => {
+  const id = parseInt(req.params.id);
+  const report = db.get('reports').find({ id }).value();
+  if (!report) return res.status(404).json({ error: 'مش موجود' });
+  if (req.session.user.role !== 'admin' && report.user_id !== req.session.user.id) {
+    return res.status(403).json({ error: 'غير مسموح' });
+  }
+  // Mark all admin comments as seen by the employee
+  if (Array.isArray(report.comments)) {
+    let updated = false;
+    report.comments.forEach(c => { if (!c.seen) { c.seen = true; updated = true; } });
+    if (updated) db.get('reports').find({ id }).assign({ comments: report.comments }).write();
+  }
+  // Reuse the same logic as admin /full endpoint
+  const user = db.get('users').find({ id: report.user_id }).value();
+  const template = user?.template_id ? db.get('templates').find({ id: user.template_id }).value() : null;
+  let sections = report.sections || [];
+  if ((!sections || !sections.length) && report.filename) {
+    try {
+      const fp = path.join(__dirname, '../public/reports/submitted', report.filename);
+      if (fs.existsSync(fp)) {
+        const html = fs.readFileSync(fp, 'utf8');
+        const m = html.match(/<script type="application\/json" id="__rpt__">([\s\S]*?)<\/script>/);
+        if (m) sections = JSON.parse(m[1]);
+      }
+    } catch (e) {}
+  }
+  // Find previous report for this user (for comparison and links)
+  const prevReports = db.get('reports')
+    .filter(r => r.user_id === report.user_id && r.status === 'submitted' && !r.seeded && r.id !== id)
+    .value()
+    .sort((a, b) => (b.submitted_at || '').localeCompare(a.submitted_at || ''));
+  const prev = prevReports[0];
+  const comparison = buildComparison({ ...report, sections }, prev || null);
+
+  res.json({
+    report: { ...report, sections },
+    user: user ? { id: user.id, name: user.name, email: user.email } : null,
+    template: template ? { id: template.id, name: template.name, visual_theme: template.visual_theme } : null,
+    comparison,
+    previousReportId: prev?.id || null,
+    previousReportTitle: prev?.title || null,
+    previousReportWeek: prev?.week || null,
+    previousReports: getUserPreviousReports(report.user_id, id, 6),
+    versionsCount: (report.versions || []).length,
+    commentsCount: (report.comments || []).length,
+    is_team_report: !!report.is_team_report,
+    child_reports: [],
+    viewer_role: req.session.user.role
+  });
 });
 
 app.get('/api/admin/reports/:id/full', requireAdmin, (req, res) => {
@@ -2218,36 +2446,13 @@ app.get('/api/admin/reports/:id/full', requireAdmin, (req, res) => {
     } catch (e) { /* ignore */ }
   }
 
-  // المقارنة مع التقرير السابق
+  // المقارنة مع التقرير السابق — uses unified helpers (handles multi-project too)
   const prevReports = db.get('reports')
     .filter(r => r.user_id === user?.id && r.status === 'submitted' && !r.seeded && r.id !== id)
     .value()
     .sort((a, b) => (b.submitted_at || '').localeCompare(a.submitted_at || ''));
   const prev = prevReports[0];
-
-  const extractMetrics = (r) => {
-    const m = {};
-    (r.sections || []).forEach(s => {
-      if (s.type === 'metrics' && Array.isArray(s.items)) {
-        s.items.forEach(it => {
-          if (it.value && !isNaN(parseFloat(it.value)) && it.label) m[it.label] = parseFloat(it.value);
-        });
-      }
-    });
-    return m;
-  };
-
-  const cur = extractMetrics({ ...report, sections });
-  const prv = prev ? extractMetrics({ ...prev, sections: prev.sections || [] }) : {};
-  const comparison = {};
-  Object.keys(cur).forEach(k => {
-    const c = cur[k], p = prv[k] || 0;
-    comparison[k] = {
-      current: c, previous: p, diff: c - p,
-      trend: c > p ? 'up' : c < p ? 'down' : 'same',
-      change: p ? Math.round(((c - p) / p) * 100) : 0
-    };
-  });
+  const comparison = buildComparison({ ...report, sections }, prev || null);
 
   res.json({
     report: { ...report, sections },
@@ -2255,6 +2460,9 @@ app.get('/api/admin/reports/:id/full', requireAdmin, (req, res) => {
     template: template ? { id: template.id, name: template.name, visual_theme: template.visual_theme } : null,
     comparison,
     previousReportId: prev?.id || null,
+    previousReportTitle: prev?.title || null,
+    previousReportWeek: prev?.week || null,
+    previousReports: user ? getUserPreviousReports(user.id, id, 6) : [],
     versionsCount: (report.versions || []).length,
     commentsCount: (report.comments || []).length,
     is_team_report: !!report.is_team_report,
@@ -2267,7 +2475,8 @@ app.get('/api/admin/reports/:id/full', requireAdmin, (req, res) => {
             full_sections: live?.sections || c.sections_snapshot || []
           };
         })
-      : []
+      : [],
+    viewer_role: 'admin'
   });
 });
 
@@ -2421,24 +2630,41 @@ app.get('/api/employee/week-history', requireLogin, (req, res) => {
     .filter(r => r.user_id === userId && r.status === 'submitted' && !r.seeded)
     .value();
 
+  // Group reports by week — could be multiple reports per week
   const submittedMap = new Map();
-  reports.forEach(r => submittedMap.set(r.week, r));
+  reports.forEach(r => {
+    if (!submittedMap.has(r.week)) submittedMap.set(r.week, []);
+    submittedMap.get(r.week).push(r);
+  });
 
   const now = new Date();
   const year = now.getFullYear();
   const start = new Date(year, 0, 1);
   const currentWeekNum = Math.ceil(((now - start) / 86400000 + start.getDay() + 1) / 7);
 
+  // Determine the display range — include all weeks the user submitted for
+  let minWn = currentWeekNum - 7;
+  let maxWn = currentWeekNum + 1;
+  // Extract week numbers from existing reports' week strings
+  reports.forEach(r => {
+    const m = (r.week || '').match(/الأسبوع\s+(\d+)\s*-\s*(\d+)/);
+    if (m && parseInt(m[2]) === year) {
+      const wn = parseInt(m[1]);
+      if (wn < minWn) minWn = wn;
+      if (wn > maxWn) maxWn = wn;
+    }
+  });
+  if (minWn < 1) minWn = 1;
+
   const weeks = [];
-  for (let i = -7; i <= 1; i++) {
-    const wn = currentWeekNum + i;
-    if (wn < 1) continue;
+  for (let wn = minWn; wn <= maxWn; wn++) {
     const label = `الأسبوع ${wn} - ${year}`;
+    const list = submittedMap.get(label) || [];
+    const found = list[0] || null;
     let status;
-    const found = submittedMap.get(label);
-    if (i === 0) status = found ? 'done' : 'current';
-    else if (i > 0) status = 'pending';
-    else if (found) status = 'done';
+    if (list.length > 0) status = 'done';
+    else if (wn === currentWeekNum) status = 'current';
+    else if (wn > currentWeekNum) status = 'pending';
     else status = 'late';
 
     weeks.push({
@@ -2446,7 +2672,8 @@ app.get('/api/employee/week-history', requireLogin, (req, res) => {
       week_string: label,
       status,
       report_id: found?.id || null,
-      filename: found?.filename || null
+      filename: found?.filename || null,
+      reports_count: list.length
     });
   }
   res.json({ weeks });
@@ -2487,7 +2714,7 @@ app.get('/api/employee/template', requireLogin, (req, res) => {
 });
 
 app.post('/api/employee/draft', requireLogin, (req, res) => {
-  const { title, week, content, draft_id, sections } = req.body;
+  const { title, week, content, draft_id, sections, projects } = req.body;
   const userId = req.session.user.id;
 
   if (!content) return res.status(400).json({ error: 'المحتوى فاضي' });
@@ -2505,6 +2732,7 @@ app.post('/api/employee/draft', requireLogin, (req, res) => {
         updated_at: new Date().toISOString()
       };
       if (Array.isArray(sections)) update.sections = sections;
+      if (Array.isArray(projects)) update.projects = projects;
       db.get('reports').find({ id: parseInt(draft_id) }).assign(update).write();
       return res.json({ success: true, draft_id: existing.id, message: 'تم الحفظ' });
     }
@@ -2524,6 +2752,7 @@ app.post('/api/employee/draft', requireLogin, (req, res) => {
     filename,
     content,
     sections: Array.isArray(sections) ? sections : [],
+    projects: Array.isArray(projects) ? projects : [],
     week: week || getCurrentWeek(),
     submitted_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
@@ -2552,6 +2781,7 @@ app.post('/api/employee/send/:id', requireLogin, (req, res) => {
     week: req.body.week || report.week
   };
   if (Array.isArray(req.body.sections)) update.sections = req.body.sections;
+  if (Array.isArray(req.body.projects)) update.projects = req.body.projects;
   db.get('reports').find({ id }).assign(update).write();
 
   addNotif(userId, `${req.session.user.name} أرسل تقرير جديد: ${req.body.title || report.title}`);
@@ -2596,14 +2826,33 @@ app.post('/api/employee/submit', requireLogin, upload.single('report'), (req, re
   if (!req.file) return res.status(400).json({ error: 'لازم ترفع ملف HTML' });
   const { title, week } = req.body;
   const userId = req.session.user.id;
+  const user = db.get('users').find({ id: userId }).value();
+  const reportWeek = week || getCurrentWeek();
+
   db.get('reports').push({
     id: nextId('reports'), user_id: userId,
     title: title || req.file.originalname,
     filename: req.file.filename,
-    week: week || getCurrentWeek(),
+    week: reportWeek,
     submitted_at: new Date().toISOString(), status: 'submitted'
   }).write();
+
   addNotif(userId, `${req.session.user.name} رفع تقرير جديد: ${title || req.file.originalname}`);
+
+  // إرسال إيميلات
+  (async () => {
+    // للموظف: تأكيد الاستقبال
+    const userTemplate = emailService.reportSubmittedTemplate(user.name, reportWeek);
+    await emailService.sendEmail(user.email, userTemplate.subject, userTemplate.html);
+
+    // للمدير: إخطار بتقرير جديد
+    const admin = db.get('users').find({ role: 'admin' }).value();
+    if (admin) {
+      const adminTemplate = emailService.newReportSubmittedToAdminTemplate(user.name, reportWeek);
+      await emailService.sendEmail(admin.email, adminTemplate.subject, adminTemplate.html);
+    }
+  })().catch(err => console.error('Email error:', err));
+
   res.json({ success: true });
 });
 

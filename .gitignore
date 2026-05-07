@@ -8,6 +8,12 @@ node_modules/
 
 # Local database & uploads (don't ship these to repo / fresh deploy)
 data/db.json
+data/data.db
+data/data.db-wal
+data/data.db-shm
+data/test.db
+data/test.db-wal
+data/test.db-shm
 data/sessions.sqlite
 public/reports/submitted/
 
