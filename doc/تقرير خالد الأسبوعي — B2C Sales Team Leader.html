@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<!-- saved from url=(0066)file:///Users/ibrahimelbahrawi/Downloads/khaled-weekly-report.html -->
+<html lang="ar" dir="rtl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تقرير خالد الأسبوعي — B2C Sales Team Leader</title>
+<link href="./تقرير خالد الأسبوعي — B2C Sales Team Leader_files/css2" rel="stylesheet">
+<style>
+:root {
+  --navy: #1D2F5F;
+  --orange: #FF6B2B;
+  --orange-soft: #FFF0EA;
+  --green: #1A7A4A;
+  --green-soft: #E6F5EE;
+  --green-mid: #2D9E63;
+  --red: #DC2626;
+  --red-soft: #FEF2F2;
+  --yellow: #D97706;
+  --yellow-soft: #FFFBEB;
+  --purple: #7C3AED;
+  --purple-soft: #F5F3FF;
+  --bg: #F4F6FA;
+  --white: #FFFFFF;
+  --gray: #4B5563;
+  --gray-light: #9CA3AF;
+  --border: #E5E7EB;
+  --shadow: 0 2px 8px rgba(29,47,95,0.09);
+  --shadow-md: 0 4px 20px rgba(29,47,95,0.14);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Cairo','Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--gray);direction:rtl;text-align:right;min-height:100vh;font-size:14px;line-height:1.65;}
+
+/* HEADER */
+.header{background:var(--white);border-bottom:3px solid var(--orange);position:sticky;top:0;z-index:100;box-shadow:var(--shadow-md);}
+.header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:12px 28px;gap:20px;}
+.logo-wrap{display:flex;align-items:center;background:#fff;border-radius:10px;border:1.5px solid var(--border);padding:5px 12px;flex-shrink:0;}
+.logo-wrap img{height:40px;width:auto;display:block;}
+.header-center{flex:1;text-align:center;}
+.header-title{font-size:18px;font-weight:900;color:var(--navy);line-height:1.2;}
+.header-sub{font-size:12px;color:var(--gray-light);margin-top:2px;}
+.week-badge{background:var(--orange);color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;}
+.mode-tabs{display:flex;gap:6px;margin-top:6px;}
+.mode-tab{background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:6px 14px;font-family:'Cairo',sans-serif;font-size:12px;font-weight:700;color:var(--gray);cursor:pointer;transition:all .2s;}
+.mode-tab.active{background:var(--navy);border-color:var(--navy);color:#fff;}
+
+/* PAGES */
+.page{display:none;max-width:1200px;margin:0 auto;padding:24px 28px 80px;}
+.page.active{display:block;}
+
+/* SECTION TITLES */
+.section-title{font-size:15px;font-weight:900;color:var(--navy);margin-bottom:14px;margin-top:24px;display:flex;align-items:center;gap:8px;}
+.section-title::after{content:'';flex:1;height:2px;background:var(--border);}
+.sec-badge{font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;}
+.badge-req{background:var(--red-soft);color:var(--red);}
+.badge-opt{background:var(--yellow-soft);color:var(--yellow);}
+
+/* SUMMARY STRIP */
+.summary-strip{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:4px;}
+.stat-card{background:var(--white);border:1.5px solid var(--border);border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:12px;flex:1;min-width:130px;box-shadow:var(--shadow);}
+.stat-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.si-orange{background:var(--orange-soft);}
+.si-green{background:var(--green-soft);}
+.si-red{background:var(--red-soft);}
+.si-yellow{background:var(--yellow-soft);}
+.si-purple{background:var(--purple-soft);}
+.si-navy{background:var(--bg);}
+.stat-num{font-size:22px;font-weight:900;color:var(--navy);line-height:1;}
+.stat-label{font-size:11px;color:var(--gray-light);margin-top:2px;}
+
+/* CARD BOX */
+.card-box{background:var(--white);border:1.5px solid var(--border);border-radius:14px;padding:18px 20px;box-shadow:var(--shadow);margin-bottom:4px;}
+.card-box-title{font-size:13px;font-weight:800;color:var(--navy);margin-bottom:14px;display:flex;align-items:center;gap:7px;}
+
+/* FORM */
+.form-grid{display:grid;gap:14px;}
+.fg-2{grid-template-columns:1fr 1fr;}
+.fg-3{grid-template-columns:1fr 1fr 1fr;}
+.fg-4{grid-template-columns:1fr 1fr 1fr 1fr;}
+@media(max-width:768px){.fg-2,.fg-3,.fg-4{grid-template-columns:1fr 1fr;}}
+.field-group{display:flex;flex-direction:column;gap:5px;}
+.field-label{font-size:12px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:4px;}
+.req{color:var(--red);font-size:13px;}
+.field-input,.field-select,.field-textarea{width:100%;background:var(--white);border:1.5px solid var(--border);border-radius:9px;padding:9px 12px;font-family:'Cairo',sans-serif;font-size:13.5px;color:var(--gray);direction:rtl;outline:none;transition:border-color .2s;resize:none;}
+.field-input:focus,.field-select:focus,.field-textarea:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,107,43,0.10);}
+.field-textarea{min-height:75px;}
+
+/* MEMBER TABLE */
+.member-table{width:100%;border-collapse:collapse;}
+.member-table th{background:var(--navy);color:#fff;font-size:12px;font-weight:700;padding:10px 13px;text-align:right;}
+.member-table th:first-child{border-radius:0 9px 0 0;}
+.member-table th:last-child{border-radius:9px 0 0 0;}
+.member-table td{padding:10px 12px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle;background:var(--white);}
+.member-table tr:last-child td{border-bottom:none;}
+.member-table tr:last-child td:first-child{border-radius:0 0 9px 0;}
+.member-table tr:last-child td:last-child{border-radius:0 0 0 9px;}
+.member-table input,.member-table select{width:100%;border:1px solid var(--border);border-radius:6px;padding:5px 8px;font-family:'Cairo',sans-serif;font-size:12.5px;color:var(--gray);direction:rtl;background:var(--bg);outline:none;transition:border-color .2s;}
+.member-table input:focus,.member-table select:focus{border-color:var(--orange);background:#fff;}
+.member-name{font-weight:800;color:var(--navy);font-size:13px;}
+
+/* STATUS CHIPS */
+.chip{display:inline-flex;align-items:center;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;}
+.chip-green{background:var(--green-soft);color:var(--green);}
+.chip-yellow{background:var(--yellow-soft);color:var(--yellow);}
+.chip-red{background:var(--red-soft);color:var(--red);}
+.chip-orange{background:var(--orange-soft);color:var(--orange);}
+.chip-navy{background:var(--bg);color:var(--navy);}
+
+/* KPI BOXES */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:4px;}
+.kpi-box{background:var(--white);border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow);}
+.kpi-label{font-size:11px;color:var(--gray-light);font-weight:600;margin-bottom:6px;}
+.kpi-input{width:100%;border:none;border-bottom:2px solid var(--border);padding:4px 0;font-family:'Cairo',sans-serif;font-size:22px;font-weight:900;color:var(--navy);background:transparent;direction:rtl;outline:none;transition:border-color .2s;}
+.kpi-input:focus{border-color:var(--orange);}
+.kpi-unit{font-size:11px;color:var(--gray-light);margin-top:4px;}
+
+/* TEXT BLOCKS */
+.text-block{background:var(--white);border:1.5px solid var(--border);border-radius:12px;padding:16px;box-shadow:var(--shadow);margin-bottom:12px;}
+.text-block-label{font-size:12px;font-weight:800;color:var(--navy);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.text-block textarea{width:100%;border:none;background:transparent;font-family:'Cairo',sans-serif;font-size:13.5px;color:var(--gray);direction:rtl;resize:none;outline:none;min-height:70px;line-height:1.7;}
+
+/* OBJECTION ROWS */
+.objection-item{background:var(--yellow-soft);border:1.5px solid #FDE68A;border-radius:10px;padding:12px 14px;margin-bottom:10px;display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;align-items:start;}
+.add-row-btn{background:var(--orange-soft);border:1.5px dashed var(--orange);border-radius:8px;padding:8px 16px;font-family:'Cairo',sans-serif;font-size:12.5px;font-weight:700;color:var(--orange);cursor:pointer;transition:all .18s;margin-top:10px;display:inline-flex;align-items:center;gap:5px;}
+.add-row-btn:hover{background:var(--orange);color:#fff;}
+.del-btn{background:none;border:none;color:var(--red);cursor:pointer;font-size:15px;padding:2px 5px;border-radius:5px;transition:background .15s;}
+.del-btn:hover{background:var(--red-soft);}
+
+/* SUBMIT BAR */
+.submit-bar{position:fixed;bottom:0;left:0;right:0;z-index:50;background:var(--white);border-top:2px solid var(--border);padding:12px 28px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 -4px 16px rgba(29,47,95,0.10);}
+.submit-info{font-size:12px;color:var(--gray-light);}
+.submit-btns{display:flex;gap:10px;}
+.btn-sec{background:var(--bg);border:1.5px solid var(--border);border-radius:9px;padding:8px 18px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;color:var(--gray);cursor:pointer;transition:all .18s;}
+.btn-sec:hover{border-color:var(--navy);color:var(--navy);}
+.btn-pri{background:var(--orange);border:none;border-radius:9px;padding:8px 22px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:800;color:#fff;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:6px;}
+.btn-pri:hover{background:#e85a1e;transform:translateY(-1px);}
+
+/* DASHBOARD */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+@media(max-width:900px){.dash-grid{grid-template-columns:1fr;}}
+.dash-card{background:var(--white);border:1.5px solid var(--border);border-radius:16px;padding:20px;box-shadow:var(--shadow);}
+.dash-card-title{font-size:13px;font-weight:800;color:var(--navy);margin-bottom:16px;display:flex;align-items:center;gap:7px;}
+.dash-card.full{grid-column:span 2;}
+
+/* Progress bars */
+.prog-item{margin-bottom:13px;}
+.prog-label{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px;}
+.prog-name{font-weight:700;color:var(--navy);}
+.prog-val{font-weight:800;}
+.prog-bar{height:9px;background:var(--bg);border-radius:10px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:10px;transition:width .6s ease;}
+.fill-green{background:var(--green);}
+.fill-orange{background:var(--orange);}
+.fill-yellow{background:var(--yellow);}
+.fill-red{background:var(--red);}
+.fill-navy{background:var(--navy);}
+.fill-purple{background:var(--purple);}
+
+/* Member performance cards */
+.member-perf-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.member-perf-card{background:var(--bg);border-radius:12px;padding:14px;border:1.5px solid var(--border);}
+.mp-name{font-size:14px;font-weight:800;color:var(--navy);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
+.mp-stat{display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px solid var(--border);}
+.mp-stat:last-child{border:none;}
+.mp-key{color:var(--gray-light);}
+.mp-val{font-weight:800;color:var(--navy);}
+
+/* Donut */
+.donut-wrap{display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
+.donut-legend{display:flex;flex-direction:column;gap:8px;}
+.donut-leg-item{display:flex;align-items:center;gap:7px;font-size:12.5px;}
+.donut-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0;}
+
+/* Toast */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--orange);color:#fff;padding:12px 24px;border-radius:12px;font-size:13.5px;font-weight:700;box-shadow:0 6px 24px rgba(0,0,0,0.15);opacity:0;transition:all .3s;pointer-events:none;z-index:999;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* Leaderboard */
+.leaderboard{display:flex;flex-direction:column;gap:8px;}
+.lb-item{display:flex;align-items:center;gap:10px;background:var(--bg);border-radius:10px;padding:10px 14px;}
+.lb-rank{font-size:18px;font-weight:900;color:var(--gray-light);width:28px;flex-shrink:0;text-align:center;}
+.lb-rank.gold{color:#F59E0B;}
+.lb-rank.silver{color:#9CA3AF;}
+.lb-rank.bronze{color:#D97706;}
+.lb-name{font-weight:800;color:var(--navy);flex:1;font-size:13.5px;}
+.lb-val{font-size:13px;font-weight:700;}
+.lb-bar{flex:2;height:7px;background:var(--border);border-radius:10px;overflow:hidden;}
+.lb-fill{height:100%;border-radius:10px;background:var(--orange);}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <div class="logo-wrap">
+      <img src="data:image/jpeg;base64,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" alt="Marketing Experts">
+    </div>
+    <div class="header-center">
+      <div class="header-title">تقرير خالد الأسبوعي</div>
+      <div class="header-sub">B2C Sales Team Leader — متابعة أداء فريق المبيعات</div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-start;gap:4px;">
+      <div class="week-badge" id="weekBadge">٣ مايو — ٧ مايو</div>
+      <div class="mode-tabs">
+        <button class="mode-tab active" onclick="switchPage(&#39;template&#39;,this)">📝 Template</button>
+        <button class="mode-tab" onclick="switchPage(&#39;dashboard&#39;,this)">📊 Dashboard</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ===== TEMPLATE PAGE ===== -->
+<div class="page active" id="page-template">
+
+  <!-- Summary Strip -->
+  <div class="summary-strip" style="margin-top:0;">
+    <div class="stat-card"><div class="stat-icon si-orange">📞</div><div><div class="stat-num" id="s-calls">—</div><div class="stat-label">إجمالي المكالمات</div></div></div>
+    <div class="stat-card"><div class="stat-icon si-green">✅</div><div><div class="stat-num" id="s-regs">—</div><div class="stat-label">إجمالي التسجيلات</div></div></div>
+    <div class="stat-card"><div class="stat-icon si-purple">📥</div><div><div class="stat-num" id="s-leads">—</div><div class="stat-label">إجمالي الليدز</div></div></div>
+    <div class="stat-card"><div class="stat-icon si-yellow">🔄</div><div><div class="stat-num" id="s-conv">—</div><div class="stat-label">% التحويل</div></div></div>
+    <div class="stat-card"><div class="stat-icon si-red">⚠️</div><div><div class="stat-num" id="s-objections">2</div><div class="stat-label">اعتراضات مسجّلة</div></div></div>
+  </div>
+
+  <!-- SECTION 1: الأسبوع -->
+  <div class="section-title">📅 معلومات الأسبوع <span class="sec-badge badge-req">مطلوب</span></div>
+  <div class="card-box">
+    <div class="form-grid fg-3">
+      <div class="field-group">
+        <div class="field-label">من <span class="req">*</span></div>
+        <input type="date" class="field-input" id="weekFrom" onchange="updateWeekBadge()">
+      </div>
+      <div class="field-group">
+        <div class="field-label">إلى <span class="req">*</span></div>
+        <input type="date" class="field-input" id="weekTo" onchange="updateWeekBadge()">
+      </div>
+      <div class="field-group">
+        <div class="field-label">تاريخ الرفع</div>
+        <input type="date" class="field-input" id="reportDate">
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: أداء الفريق الفردي -->
+  <div class="section-title">👥 أداء الفريق الفردي <span class="sec-badge badge-req">مطلوب</span></div>
+  <div class="card-box" style="padding:0;overflow:hidden;">
+    <table class="member-table" id="memberTable">
+      <thead>
+        <tr>
+          <th>الاسم</th>
+          <th>ليدز مستلمة</th>
+          <th>مكالمات</th>
+          <th>متابعات</th>
+          <th>تسجيلات</th>
+          <th>% التحويل</th>
+          <th>جودة المحادثات</th>
+          <th>الالتزام بالسكريبت</th>
+          <th>الحالة العامة</th>
+        </tr>
+      </thead>
+      <tbody id="memberBody"><tr>
+      <td><div class="member-name">زينب</div></td>
+      <td><input type="number" min="0" value="" placeholder="0" oninput="updateMember(&#39;زينب&#39;,&#39;leads&#39;,this.value);calcConv();refreshStrip();"></td>
+      <td><input type="number" min="0" value="" placeholder="0" oninput="updateMember(&#39;زينب&#39;,&#39;calls&#39;,this.value);refreshStrip();"></td>
+      <td><input type="number" min="0" value="" placeholder="0" oninput="updateMember(&#39;زينب&#39;,&#39;followups&#39;,this.value)"></td>
+      <td><input type="number" min="0" value="" placeholder="0" oninput="updateMember(&#39;زينب&#39;,&#39;regs&#39;,this.value);calcConv();refreshStrip();"></td>
+      <td><span style="font-weight:800;color:var(--orange);">—</span></td>
+      <td><select onchange="updateMember(&#39;زينب&#39;,&#39;quality&#39;,this.value)">
+        <option>ممتازة</option><option selected="">جيدة</option><option>مقبولة</option><option>ضعيفة</option>
+      </select></td>
+      <td><select onchange="updateMember(&#39;زينب&#39;,&#39;script&#39;,this.value)">
+        <option>ممتاز</option><option selected="">جيد</option><option>مقبول</option><option>ضعيف</option>
+      </select></td>
+      <td><select onchange="updateMember(&#39;زينب&#39;,&#39;status&#39;,this.value)">
+        <option>🟢 ممتاز</option><option selected="">🟡 جيد</option><option>🟠 يحتاج متابعة</option><option>🔴 ضعيف</option>
+      </select></td>
+    </tr><tr>
+      <td><div class="member-name">ريم</div></td>
+      <td><input type="number" min="0" value="" placeholder="0" oninput="updateMember(&#39;ريم&#39;,&#39;leads&#39;,this.value);calcConv();refreshStrip();"></td>
+      <td><input type="number" min="0" value="" placeholder="0" oninput="updateMember(&#39;ريم&#39;,&#39;calls&#39;,this.value);refreshStrip();"></td>
+      <td><input type="number" min="0" value="" placeholder="0" oninput="updateMember(&#39;ريم&#39;,&#39;followups&#39;,this.value)"></td>
+      <td><input type="number" min="0" value="" placeholder="0" oninput="updateMember(&#39;ريم&#39;,&#39;regs&#39;,this.value);calcConv();refreshStrip();"></td>
+      <td><span style="font-weight:800;color:var(--orange);">—</span></td>
+      <td><select onchange="updateMember(&#39;ريم&#39;,&#39;quality&#39;,this.value)">
+        <option>ممتازة</option><option selected="">جيدة</option><option>مقبولة</option><option>ضعيفة</option>
+      </select></td>
+      <td><select onchange="updateMember(&#39;ريم&#39;,&#39;script&#39;,this.value)">
+        <option>ممتاز</option><option selected="">جيد</option><option>مقبول</option><option>ضعيف</option>
+      </select></td>
+      <td><select onchange="updateMember(&#39;ريم&#39;,&#39;status&#39;,this.value)">
+        <option>🟢 ممتاز</option><option selected="">🟡 جيد</option><option>🟠 يحتاج متابعة</option><option>🔴 ضعيف</option>
+      </select></td>
+    </tr><tr>
+      <td><div class="member-name">عائشة</div></td>
+      <td><input type="number" min="0" value="" placeholder="0" oninput="updateMember(&#39;عائشة&#39;,&#39;leads&#39;,this.value);calcConv();refreshStrip();"></td>
+      <td><input type="number" min="0" value="" placeholder="0" oninput="updateMember(&#39;عائشة&#39;,&#39;calls&#39;,this.value);refreshStrip();"></td>
+      <td><input type="number" min="0" value="" placeholder="0" oninput="updateMember(&#39;عائشة&#39;,&#39;followups&#39;,this.value)"></td>
+      <td><input type="number" min="0" value="" placeholder="0" oninput="updateMember(&#39;عائشة&#39;,&#39;regs&#39;,this.value);calcConv();refreshStrip();"></td>
+      <td><span style="font-weight:800;color:var(--orange);">—</span></td>
+      <td><select onchange="updateMember(&#39;عائشة&#39;,&#39;quality&#39;,this.value)">
+        <option>ممتازة</option><option selected="">جيدة</option><option>مقبولة</option><option>ضعيفة</option>
+      </select></td>
+      <td><select onchange="updateMember(&#39;عائشة&#39;,&#39;script&#39;,this.value)">
+        <option>ممتاز</option><option selected="">جيد</option><option>مقبول</option><option>ضعيف</option>
+      </select></td>
+      <td><select onchange="updateMember(&#39;عائشة&#39;,&#39;status&#39;,this.value)">
+        <option>🟢 ممتاز</option><option selected="">🟡 جيد</option><option>🟠 يحتاج متابعة</option><option>🔴 ضعيف</option>
+      </select></td>
+    </tr><tr>
+      <td><div class="member-name">مروة</div></td>
+      <td><input type="number" min="0" value="" placeholder="0" oninput="updateMember(&#39;مروة&#39;,&#39;leads&#39;,this.value);calcConv();refreshStrip();"></td>
+      <td><input type="number" min="0" value="" placeholder="0" oninput="updateMember(&#39;مروة&#39;,&#39;calls&#39;,this.value);refreshStrip();"></td>
+      <td><input type="number" min="0" value="" placeholder="0" oninput="updateMember(&#39;مروة&#39;,&#39;followups&#39;,this.value)"></td>
+      <td><input type="number" min="0" value="" placeholder="0" oninput="updateMember(&#39;مروة&#39;,&#39;regs&#39;,this.value);calcConv();refreshStrip();"></td>
+      <td><span style="font-weight:800;color:var(--orange);">—</span></td>
+      <td><select onchange="updateMember(&#39;مروة&#39;,&#39;quality&#39;,this.value)">
+        <option>ممتازة</option><option selected="">جيدة</option><option>مقبولة</option><option>ضعيفة</option>
+      </select></td>
+      <td><select onchange="updateMember(&#39;مروة&#39;,&#39;script&#39;,this.value)">
+        <option>ممتاز</option><option selected="">جيد</option><option>مقبول</option><option>ضعيف</option>
+      </select></td>
+      <td><select onchange="updateMember(&#39;مروة&#39;,&#39;status&#39;,this.value)">
+        <option>🟢 ممتاز</option><option selected="">🟡 جيد</option><option>🟠 يحتاج متابعة</option><option>🔴 ضعيف</option>
+      </select></td>
+    </tr></tbody>
+    </table>
+  </div>
+
+  <!-- SECTION 3: مؤشرات الفريق الكلية -->
+  <div class="section-title">📊 مؤشرات الفريق الكلية <span class="sec-badge badge-req">مطلوب</span></div>
+  <div class="kpi-grid">
+    <div class="kpi-box">
+      <div class="kpi-label">إجمالي الليدز المستلمة</div>
+      <input class="kpi-input" type="number" min="0" placeholder="—" id="kpi-leads" oninput="calcConv();refreshStrip();">
+      <div class="kpi-unit">ليد هذا الأسبوع</div>
+    </div>
+    <div class="kpi-box">
+      <div class="kpi-label">إجمالي المكالمات</div>
+      <input class="kpi-input" type="number" min="0" placeholder="—" id="kpi-calls" oninput="refreshStrip();">
+      <div class="kpi-unit">مكالمة</div>
+    </div>
+    <div class="kpi-box">
+      <div class="kpi-label">إجمالي المتابعات</div>
+      <input class="kpi-input" type="number" min="0" placeholder="—" id="kpi-followups">
+      <div class="kpi-unit">متابعة</div>
+    </div>
+    <div class="kpi-box">
+      <div class="kpi-label">إجمالي التسجيلات</div>
+      <input class="kpi-input" type="number" min="0" placeholder="—" id="kpi-regs" oninput="calcConv();refreshStrip();">
+      <div class="kpi-unit">تسجيل مؤكد</div>
+    </div>
+    <div class="kpi-box">
+      <div class="kpi-label">% التحويل</div>
+      <input class="kpi-input" type="number" min="0" max="100" step="0.1" placeholder="—" id="kpi-conv" readonly="" style="color:var(--orange);">
+      <div class="kpi-unit">تسجيلات ÷ ليدز × 100</div>
+    </div>
+    <div class="kpi-box">
+      <div class="kpi-label">متوسط سرعة الرد</div>
+      <input class="kpi-input" type="number" min="0" placeholder="—" id="kpi-speed">
+      <div class="kpi-unit">دقيقة من استلام الليد</div>
+    </div>
+  </div>
+
+  <!-- SECTION 4: أسباب عدم الشراء -->
+  <div class="section-title">❌ أسباب عدم الشراء <span class="sec-badge badge-req">مطلوب</span></div>
+  <div class="text-block">
+    <div class="text-block-label">🔍 أكثر أسباب رفض الشراء هذا الأسبوع</div>
+    <textarea id="reasons-no-buy" placeholder="مثال: السعر مرتفع، الوقت غير مناسب، يريد التفكير، لم يقتنع بالمحتوى…"></textarea>
+  </div>
+
+  <!-- SECTION 5: الاعتراضات -->
+  <div class="section-title">💬 الاعتراضات الأكثر تكراراً <span class="sec-badge badge-req">مطلوب</span></div>
+  <div id="objContainer">
+    <div class="objection-item">
+      <div class="field-group">
+        <div class="field-label" style="color:var(--yellow);">نص الاعتراض</div>
+        <input class="field-input" type="text" value="" placeholder="مثال: السعر مرتفع…" oninput="objRows[0].text=this.value" style="font-size:13px;padding:7px 10px;">
+      </div>
+      <div class="field-group">
+        <div class="field-label" style="color:var(--yellow);">التكرار</div>
+        <select class="field-select" onchange="objRows[0].freq=this.value" style="font-size:13px;padding:7px 10px;">
+          <option>مرة واحدة</option><option selected="">متكرر</option><option>كثير جداً</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <div class="field-label" style="color:var(--yellow);">الرد المقترح</div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <input class="field-input" type="text" value="" placeholder="كيف تعاملنا معه؟" oninput="objRows[0].handled=this.value" style="font-size:13px;padding:7px 10px;">
+          <button class="del-btn" onclick="objRows.splice(0,1);renderObjRows();refreshStrip();">✕</button>
+        </div>
+      </div>
+    </div>
+    <div class="objection-item">
+      <div class="field-group">
+        <div class="field-label" style="color:var(--yellow);">نص الاعتراض</div>
+        <input class="field-input" type="text" value="" placeholder="مثال: السعر مرتفع…" oninput="objRows[1].text=this.value" style="font-size:13px;padding:7px 10px;">
+      </div>
+      <div class="field-group">
+        <div class="field-label" style="color:var(--yellow);">التكرار</div>
+        <select class="field-select" onchange="objRows[1].freq=this.value" style="font-size:13px;padding:7px 10px;">
+          <option>مرة واحدة</option><option selected="">متكرر</option><option>كثير جداً</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <div class="field-label" style="color:var(--yellow);">الرد المقترح</div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <input class="field-input" type="text" value="" placeholder="كيف تعاملنا معه؟" oninput="objRows[1].handled=this.value" style="font-size:13px;padding:7px 10px;">
+          <button class="del-btn" onclick="objRows.splice(1,1);renderObjRows();refreshStrip();">✕</button>
+        </div>
+      </div>
+    </div></div>
+  <button class="add-row-btn" onclick="addObjRow()">＋ إضافة اعتراض</button>
+
+  <!-- SECTION 6: جودة المحادثات -->
+  <div class="section-title">🎯 جودة المحادثات والسكريبت <span class="sec-badge badge-req">مطلوب</span></div>
+  <div class="form-grid fg-2">
+    <div class="text-block" style="margin-bottom:0;">
+      <div class="text-block-label">✅ أفضل محادثة هذا الأسبوع</div>
+      <textarea id="best-call" placeholder="من كان المندوب؟ ماذا فعل صح؟ ما النتيجة؟"></textarea>
+    </div>
+    <div class="text-block" style="margin-bottom:0;">
+      <div class="text-block-label">⚠️ أضعف محادثة أو موقف</div>
+      <textarea id="worst-call" placeholder="ما المشكلة؟ كيف كان يجب أن يتصرف؟"></textarea>
+    </div>
+  </div>
+  <div class="text-block" style="margin-top:12px;">
+    <div class="text-block-label">📋 مدى التزام الفريق بالسكريبت</div>
+    <textarea id="script-compliance" placeholder="هل الفريق ملتزم بالسكريبت؟ من يحتاج تدريب؟ ما النقاط الأكثر انحرافاً؟"></textarea>
+  </div>
+
+  <!-- SECTION 7: أفضل وأضعف عضو -->
+  <div class="section-title">🏆 تقييم الفريق <span class="sec-badge badge-req">مطلوب</span></div>
+  <div class="form-grid fg-2">
+    <div class="card-box" style="border-color:#A7F3D0;background:#F0FDF4;margin-bottom:0;">
+      <div class="card-box-title">🥇 الأفضل أداءً هذا الأسبوع</div>
+      <div class="field-group">
+        <select class="field-select" id="best-member">
+          <option value="">اختر…</option>
+          <option>زينب</option><option>ريم</option><option>عائشة</option><option>مروة</option>
+        </select>
+      </div>
+      <div class="field-group" style="margin-top:10px;">
+        <div class="field-label">السبب</div>
+        <textarea class="field-textarea" id="best-member-reason" placeholder="لماذا تميّز؟" style="min-height:60px;"></textarea>
+      </div>
+    </div>
+    <div class="card-box" style="border-color:#FECACA;background:#FEF2F2;margin-bottom:0;">
+      <div class="card-box-title">🔴 يحتاج دعم وتطوير</div>
+      <div class="field-group">
+        <select class="field-select" id="weak-member">
+          <option value="">اختر…</option>
+          <option>زينب</option><option>ريم</option><option>عائشة</option><option>مروة</option>
+        </select>
+      </div>
+      <div class="field-group" style="margin-top:10px;">
+        <div class="field-label">خطة الدعم</div>
+        <textarea class="field-textarea" id="weak-member-plan" placeholder="ما الخطوات المقررة لتحسين أدائه؟" style="min-height:60px;"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 8: خطة الأسبوع القادم -->
+  <div class="section-title">📅 خطة الأسبوع القادم <span class="sec-badge badge-req">مطلوب</span></div>
+  <div class="text-block">
+    <div class="text-block-label">🎯 التارجت المستهدف للأسبوع القادم</div>
+    <div class="form-grid fg-3" style="margin-bottom:12px;">
+      <div class="field-group">
+        <div class="field-label">تسجيلات مستهدفة</div>
+        <input type="number" class="field-input" id="target-regs" placeholder="—">
+      </div>
+      <div class="field-group">
+        <div class="field-label">مكالمات مستهدفة</div>
+        <input type="number" class="field-input" id="target-calls" placeholder="—">
+      </div>
+      <div class="field-group">
+        <div class="field-label">% تحويل مستهدف</div>
+        <input type="number" class="field-input" id="target-conv" placeholder="—">
+      </div>
+    </div>
+  </div>
+  <div class="text-block">
+    <div class="text-block-label">📋 خطوات التحسين المقررة</div>
+    <textarea id="improvement-plan" placeholder="ما الذي ستغيّره أو تحسّنه الأسبوع القادم على مستوى الفريق أو السكريبت؟"></textarea>
+  </div>
+
+  <!-- SECTION 9: ملاحظات للإدارة -->
+  <div class="section-title">📢 ملاحظات للإدارة <span class="sec-badge badge-opt">اختياري</span></div>
+  <div class="text-block">
+    <div class="text-block-label">💬 قرارات أو دعم تحتاجه من محمد عبدالقوي</div>
+    <textarea id="mgmt-notes" placeholder="هل تحتاج سكريبت جديد؟ تدريب؟ تعديل على توزيع الليدز؟ أي قرار يحتاجه الفريق؟"></textarea>
+  </div>
+
+  <div class="submit-bar">
+    <div class="submit-info" id="saveInfo">آخر حفظ: ١٠:٤٥:١٧ ص</div>
+    <div class="submit-btns">
+      <button class="btn-sec" onclick="clearForm()">🗑️ مسح</button>
+      <button class="btn-sec" onclick="switchPage(&#39;dashboard&#39;,document.querySelectorAll(&#39;.mode-tab&#39;)[1])">📊 Dashboard</button>
+      <button class="btn-pri" onclick="saveReport()">💾 حفظ التقرير</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DASHBOARD PAGE ===== -->
+<div class="page" id="page-dashboard">
+
+  <!-- KPI Strip -->
+  <div class="summary-strip" id="dash-kpi-strip"><div class="stat-card">
+    <div class="stat-icon si-purple">📥</div>
+    <div><div class="stat-num">—</div><div class="stat-label">إجمالي الليدز</div></div>
+  </div><div class="stat-card">
+    <div class="stat-icon si-orange">📞</div>
+    <div><div class="stat-num">—</div><div class="stat-label">إجمالي المكالمات</div></div>
+  </div><div class="stat-card">
+    <div class="stat-icon si-green">✅</div>
+    <div><div class="stat-num">—</div><div class="stat-label">إجمالي التسجيلات</div></div>
+  </div><div class="stat-card">
+    <div class="stat-icon si-yellow">🔄</div>
+    <div><div class="stat-num">—</div><div class="stat-label">% التحويل</div></div>
+  </div><div class="stat-card">
+    <div class="stat-icon si-navy">⚡</div>
+    <div><div class="stat-num">—</div><div class="stat-label">متوسط سرعة الرد</div></div>
+  </div></div>
+
+  <div class="dash-grid">
+
+    <!-- Leaderboard -->
+    <div class="dash-card">
+      <div class="dash-card-title">🏆 ترتيب الفريق — التسجيلات</div>
+      <div class="leaderboard" id="dash-leaderboard"><div class="lb-item">
+      <div class="lb-rank gold">🥇</div>
+      <div class="lb-name">زينب</div>
+      <div class="lb-bar"><div class="lb-fill" style="width:0%"></div></div>
+      <div class="lb-val" style="color:var(--orange);min-width:50px;text-align:center;">0 تسجيل</div>
+      <div style="min-width:60px;text-align:center;">—</div>
+    </div><div class="lb-item">
+      <div class="lb-rank silver">🥈</div>
+      <div class="lb-name">ريم</div>
+      <div class="lb-bar"><div class="lb-fill" style="width:0%"></div></div>
+      <div class="lb-val" style="color:var(--orange);min-width:50px;text-align:center;">0 تسجيل</div>
+      <div style="min-width:60px;text-align:center;">—</div>
+    </div><div class="lb-item">
+      <div class="lb-rank bronze">🥉</div>
+      <div class="lb-name">عائشة</div>
+      <div class="lb-bar"><div class="lb-fill" style="width:0%"></div></div>
+      <div class="lb-val" style="color:var(--orange);min-width:50px;text-align:center;">0 تسجيل</div>
+      <div style="min-width:60px;text-align:center;">—</div>
+    </div><div class="lb-item">
+      <div class="lb-rank ">4️⃣</div>
+      <div class="lb-name">مروة</div>
+      <div class="lb-bar"><div class="lb-fill" style="width:0%"></div></div>
+      <div class="lb-val" style="color:var(--orange);min-width:50px;text-align:center;">0 تسجيل</div>
+      <div style="min-width:60px;text-align:center;">—</div>
+    </div></div>
+    </div>
+
+    <!-- Conversion Donut -->
+    <div class="dash-card">
+      <div class="dash-card-title">📊 توزيع نتائج الليدز</div>
+      <div class="donut-wrap">
+        <svg width="120" height="120" viewBox="0 0 120 120" id="donutSvg"><circle cx="60" cy="60" r="50" fill="none" stroke="#1A7A4A" stroke-width="18" stroke-dasharray="0 314.1592653589793" stroke-dashoffset="0" transform="rotate(-90 60 60)" opacity="0.15"></circle><circle cx="60" cy="60" r="50" fill="none" stroke="#E5E7EB" stroke-width="18" stroke-dasharray="0 314.1592653589793" stroke-dashoffset="0" transform="rotate(-90 60 60)" opacity="0.15"></circle><text x="60" y="57" text-anchor="middle" font-family="Cairo" font-size="16" font-weight="900" fill="#1A7A4A">0%</text>
+     <text x="60" y="72" text-anchor="middle" font-family="Cairo" font-size="10" fill="#9CA3AF">تحويل</text></svg>
+        <div class="donut-legend" id="donutLegend"><div class="donut-leg-item"><div class="donut-dot" style="background:#1A7A4A"></div>
+      <span style="font-weight:700;color:var(--navy);">0</span>
+      <span style="color:var(--gray-light);">تسجيلات</span></div><div class="donut-leg-item"><div class="donut-dot" style="background:#E5E7EB"></div>
+      <span style="font-weight:700;color:var(--navy);">0</span>
+      <span style="color:var(--gray-light);">لم يتحولوا</span></div></div>
+      </div>
+    </div>
+
+    <!-- Individual Performance -->
+    <div class="dash-card full">
+      <div class="dash-card-title">👥 أداء كل عضو في الفريق</div>
+      <div class="member-perf-grid" id="dash-members"><div class="member-perf-card">
+      <div class="mp-name">زينب <span style="font-size:13px;">🟡 جيد</span></div>
+      <div class="mp-stat"><span class="mp-key">ليدز</span><span class="mp-val">0</span></div>
+      <div class="mp-stat"><span class="mp-key">مكالمات</span><span class="mp-val">0</span></div>
+      <div class="mp-stat"><span class="mp-key">متابعات</span><span class="mp-val">0</span></div>
+      <div class="mp-stat"><span class="mp-key">تسجيلات</span><span class="mp-val" style="color:var(--green);">0</span></div>
+      <div class="mp-stat"><span class="mp-key">التحويل</span><span class="mp-val" style="color:var(--orange);">—</span></div>
+      <div class="mp-stat"><span class="mp-key">جودة المحادثات</span><span class="mp-val">جيدة</span></div>
+      <div class="mp-stat"><span class="mp-key">السكريبت</span><span class="mp-val">جيد</span></div>
+    </div><div class="member-perf-card">
+      <div class="mp-name">ريم <span style="font-size:13px;">🟡 جيد</span></div>
+      <div class="mp-stat"><span class="mp-key">ليدز</span><span class="mp-val">0</span></div>
+      <div class="mp-stat"><span class="mp-key">مكالمات</span><span class="mp-val">0</span></div>
+      <div class="mp-stat"><span class="mp-key">متابعات</span><span class="mp-val">0</span></div>
+      <div class="mp-stat"><span class="mp-key">تسجيلات</span><span class="mp-val" style="color:var(--green);">0</span></div>
+      <div class="mp-stat"><span class="mp-key">التحويل</span><span class="mp-val" style="color:var(--orange);">—</span></div>
+      <div class="mp-stat"><span class="mp-key">جودة المحادثات</span><span class="mp-val">جيدة</span></div>
+      <div class="mp-stat"><span class="mp-key">السكريبت</span><span class="mp-val">جيد</span></div>
+    </div><div class="member-perf-card">
+      <div class="mp-name">عائشة <span style="font-size:13px;">🟡 جيد</span></div>
+      <div class="mp-stat"><span class="mp-key">ليدز</span><span class="mp-val">0</span></div>
+      <div class="mp-stat"><span class="mp-key">مكالمات</span><span class="mp-val">0</span></div>
+      <div class="mp-stat"><span class="mp-key">متابعات</span><span class="mp-val">0</span></div>
+      <div class="mp-stat"><span class="mp-key">تسجيلات</span><span class="mp-val" style="color:var(--green);">0</span></div>
+      <div class="mp-stat"><span class="mp-key">التحويل</span><span class="mp-val" style="color:var(--orange);">—</span></div>
+      <div class="mp-stat"><span class="mp-key">جودة المحادثات</span><span class="mp-val">جيدة</span></div>
+      <div class="mp-stat"><span class="mp-key">السكريبت</span><span class="mp-val">جيد</span></div>
+    </div><div class="member-perf-card">
+      <div class="mp-name">مروة <span style="font-size:13px;">🟡 جيد</span></div>
+      <div class="mp-stat"><span class="mp-key">ليدز</span><span class="mp-val">0</span></div>
+      <div class="mp-stat"><span class="mp-key">مكالمات</span><span class="mp-val">0</span></div>
+      <div class="mp-stat"><span class="mp-key">متابعات</span><span class="mp-val">0</span></div>
+      <div class="mp-stat"><span class="mp-key">تسجيلات</span><span class="mp-val" style="color:var(--green);">0</span></div>
+      <div class="mp-stat"><span class="mp-key">التحويل</span><span class="mp-val" style="color:var(--orange);">—</span></div>
+      <div class="mp-stat"><span class="mp-key">جودة المحادثات</span><span class="mp-val">جيدة</span></div>
+      <div class="mp-stat"><span class="mp-key">السكريبت</span><span class="mp-val">جيد</span></div>
+    </div></div>
+    </div>
+
+    <!-- KPI Bars -->
+    <div class="dash-card">
+      <div class="dash-card-title">📈 مؤشرات الأداء الكلية</div>
+      <div id="dash-kpi-bars">
+    <div class="prog-item">
+      <div class="prog-label"><span class="prog-name">% التحويل</span><span class="prog-val" style="color:var(--orange);">0.0%</span></div>
+      <div class="prog-bar"><div class="prog-fill fill-orange" style="width:0%"></div></div>
+    </div>
+    <div class="prog-item">
+      <div class="prog-label"><span class="prog-name">معدل الاستجابة</span><span class="prog-val" style="color:var(--orange);">0.0%</span></div>
+      <div class="prog-bar"><div class="prog-fill fill-navy" style="width:0%"></div></div>
+    </div></div>
+    </div>
+
+    <!-- Objections -->
+    <div class="dash-card">
+      <div class="dash-card-title">💬 الاعتراضات الأكثر تكراراً</div>
+      <div id="dash-objections">
+      <div style="background:var(--bg);border-radius:9px;padding:10px 13px;margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;">
+        <span class="chip chip-yellow">متكرر</span>
+        <div style="flex:1;">
+          <div style="font-weight:700;color:var(--navy);font-size:13px;">—</div>
+          
+        </div>
+      </div>
+      <div style="background:var(--bg);border-radius:9px;padding:10px 13px;margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;">
+        <span class="chip chip-yellow">متكرر</span>
+        <div style="flex:1;">
+          <div style="font-weight:700;color:var(--navy);font-size:13px;">—</div>
+          
+        </div>
+      </div></div>
+    </div>
+
+    <!-- Best/Weak + Plan -->
+    <div class="dash-card">
+      <div class="dash-card-title">🎯 تقييم + خطة الأسبوع القادم</div>
+      <div id="dash-eval" style="font-size:13px;color:var(--gray);line-height:1.7;">
+    
+    
+    <div style="background:var(--bg);border-radius:9px;padding:10px 13px;margin-bottom:8px;">
+      <div style="font-weight:700;color:var(--navy);margin-bottom:4px;">🎯 تارجت الأسبوع القادم</div>
+      <div style="font-size:13px;color:var(--gray);">— تسجيل | — مكالمة | —% تحويل</div>
+    </div>
+    </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="dash-card">
+      <div class="dash-card-title">📢 ملاحظات للإدارة</div>
+      <div id="dash-notes" style="font-size:13.5px;color:var(--gray);line-height:1.7;white-space:pre-wrap;">—</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">💾 تم حفظ التقرير</div>
+
+<script>
+// ===== MEMBERS =====
+const MEMBERS = ['زينب','ريم','عائشة','مروة'];
+const QUALITY_OPTS = ['ممتازة','جيدة','مقبولة','ضعيفة'];
+const STATUS_OPTS = ['🟢 ممتاز','🟡 جيد','🟠 يحتاج متابعة','🔴 ضعيف'];
+
+let memberData = {};
+let objRows = [];
+
+function init() {
+  // Set week dates
+  const today = new Date();
+  const mon = new Date(today); mon.setDate(today.getDate() - today.getDay() + 1);
+  const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
+  document.getElementById('weekFrom').value = mon.toISOString().split('T')[0];
+  document.getElementById('weekTo').value   = sun.toISOString().split('T')[0];
+  document.getElementById('reportDate').value = today.toISOString().split('T')[0];
+  updateWeekBadge();
+
+  // Init member data
+  MEMBERS.forEach(m => { memberData[m] = {leads:0,calls:0,followups:0,regs:0,quality:'جيدة',script:'جيد',status:'🟡 جيد'}; });
+  renderMemberTable();
+
+  // Default 2 objection rows
+  addObjRow(); addObjRow();
+  refreshStrip();
+}
+
+function updateWeekBadge() {
+  const f = document.getElementById('weekFrom').value;
+  const t = document.getElementById('weekTo').value;
+  if (f && t) {
+    const fd = new Date(f).toLocaleDateString('ar-SA',{day:'numeric',month:'short'});
+    const td = new Date(t).toLocaleDateString('ar-SA',{day:'numeric',month:'short'});
+    document.getElementById('weekBadge').textContent = `${fd} — ${td}`;
+  }
+}
+
+// ===== MEMBER TABLE =====
+function renderMemberTable() {
+  document.getElementById('memberBody').innerHTML = MEMBERS.map(m => {
+    const d = memberData[m];
+    return `<tr>
+      <td><div class="member-name">${m}</div></td>
+      <td><input type="number" min="0" value="${d.leads||''}" placeholder="0" oninput="updateMember('${m}','leads',this.value);calcConv();refreshStrip();"></td>
+      <td><input type="number" min="0" value="${d.calls||''}" placeholder="0" oninput="updateMember('${m}','calls',this.value);refreshStrip();"></td>
+      <td><input type="number" min="0" value="${d.followups||''}" placeholder="0" oninput="updateMember('${m}','followups',this.value)"></td>
+      <td><input type="number" min="0" value="${d.regs||''}" placeholder="0" oninput="updateMember('${m}','regs',this.value);calcConv();refreshStrip();"></td>
+      <td><span style="font-weight:800;color:var(--orange);">${d.leads>0?Math.round((d.regs/d.leads)*100)+'%':'—'}</span></td>
+      <td><select onchange="updateMember('${m}','quality',this.value)">
+        ${QUALITY_OPTS.map(o=>`<option ${d.quality===o?'selected':''}>${o}</option>`).join('')}
+      </select></td>
+      <td><select onchange="updateMember('${m}','script',this.value)">
+        ${['ممتاز','جيد','مقبول','ضعيف'].map(o=>`<option ${d.script===o?'selected':''}>${o}</option>`).join('')}
+      </select></td>
+      <td><select onchange="updateMember('${m}','status',this.value)">
+        ${STATUS_OPTS.map(o=>`<option ${d.status===o?'selected':''}>${o}</option>`).join('')}
+      </select></td>
+    </tr>`;
+  }).join('');
+}
+
+function updateMember(name, key, val) {
+  memberData[name][key] = isNaN(val) ? val : (Number(val)||0);
+}
+
+// ===== CALC =====
+function calcConv() {
+  const leads = parseInt(document.getElementById('kpi-leads').value)||0;
+  const regs  = parseInt(document.getElementById('kpi-regs').value)||0;
+  if (leads > 0) document.getElementById('kpi-conv').value = ((regs/leads)*100).toFixed(1);
+  else document.getElementById('kpi-conv').value = '';
+}
+
+function refreshStrip() {
+  const calls = parseInt(document.getElementById('kpi-calls').value)||
+    MEMBERS.reduce((s,m)=>s+(memberData[m].calls||0),0);
+  const regs  = parseInt(document.getElementById('kpi-regs').value)||
+    MEMBERS.reduce((s,m)=>s+(memberData[m].regs||0),0);
+  const leads = parseInt(document.getElementById('kpi-leads').value)||
+    MEMBERS.reduce((s,m)=>s+(memberData[m].leads||0),0);
+  const conv  = leads>0 ? ((regs/leads)*100).toFixed(1)+'%' : '—';
+  document.getElementById('s-calls').textContent = calls||'—';
+  document.getElementById('s-regs').textContent  = regs||'—';
+  document.getElementById('s-leads').textContent = leads||'—';
+  document.getElementById('s-conv').textContent  = conv;
+  document.getElementById('s-objections').textContent = objRows.length||'—';
+}
+
+// ===== OBJECTIONS =====
+function addObjRow() {
+  objRows.push({text:'',freq:'متكرر',handled:''});
+  renderObjRows();
+}
+function renderObjRows() {
+  const c = document.getElementById('objContainer');
+  c.innerHTML = objRows.map((r,i)=>`
+    <div class="objection-item">
+      <div class="field-group">
+        <div class="field-label" style="color:var(--yellow);">نص الاعتراض</div>
+        <input class="field-input" type="text" value="${r.text}" placeholder="مثال: السعر مرتفع…" oninput="objRows[${i}].text=this.value" style="font-size:13px;padding:7px 10px;">
+      </div>
+      <div class="field-group">
+        <div class="field-label" style="color:var(--yellow);">التكرار</div>
+        <select class="field-select" onchange="objRows[${i}].freq=this.value" style="font-size:13px;padding:7px 10px;">
+          ${['مرة واحدة','متكرر','كثير جداً'].map(f=>`<option ${r.freq===f?'selected':''}>${f}</option>`).join('')}
+        </select>
+      </div>
+      <div class="field-group">
+        <div class="field-label" style="color:var(--yellow);">الرد المقترح</div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <input class="field-input" type="text" value="${r.handled}" placeholder="كيف تعاملنا معه؟" oninput="objRows[${i}].handled=this.value" style="font-size:13px;padding:7px 10px;">
+          <button class="del-btn" onclick="objRows.splice(${i},1);renderObjRows();refreshStrip();">✕</button>
+        </div>
+      </div>
+    </div>`).join('');
+  document.getElementById('s-objections').textContent = objRows.length||'—';
+}
+
+// ===== PAGE SWITCH =====
+function switchPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.mode-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  btn.classList.add('active');
+  if (id==='dashboard') refreshDash();
+}
+
+// ===== DASHBOARD =====
+function refreshDash() {
+  const leads = parseInt(document.getElementById('kpi-leads').value)||MEMBERS.reduce((s,m)=>s+(memberData[m].leads||0),0);
+  const regs  = parseInt(document.getElementById('kpi-regs').value)||MEMBERS.reduce((s,m)=>s+(memberData[m].regs||0),0);
+  const calls = parseInt(document.getElementById('kpi-calls').value)||MEMBERS.reduce((s,m)=>s+(memberData[m].calls||0),0);
+
+  // KPI strip
+  const conv = leads>0?((regs/leads)*100).toFixed(1)+'%':'—';
+  const speed = document.getElementById('kpi-speed').value;
+  document.getElementById('dash-kpi-strip').innerHTML = [
+    {icon:'📥',val:leads,label:'إجمالي الليدز',cls:'si-purple'},
+    {icon:'📞',val:calls,label:'إجمالي المكالمات',cls:'si-orange'},
+    {icon:'✅',val:regs,label:'إجمالي التسجيلات',cls:'si-green'},
+    {icon:'🔄',val:conv,label:'% التحويل',cls:'si-yellow'},
+    {icon:'⚡',val:speed?speed+'د':'—',label:'متوسط سرعة الرد',cls:'si-navy'},
+  ].map(k=>`<div class="stat-card">
+    <div class="stat-icon ${k.cls}">${k.icon}</div>
+    <div><div class="stat-num">${k.val||'—'}</div><div class="stat-label">${k.label}</div></div>
+  </div>`).join('');
+
+  // Leaderboard by regs
+  const sorted = [...MEMBERS].sort((a,b)=>(memberData[b].regs||0)-(memberData[a].regs||0));
+  const maxRegs = Math.max(...MEMBERS.map(m=>memberData[m].regs||0),1);
+  const rankEmoji = ['🥇','🥈','🥉','4️⃣'];
+  const rankCls = ['gold','silver','bronze',''];
+  document.getElementById('dash-leaderboard').innerHTML = sorted.map((m,i)=>{
+    const d = memberData[m];
+    const pct = maxRegs>0?((d.regs||0)/maxRegs)*100:0;
+    return `<div class="lb-item">
+      <div class="lb-rank ${rankCls[i]}">${rankEmoji[i]}</div>
+      <div class="lb-name">${m}</div>
+      <div class="lb-bar"><div class="lb-fill" style="width:${pct}%"></div></div>
+      <div class="lb-val" style="color:var(--orange);min-width:50px;text-align:center;">${d.regs||0} تسجيل</div>
+      <div style="min-width:60px;text-align:center;">${d.leads>0?Math.round((d.regs/d.leads)*100)+'%':'—'}</div>
+    </div>`;
+  }).join('');
+
+  // Donut: converted vs not
+  const notConv = Math.max(0, leads - regs);
+  drawDonut([
+    {label:'تسجيلات', val:regs, color:'#1A7A4A'},
+    {label:'لم يتحولوا', val:notConv, color:'#E5E7EB'},
+  ], leads||1);
+
+  // Member perf cards
+  document.getElementById('dash-members').innerHTML = MEMBERS.map(m=>{
+    const d = memberData[m];
+    const conv = d.leads>0?Math.round((d.regs/d.leads)*100)+'%':'—';
+    const statusColor = d.status.includes('🟢')?'var(--green)':d.status.includes('🟡')?'var(--yellow)':d.status.includes('🟠')?'var(--orange)':'var(--red)';
+    return `<div class="member-perf-card">
+      <div class="mp-name">${m} <span style="font-size:13px;">${d.status}</span></div>
+      <div class="mp-stat"><span class="mp-key">ليدز</span><span class="mp-val">${d.leads||0}</span></div>
+      <div class="mp-stat"><span class="mp-key">مكالمات</span><span class="mp-val">${d.calls||0}</span></div>
+      <div class="mp-stat"><span class="mp-key">متابعات</span><span class="mp-val">${d.followups||0}</span></div>
+      <div class="mp-stat"><span class="mp-key">تسجيلات</span><span class="mp-val" style="color:var(--green);">${d.regs||0}</span></div>
+      <div class="mp-stat"><span class="mp-key">التحويل</span><span class="mp-val" style="color:var(--orange);">${conv}</span></div>
+      <div class="mp-stat"><span class="mp-key">جودة المحادثات</span><span class="mp-val">${d.quality}</span></div>
+      <div class="mp-stat"><span class="mp-key">السكريبت</span><span class="mp-val">${d.script}</span></div>
+    </div>`;
+  }).join('');
+
+  // KPI Bars
+  const kpiBarData = [
+    {label:'% التحويل',val:leads>0?((regs/leads)*100):0,max:100,unit:'%',fill:'fill-orange'},
+    {label:'معدل الاستجابة',val:Math.min(100,(calls/(leads||1))*100),max:100,unit:'%',fill:'fill-navy'},
+  ];
+  document.getElementById('dash-kpi-bars').innerHTML = kpiBarData.map(k=>`
+    <div class="prog-item">
+      <div class="prog-label"><span class="prog-name">${k.label}</span><span class="prog-val" style="color:var(--orange);">${k.val.toFixed(1)}${k.unit}</span></div>
+      <div class="prog-bar"><div class="prog-fill ${k.fill}" style="width:${Math.min(100,k.val)}%"></div></div>
+    </div>`).join('');
+
+  // Objections
+  if (!objRows.length) {
+    document.getElementById('dash-objections').innerHTML = '<div style="color:var(--gray-light);font-size:13px;text-align:center;padding:20px 0;">✅ لا اعتراضات مسجّلة</div>';
+  } else {
+    const freqColor = {'مرة واحدة':'chip-navy','متكرر':'chip-yellow','كثير جداً':'chip-red'};
+    document.getElementById('dash-objections').innerHTML = objRows.map(r=>`
+      <div style="background:var(--bg);border-radius:9px;padding:10px 13px;margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;">
+        <span class="chip ${freqColor[r.freq]||'chip-navy'}">${r.freq}</span>
+        <div style="flex:1;">
+          <div style="font-weight:700;color:var(--navy);font-size:13px;">${r.text||'—'}</div>
+          ${r.handled?`<div style="font-size:12px;color:var(--gray-light);margin-top:3px;">💡 ${r.handled}</div>`:''}
+        </div>
+      </div>`).join('');
+  }
+
+  // Eval + Plan
+  const best = document.getElementById('best-member').value;
+  const weak = document.getElementById('weak-member').value;
+  const plan = document.getElementById('improvement-plan').value;
+  const targets = `${document.getElementById('target-regs').value||'—'} تسجيل | ${document.getElementById('target-calls').value||'—'} مكالمة | ${document.getElementById('target-conv').value||'—'}% تحويل`;
+  document.getElementById('dash-eval').innerHTML = `
+    ${best?`<div style="background:var(--green-soft);border-radius:9px;padding:10px 13px;margin-bottom:8px;"><span style="font-weight:800;color:var(--green);">🥇 الأفضل: ${best}</span><br><span style="font-size:12.5px;color:var(--gray);">${document.getElementById('best-member-reason').value||'—'}</span></div>`:''}
+    ${weak?`<div style="background:var(--red-soft);border-radius:9px;padding:10px 13px;margin-bottom:8px;"><span style="font-weight:800;color:var(--red);">🔴 يحتاج دعم: ${weak}</span><br><span style="font-size:12.5px;color:var(--gray);">${document.getElementById('weak-member-plan').value||'—'}</span></div>`:''}
+    <div style="background:var(--bg);border-radius:9px;padding:10px 13px;margin-bottom:8px;">
+      <div style="font-weight:700;color:var(--navy);margin-bottom:4px;">🎯 تارجت الأسبوع القادم</div>
+      <div style="font-size:13px;color:var(--gray);">${targets}</div>
+    </div>
+    ${plan?`<div style="font-size:13px;color:var(--gray);line-height:1.7;white-space:pre-wrap;">${plan}</div>`:''}`;
+
+  // Notes
+  document.getElementById('dash-notes').textContent = document.getElementById('mgmt-notes').value||'—';
+}
+
+// ===== DONUT =====
+function drawDonut(segs, total) {
+  const r=50,cx=60,cy=60,circ=2*Math.PI*r;
+  let offset=0, paths='';
+  const legend = document.getElementById('donutLegend');
+  legend.innerHTML = '';
+  segs.forEach(seg=>{
+    const dash=(seg.val/total)*circ, gap=circ-dash;
+    paths+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${seg.color}" stroke-width="18"
+      stroke-dasharray="${dash} ${gap}" stroke-dashoffset="${-offset}" transform="rotate(-90 ${cx} ${cy})" opacity="${seg.val?1:0.15}"/>`;
+    offset+=dash;
+    legend.innerHTML+=`<div class="donut-leg-item"><div class="donut-dot" style="background:${seg.color}"></div>
+      <span style="font-weight:700;color:var(--navy);">${seg.val}</span>
+      <span style="color:var(--gray-light);">${seg.label}</span></div>`;
+  });
+  const pct=total>0?Math.round((segs[0].val/total)*100):0;
+  document.getElementById('donutSvg').innerHTML = paths +
+    `<text x="60" y="57" text-anchor="middle" font-family="Cairo" font-size="16" font-weight="900" fill="${segs[0].color}">${pct}%</text>
+     <text x="60" y="72" text-anchor="middle" font-family="Cairo" font-size="10" fill="#9CA3AF">تحويل</text>`;
+}
+
+// ===== SAVE =====
+function saveReport() {
+  // Sync member data from table inputs
+  document.getElementById('memberBody').querySelectorAll('tr').forEach((tr,i)=>{
+    const m = MEMBERS[i];
+    const inputs = tr.querySelectorAll('input,select');
+    if (inputs[0]) memberData[m].leads = parseInt(inputs[0].value)||0;
+    if (inputs[1]) memberData[m].calls = parseInt(inputs[1].value)||0;
+    if (inputs[2]) memberData[m].followups = parseInt(inputs[2].value)||0;
+    if (inputs[3]) memberData[m].regs = parseInt(inputs[3].value)||0;
+    if (inputs[4]) memberData[m].quality = inputs[4].value;
+    if (inputs[5]) memberData[m].script = inputs[5].value;
+    if (inputs[6]) memberData[m].status = inputs[6].value;
+  });
+
+  const data = {
+    weekFrom: document.getElementById('weekFrom').value,
+    weekTo: document.getElementById('weekTo').value,
+    memberData, objRows,
+    kpis: {
+      leads: document.getElementById('kpi-leads').value,
+      calls: document.getElementById('kpi-calls').value,
+      followups: document.getElementById('kpi-followups').value,
+      regs: document.getElementById('kpi-regs').value,
+      speed: document.getElementById('kpi-speed').value,
+    },
+    bestMember: document.getElementById('best-member').value,
+    weakMember: document.getElementById('weak-member').value,
+    reasonsNoBuy: document.getElementById('reasons-no-buy').value,
+    bestCall: document.getElementById('best-call').value,
+    worstCall: document.getElementById('worst-call').value,
+    scriptCompliance: document.getElementById('script-compliance').value,
+    targetRegs: document.getElementById('target-regs').value,
+    targetCalls: document.getElementById('target-calls').value,
+    targetConv: document.getElementById('target-conv').value,
+    improvementPlan: document.getElementById('improvement-plan').value,
+    mgmtNotes: document.getElementById('mgmt-notes').value,
+  };
+  localStorage.setItem('khaled-report-latest', JSON.stringify(data));
+  const now = new Date().toLocaleTimeString('ar-SA');
+  document.getElementById('saveInfo').textContent = `آخر حفظ: ${now}`;
+  showToast('💾 تم حفظ التقرير');
+}
+
+function clearForm() {
+  if (!confirm('مسح جميع البيانات؟')) return;
+  MEMBERS.forEach(m=>{ memberData[m]={leads:0,calls:0,followups:0,regs:0,quality:'جيدة',script:'جيد',status:'🟡 جيد'}; });
+  objRows=[];
+  renderMemberTable(); renderObjRows(); refreshStrip();
+  ['kpi-leads','kpi-calls','kpi-followups','kpi-regs','kpi-conv','kpi-speed',
+   'reasons-no-buy','best-call','worst-call','script-compliance',
+   'target-regs','target-calls','target-conv','improvement-plan','mgmt-notes']
+    .forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  showToast('🗑️ تم المسح');
+}
+
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// Auto-save every 60s
+setInterval(()=>{ if(document.getElementById('weekFrom').value) saveReport(); }, 60000);
+
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') {} });
+
+init();
+</script>
+
+
+</body></html>

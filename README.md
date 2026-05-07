@@ -1,6 +1,6 @@
 # 📋 ME-CRM — لوحة تحكم التقارير الأسبوعية
 
-نظام إدارة وتسليم تقارير أسبوعية للفِرق، مبنى على Node.js + Express + lowdb.
+نظام إدارة وتسليم تقارير أسبوعية للفِرق، مبنى على Node.js + Express + SQLite.
 
 ---
 
@@ -40,7 +40,8 @@ ME-CRM/
 │   ├── css/               # Stylesheets
 │   ├── js/                # Client-side JS
 │   └── reports/           # قوالب التقارير + المرفوع (submitted/)
-├── data/                  # lowdb JSON + sessions SQLite (gitignored)
+├── data/                  # SQLite databases (gitignored)
+├── scripts/                # Migration & test scripts
 ├── doc/                   # نسخ مرجعية من التقارير
 ├── .env.example           # نموذج متغيرات البيئة
 └── DEPLOY.md              # دليل الرفع على cPanel
@@ -85,8 +86,10 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ## 🛠️ Scripts
 
 ```bash
-npm start        # تشغيل الإنتاج
-npm run dev      # تشغيل مع nodemon (auto-reload)
+npm start              # تشغيل الإنتاج
+npm run dev            # تشغيل مع nodemon (auto-reload)
+npm run migrate        # تحويل db.json (lowdb) إلى data.db (SQLite)
+npm run test:adapter   # اختبار شامل للـ DB adapter
 ```
 
 ---
@@ -95,7 +98,7 @@ npm run dev      # تشغيل مع nodemon (auto-reload)
 
 - **express** — web framework
 - **express-session** + **connect-sqlite3** — جلسات مخزنة فى SQLite
-- **lowdb** — قاعدة بيانات JSON خفيفة
+- **better-sqlite3** — قاعدة بيانات SQLite (synchronous, fast)
 - **bcryptjs** — تشفير كلمات السر
 - **multer** — رفع الملفات
 - **puppeteer** *(optional)* — تصدير PDF (مش بيشتغل على shared hosting)
@@ -115,10 +118,10 @@ npm run dev      # تشغيل مع nodemon (auto-reload)
 ## 💾 النسخ الاحتياطى
 
 كل البيانات فى:
-- `data/db.json` — الموظفين، التقارير، القوالب
+- `data/data.db` — الموظفين، التقارير، القوالب، الفرق (SQLite)
 - `public/reports/submitted/` — ملفات التقارير المرفوعة
 
-اعمل backup أسبوعى عبر cron أو يدوياً.
+اعمل backup أسبوعى عبر cron أو يدوياً. شوف [DEPLOY.md](DEPLOY.md) لتفاصيل الـ backup script.
 
 ---
 

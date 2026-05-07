@@ -1,0 +1,16 @@
+{
+  "name": "sqlite-test",
+  "version": "1.0.0",
+  "description": "اختبار better-sqlite3 على cPanel قبل الـ migration",
+  "main": "test.js",
+  "scripts": {
+    "start": "node test.js",
+    "test": "node test.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.5.0"
+  }
+}

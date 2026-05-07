@@ -167,6 +167,21 @@ tr:hover td { background: var(--orange-soft); }
 .report-card-rich.is-master { border-color: var(--orange); background: linear-gradient(to left, rgba(255,107,43,0.04), var(--white)); border-width: 2px; }
 .report-card-rich.is-master .rc-avatar { background: linear-gradient(135deg, #FF6B2B 0%, #FFA500 100%); box-shadow: 0 0 0 3px rgba(255,107,43,0.15); }
 .rc-master-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; background: linear-gradient(135deg, #FF6B2B, #FFA500); color: #fff; box-shadow: 0 2px 6px rgba(255,107,43,0.3); }
+
+/* Title line (report's actual title) */
+.rc-title-line { font-size: 12.5px; font-weight: 700; color: var(--gray); margin: 4px 0 6px; line-height: 1.4; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; }
+
+/* Comments badge */
+.rc-cmt-badge { display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 800; background: var(--yellow-soft, #fef3c7); color: var(--yellow, #d97706); }
+.rc-cmt-badge.has-unread { background: var(--yellow, #d97706); color: #fff; box-shadow: 0 2px 6px rgba(217,119,6,0.3); animation: pulseCmt 2s infinite; }
+.rc-cmt-badge.has-unread strong { background: rgba(255,255,255,0.3); padding: 1px 5px; border-radius: 8px; font-size: 9px; }
+@keyframes pulseCmt {
+  0%,100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+
+/* Edited badge */
+.rc-edited-badge { display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 800; background: var(--orange-soft); color: var(--orange); }
 @media (max-width: 768px) {
   .report-card-rich { grid-template-columns: 40px 1fr; gap: 10px; }
   .rc-completion, .rc-actions { grid-column: 1 / -1; }
@@ -933,18 +948,28 @@ function renderReports(reports) {
         const masterBadge = r.is_team_report
           ? `<span class="rc-master-badge" title="التقرير الرئيسي للفريق — يحتوي ${r.child_count} تقرير فرعي">⭐ تقرير الفريق الرئيسي${r.child_count ? ` (${r.child_count})` : ''}</span>`
           : '';
+        const cmtCount = r.comments_count || 0;
+        const cmtBadge = cmtCount > 0
+          ? `<span class="rc-cmt-badge${r.unread_emp_comments > 0 ? ' has-unread' : ''}" title="${cmtCount} تعليق${r.unread_emp_comments > 0 ? ' • ' + r.unread_emp_comments + ' رد جديد من الموظف' : ''}">💬 ${cmtCount}${r.unread_emp_comments > 0 ? ` <strong>•${r.unread_emp_comments}</strong>` : ''}</span>`
+          : '';
+        const editedBadge = r.edited_by_admin ? `<span class="rc-edited-badge" title="تم تعديل التقرير">✏️ معدّل</span>` : '';
+        const submittedDate = r.submitted_at ? new Date(r.submitted_at).toLocaleDateString('ar-EG', { year:'numeric', month:'short', day:'numeric' }) : '—';
         return `
           <div class="report-card-rich${r.is_team_report ? ' is-master' : ''}">
             <div class="rc-avatar">${initial}</div>
             <div class="rc-info">
               <div class="rc-name">
                 ${r.user_name}
-                <span class="rc-week">${r.week || '—'}</span>
+                <span class="rc-week">📅 ${r.week || '—'}</span>
                 ${masterBadge}
+                ${cmtBadge}
+                ${editedBadge}
               </div>
+              <div class="rc-title-line">${r.title || '<em style="color:var(--gray-light)">بدون عنوان</em>'}</div>
               <div class="rc-meta">
                 ${teamPart}
                 ${leaderPart}
+                <span class="rc-meta-item"><span data-icon="calendar"></span>${submittedDate}</span>
                 <span class="rc-meta-item"><span data-icon="clock"></span>${formatRelativeTime(r.submitted_at)}</span>
               </div>
             </div>

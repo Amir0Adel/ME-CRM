@@ -1,23 +1,23 @@
 require('dotenv').config();
 
 const express = require('express');
+const emailService = require('./email-service');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
-const low = require('lowdb');
-const FileSync = require('lowdb/adapters/FileSync');
+const { createDB } = require('./db');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ── Database (lowdb JSON) ─────────────────────────────────────────────────────
+// ── Database (SQLite via lowdb-compatible adapter) ────────────────────────────
 const dataDir = path.join(__dirname, '../data');
 if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
 
-const adapter = new FileSync(path.join(dataDir, 'db.json'));
-const db = low(adapter);
+const db = createDB(path.join(dataDir, 'data.db'));
+console.log('💾 DB: SQLite (data.db) via lowdb-compatible adapter');
 
 db.defaults({
   users: [], reports: [], notifications: [], templates: [], teams: [],
@@ -72,21 +72,7 @@ for (const e of empList) {
 }
 
 // Seed existing template files as reports in DB
-const TEMPLATE_REPORTS = [
-  { emp: 'fatima@reports.com',  file: 'report-ceo-weekly.html',   title: 'Weekly CEO Control Report — فاطمة' },
-  { emp: 'growth@reports.com',  file: 'report-growth.html',       title: 'تقرير النمو والأداء التسويقي' },
-  { emp: 'sales@reports.com',   file: 'report-sales.html',        title: 'تقرير المبيعات' },
-  { emp: 'finance@reports.com', file: 'report-finance.html',      title: 'تقرير Finance & Accounting' },
-  { emp: 'hr@reports.com',      file: 'report-hr.html',           title: 'تقرير HR' },
-  { emp: 'seo@reports.com',     file: 'report-seo.html',          title: 'تقرير SEO Team' },
-  { emp: 'web@reports.com',     file: 'report-web.html',          title: 'تقرير Web Team' },
-  { emp: 'academy@reports.com', file: 'report-academy.html',      title: 'تقرير الأكاديمية' },
-  { emp: 'account@reports.com', file: 'report-account.html',      title: 'تقرير Account Management' },
-  { emp: 'pod1@reports.com',    file: 'report-pod1.html',         title: 'تقرير Social Pod 1' },
-  { emp: 'pod2@reports.com',    file: 'report-pod2.html',         title: 'تقرير Social Pod 2' },
-  { emp: 'ahmed@reports.com',   file: 'تقرير_النمو_والا_يرادات___ا_حمد_عبدالرو_وف.html', title: 'تقرير النمو والإيرادات — أحمد عبدالرؤوف' },
-  { emp: 'narmin@reports.com',  file: 'تقرير_نرمين_الا_سبوعي___Planning___Quality_Governance.html', title: 'تقرير نرمين الأسبوعي' },
-];
+const TEMPLATE_REPORTS = [];
 
 for (const t of TEMPLATE_REPORTS) {
   const user = db.get('users').find({ email: t.emp }).value();
@@ -106,413 +92,277 @@ for (const t of TEMPLATE_REPORTS) {
   }
 }
 
-// Marker version — لو اتغير، يعمل force reseed للقوالب
-const TEMPLATES_VERSION = 'v3-2026-05-02-fix1';
+// Marker version — لو اتغير، يعمل force reseed للقوالب + مسح كل التقارير
+const TEMPLATES_VERSION = 'v4-2026-05-07-mahmoud-only';
 
 const TEMPLATE_SEEDS = [
-  // ============ 1. تقرير المبيعات ============
+  // ============ 📈 تقرير النمو والأداء التسويقي — محمود القوصي ============
   {
-    name: '📋 تقرير المبيعات الأسبوعي',
-    description: 'محمد عبدالقوي — Sales Manager',
-    visual_theme: 'standard',
-    icon: '📋',
+    name: "📈 تقرير النمو والأداء التسويقي — محمود القوصي",
+    description: "محمود القوصي — Growth / Planning / Strategy / Performance Lead",
+    visual_theme: "analytics",
+    icon: "📈",
     sections: [
-      { type: 'scorecard', title: '📊 Scorecard الأسبوع', description: 'تقييم الالتزام والمخرجات', items: [
-        { label: 'التقرير مكتمل ومرسل؟', mode: 'yesno', value: '' },
-        { label: 'تم تحقيق التارجت؟', mode: 'yesno', value: '' },
-        { label: 'حالة الفريق', mode: 'traffic', value: '' },
-      ]},
-      { type: 'metrics', title: '💰 أرقام المبيعات', description: 'B2C + B2B هذا الأسبوع', items: [
-        { label: 'إيرادات B2C', value: '', unit: 'جنيه' },
-        { label: 'إيرادات B2B', value: '', unit: 'جنيه' },
-        { label: 'عدد الصفقات المغلقة', value: '', unit: '' },
-        { label: 'نسبة تحقيق التارجت', value: '', unit: '%' },
-      ]},
-      { type: 'table', title: '👥 أداء الفريق', description: 'تقييم كل فرد هذا الأسبوع',
-        headers: ['الموظف', 'المكالمات', 'الصفقات', 'الإيرادات', 'التقييم'],
-        rows: [['', '', '', '', '']]
-      },
-      { type: 'text', title: '⚠️ المشاكل والاعتراضات', description: 'أسباب عدم الشراء + أهم الاعتراضات', content: '' },
-      { type: 'text', title: '🎯 خطة سد الفجوة', description: 'ماذا ستفعل لتحقيق التارجت؟', content: '' },
-      { type: 'checklist', title: '🔑 قرارات مطلوبة', description: 'ما تحتاجه من إبراهيم أو أحمد هذا الأسبوع',
-        status_options: ['عاجل', 'هذا الأسبوع', 'الأسبوع القادم'],
-        items: [{ text: '', status: '' }]
-      },
+      { type: "scorecard", title: "📊 Scorecard الأسبوع", subtitle: "تقييم الالتزام والمخرجات", has_note: false, note_label: "", items: [{ label: "التقرير مكتمل ومرسل؟", mode: "yesno", value: "" }, { label: "تم تحقيق المخرجات؟", mode: "yesno", value: "" }, { label: "حالة الفريق", mode: "traffic", value: "" }] },
+      { type: "metrics", title: "📈 أداء الحملات", subtitle: "نتائج هذا الأسبوع", has_note: false, note_label: "", items: [{ label: "CPL متوسط", value: "", unit: "ر.س" }, { label: "CPC متوسط", value: "", unit: "ر.س" }, { label: "CTR", value: "", unit: "%" }, { label: "إجمالي الليدز", value: "", unit: "" }, { label: "جودة الليدز (1-10)", value: "", unit: "" }, { label: "الإنفاق الإعلاني", value: "", unit: "ر.س" }] },
+      { type: "text", title: "💬 الرسائل والمحتوى", subtitle: "تقييم أداء الرسائل هذا الأسبوع", has_note: false, note_label: "", blocks: [{ heading: "أفضل رسالة / إعلان هذا الأسبوع", placeholder: "اكتب الرسالة الأفضل أداءً وسبب نجاحها..." }, { heading: "أضعف رسالة / إعلان هذا الأسبوع", placeholder: "اكتب الرسالة الأضعف أداءً وسبب ضعفها..." }, { heading: "ملاحظات على المحتوى والفانل", placeholder: "هل يوجد ضعف في الفانل؟ أين يتسرب الليد؟" }] },
+      { type: "text", title: "🧪 الاختبارات والتحسينات", subtitle: "هذا الأسبوع والأسبوع القادم", has_note: false, note_label: "", blocks: [{ heading: "الاختبارات التي تمت هذا الأسبوع", placeholder: "ما الذي اختبرناه؟ وما النتيجة؟" }, { heading: "الاختبارات المخطط لها الأسبوع القادم", placeholder: "ما الذي سنختبره الأسبوع القادم؟" }, { heading: "توصيات التحسين", placeholder: "اكتب توصياتك لتحسين الأداء..." }] },
+      { type: "scorecard", title: "🎯 متابعة أحمد عبدالفتاح", subtitle: "تقييم أداء Media Buyer هذا الأسبوع", has_note: true, note_label: "ملاحظات على أداء أحمد عبدالفتاح", items: [{ label: "الالتزام بالخطة؟", mode: "yesno", value: "" }, { label: "جودة التنفيذ؟", mode: "traffic", value: "" }, { label: "رفع التقرير في موعده؟", mode: "yesno", value: "" }] },
+      { type: "checklist", title: "🔑 قرارات مطلوبة", subtitle: "ما تحتاجه من الإدارة هذا الأسبوع", has_note: false, note_label: "", placeholder: "اكتب القرار المطلوب...", status_options: ["عاجل", "هذا الأسبوع", "الأسبوع القادم"], items: [{ text: "", status: "" }] },
     ]
   },
-
-  // ============ 2. تقرير النمو والأداء التسويقي ============
+  // ============ 🏫 تقرير تشغيل الأكاديمية — شيري ============
   {
-    name: '📈 تقرير النمو والأداء التسويقي',
-    description: 'محمود القوصي — Growth & Performance Lead',
-    visual_theme: 'analytics',
-    icon: '📈',
+    name: "🏫 تقرير تشغيل الأكاديمية — شيري",
+    description: "شيري — Academy Operation & Customer Service",
+    visual_theme: "standard",
+    icon: "🏫",
     sections: [
-      { type: 'scorecard', title: '📊 Scorecard الأسبوع', description: 'تقييم الالتزام والمخرجات', items: [
-        { label: 'التقرير مكتمل ومرسل؟', mode: 'yesno', value: '' },
-        { label: 'الحملات تعمل بكفاءة؟', mode: 'yesno', value: '' },
-        { label: 'حالة الـ Performance', mode: 'traffic', value: '' },
-      ]},
-      { type: 'metrics', title: '🎯 أداء الحملات', description: 'نتائج هذا الأسبوع', items: [
-        { label: 'إجمالي الإنفاق', value: '', unit: 'جنيه' },
-        { label: 'عدد الليدز', value: '', unit: '' },
-        { label: 'CPL متوسط', value: '', unit: 'جنيه' },
-        { label: 'ROAS', value: '', unit: 'X' },
-        { label: 'CTR متوسط', value: '', unit: '%' },
-        { label: 'Conversion Rate', value: '', unit: '%' },
-      ]},
-      { type: 'text', title: '✉️ الرسائل والمحتوى', description: 'تقييم أداء الرسائل هذا الأسبوع', content: '' },
-      { type: 'text', title: '🧪 الاختبارات والتحسينات', description: 'هذا الأسبوع والأسبوع القادم', content: '' },
-      { type: 'text', title: '👨‍💼 متابعة أحمد عبدالفتاح', description: 'تقييم أداء Media Buyer هذا الأسبوع', content: '' },
-      { type: 'checklist', title: '🔑 قرارات مطلوبة', description: 'ما تحتاجه من الإدارة هذا الأسبوع',
-        status_options: ['عاجل', 'هذا الأسبوع', 'الأسبوع القادم'],
-        items: [{ text: '', status: '' }]
-      },
+      { type: "scorecard", title: "📊 Scorecard الأسبوع", subtitle: "تقييم الالتزام والمخرجات", has_note: false, note_label: "", items: [{ label: "التقرير مكتمل ومرسل؟", mode: "yesno", value: "" }, { label: "تم تحقيق المخرجات؟", mode: "yesno", value: "" }, { label: "حالة الأكاديمية", mode: "traffic", value: "" }] },
+      { type: "checklist", title: "📚 حالة الدورات النشطة", subtitle: "كل دورة هذا الأسبوع", has_note: false, note_label: "", placeholder: "اسم الدورة", status_options: ["🟢 منتظمة", "🟡 تحتاج متابعة", "🔴 مشكلة"], items: [{ text: "", status: "" }] },
+      { type: "metrics", title: "😊 رضا المتدربين والشكاوى", subtitle: "", has_note: true, note_label: "أبرز الشكاوى والمشاكل", items: [{ label: "تقييم الرضا (1-10)", value: "", unit: "" }, { label: "عدد الشكاوى", value: "", unit: "" }, { label: "شكاوى تم حلها", value: "", unit: "" }] },
+      { type: "status", title: "👨‍🏫 متابعة المدربين", subtitle: "", has_note: true, note_label: "ملاحظات على المدربين", options: [{ value: "green", label: "🟢 ملتزمون" }, { value: "yellow", label: "🟡 متوسط" }, { value: "red", label: "🔴 مشكلة" }], value: "", note: "" },
+      { type: "text", title: "💡 فرص النمو والتحسين", subtitle: "", has_note: false, note_label: "", blocks: [{ heading: "فرص Referral أو Upsell لاحظتِها", placeholder: "اكتب المتدربين أو الفرص المحتملة..." }, { heading: "أي مشكلة تشغيلية تؤثر على السمعة", placeholder: "اكتب أي مشكلة تؤثر على تجربة المتدرب..." }] },
+      { type: "checklist", title: "🔑 قرارات مطلوبة", subtitle: "", has_note: false, note_label: "", placeholder: "اكتب القرار المطلوب...", status_options: ["عاجل", "هذا الأسبوع", "الأسبوع القادم"], items: [{ text: "", status: "" }] },
     ]
   },
-
-  // ============ 3. تقرير Finance & Accounting ============
+  // ============ 🤝 تقرير Account Management — سماح ============
   {
-    name: '💰 تقرير Finance & Accounting',
-    description: 'محمد عبد الله · يوسف',
-    visual_theme: 'executive',
-    icon: '💰',
+    name: "🤝 تقرير Account Management — سماح",
+    description: "سماح — Account Manager",
+    visual_theme: "standard",
+    icon: "🤝",
     sections: [
-      { type: 'scorecard', title: '📊 Scorecard الأسبوع', description: 'تقييم الالتزام والمخرجات', items: [
-        { label: 'التقرير مكتمل ومرسل؟', mode: 'yesno', value: '' },
-        { label: 'كل المعاملات مسجلة؟', mode: 'yesno', value: '' },
-        { label: 'حالة التدفق النقدي', mode: 'traffic', value: '' },
-      ]},
-      { type: 'metrics', title: '📈 الصورة المالية الأسبوعية', description: '', items: [
-        { label: 'إجمالي الإيرادات', value: '', unit: 'جنيه' },
-        { label: 'إجمالي المصروفات', value: '', unit: 'جنيه' },
-        { label: 'صافي الربح', value: '', unit: 'جنيه' },
-        { label: 'الذمم المدينة', value: '', unit: 'جنيه' },
-        { label: 'الذمم الدائنة', value: '', unit: 'جنيه' },
-        { label: 'الرصيد البنكي', value: '', unit: 'جنيه' },
-      ]},
-      { type: 'table', title: '⏰ العملاء المتأخرون في السداد', description: '',
-        headers: ['العميل', 'المبلغ', 'تاريخ الاستحقاق', 'مدة التأخير', 'الإجراء'],
-        rows: [['', '', '', '', '']]
-      },
-      { type: 'checklist', title: '🔑 قرارات مطلوبة', description: '',
-        status_options: ['عاجل', 'هذا الأسبوع', 'الأسبوع القادم'],
-        items: [{ text: '', status: '' }]
-      },
+      { type: "scorecard", title: "📊 Scorecard الأسبوع", subtitle: "تقييم الالتزام والمخرجات", has_note: false, note_label: "", items: [{ label: "التقرير مكتمل ومرسل؟", mode: "yesno", value: "" }, { label: "تم تحقيق المخرجات؟", mode: "yesno", value: "" }, { label: "حالة الفريق", mode: "traffic", value: "" }] },
+      { type: "metrics", title: "👥 صحة العملاء", subtitle: "Client Health هذا الأسبوع", has_note: true, note_label: "قرارات تحتاج تدخل إداري", items: [{ label: "عملاء راضون", value: "", unit: "" }, { label: "عملاء معرضون للخطر", value: "", unit: "" }, { label: "شكاوى مفتوحة", value: "", unit: "" }, { label: "اعتمادات متأخرة", value: "", unit: "" }, { label: "فرص Upsell", value: "", unit: "" }, { label: "فرص Renewal قريبة", value: "", unit: "" }] },
+      { type: "checklist", title: "🔑 قرارات مطلوبة", subtitle: "", has_note: false, note_label: "", placeholder: "اكتب القرار المطلوب...", status_options: ["عاجل", "هذا الأسبوع", "الأسبوع القادم"], items: [{ text: "", status: "" }] },
     ]
   },
-
-  // ============ 4. تقرير HR ============
+  // ============ 📋 Weekly CEO Control Report — فاطمة ============
   {
-    name: '👤 تقرير HR',
-    description: 'محسن — Human Resources',
-    visual_theme: 'standard',
-    icon: '👤',
+    name: "📋 Weekly CEO Control Report — فاطمة",
+    description: "فاطمة — Admin Assistant / CEO Control Support",
+    visual_theme: "executive",
+    icon: "📋",
     sections: [
-      { type: 'scorecard', title: '📊 Scorecard الأسبوع', description: 'تقييم الالتزام والمخرجات', items: [
-        { label: 'التقرير مكتمل ومرسل؟', mode: 'yesno', value: '' },
-        { label: 'كل المخالفات تم رصدها؟', mode: 'yesno', value: '' },
-        { label: 'حالة الفريق العامة', mode: 'traffic', value: '' },
-      ]},
-      { type: 'metrics', title: '📅 الحضور والانصراف', description: '', items: [
-        { label: 'متوسط نسبة الحضور', value: '', unit: '%' },
-        { label: 'عدد التأخيرات', value: '', unit: '' },
-        { label: 'عدد الغيابات', value: '', unit: '' },
-        { label: 'عدد الإجازات المعتمدة', value: '', unit: '' },
-      ]},
-      { type: 'table', title: '⚠️ المخالفات والملاحظات', description: '',
-        headers: ['الموظف', 'نوع المخالفة', 'التاريخ', 'الإجراء'],
-        rows: [['', '', '', '']]
-      },
-      { type: 'text', title: '🎯 توظيف وتدريب', description: 'الوظائف المفتوحة + خطط التدريب', content: '' },
-      { type: 'checklist', title: '🔑 قرارات مطلوبة', description: '',
-        status_options: ['عاجل', 'هذا الأسبوع', 'الأسبوع القادم'],
-        items: [{ text: '', status: '' }]
-      },
+      { type: "metrics", title: "⚡ لمحة سريعة", subtitle: "أبرز أرقام الأسبوع دفعة واحدة", has_note: false, note_label: "", items: [{ label: "الإيراد المحصل", value: "", unit: "" }, { label: "التارجت الشهري", value: "", unit: "" }, { label: "إجمالي الليدز", value: "", unit: "" }, { label: "مشاريع حمراء", value: "", unit: "" }, { label: "عملاء معرضون للخطر", value: "", unit: "" }, { label: "قرارات مطلوبة", value: "", unit: "" }] },
+      { type: "metrics", title: "💰 ملخص الإيرادات والنمو", subtitle: "من أحمد عبدالرؤوف", has_note: false, note_label: "", items: [{ label: "الإيراد المحقق", value: "", unit: "ر.س" }, { label: "الإيراد المتوقع", value: "", unit: "ر.س" }, { label: "الفجوة من التارجت", value: "", unit: "ر.س" }, { label: "Pipeline Value", value: "", unit: "ر.س" }] },
+      { type: "text", title: "💰 تفاصيل الإيرادات", subtitle: "", has_note: false, note_label: "", blocks: [{ heading: "خطة سد الفجوة", placeholder: "اكتب خطة الأسبوع لسد الفجوة..." }, { heading: "أبرز فرص الإغلاق هذا الأسبوع", placeholder: "اكتب أهم الفرص القريبة من الإغلاق..." }] },
+      { type: "scorecard", title: "🎯 ملخص التنفيذ والجودة", subtitle: "حالة فرق التنفيذ", has_note: true, note_label: "أبرز التأخيرات أو المشاريع الحمراء", items: [{ label: "🟦 Social Pod 1", mode: "traffic", value: "" }, { label: "🟩 Social Pod 2", mode: "traffic", value: "" }, { label: "🔍 SEO Team", mode: "traffic", value: "" }, { label: "💻 Web Team", mode: "traffic", value: "" }, { label: "🤝 Account Mgmt", mode: "traffic", value: "" }, { label: "🏫 الأكاديمية", mode: "traffic", value: "" }] },
+      { type: "metrics", title: "👥 ملخص العملاء", subtitle: "من سماح — Account Management", has_note: false, note_label: "", items: [{ label: "عملاء راضون", value: "", unit: "" }, { label: "عملاء في خطر", value: "", unit: "" }, { label: "شكاوى مفتوحة", value: "", unit: "" }] },
+      { type: "text", title: "👥 تفاصيل العملاء", subtitle: "", has_note: false, note_label: "", blocks: [{ heading: "العملاء المعرضون للخطر وأسبابها", placeholder: "اكتب تفاصيل العملاء في خطر..." }, { heading: "فرص التجديد أو Upsell القريبة", placeholder: "اكتب الفرص المتاحة..." }] },
+      { type: "metrics", title: "📈 ملخص التسويق والأداء", subtitle: "من محمود القوصي", has_note: false, note_label: "", items: [{ label: "CPL متوسط", value: "", unit: "" }, { label: "جودة الليدز (1-10)", value: "", unit: "" }, { label: "الإنفاق الإعلاني", value: "", unit: "ر.س" }] },
+      { type: "text", title: "📈 تفاصيل التسويق", subtitle: "", has_note: false, note_label: "", blocks: [{ heading: "أفضل رسالة / حملة هذا الأسبوع", placeholder: "اكتب الأفضل أداءً..." }, { heading: "أضعف رسالة / حملة", placeholder: "اكتب الأضعف أداءً وسبب الضعف..." }] },
+      { type: "metrics", title: "💵 ملخص المالية", subtitle: "من محمد عبد الله ويوسف", has_note: true, note_label: "مخاطر مالية تحتاج قرار", items: [{ label: "الإيراد المحصل", value: "", unit: "ر.س" }, { label: "فواتير متأخرة", value: "", unit: "ر.س" }, { label: "المتوقع تحصيله", value: "", unit: "ر.س" }] },
+      { type: "metrics", title: "👤 ملخص HR", subtitle: "من محسن", has_note: true, note_label: "مشاكل أفراد تحتاج قرار", items: [{ label: "أيام غياب", value: "", unit: "" }, { label: "حالات تأخير", value: "", unit: "" }, { label: "موظفون تحت الملاحظة", value: "", unit: "" }] },
+      { type: "checklist", title: "🔑 القرارات المطلوبة من إبراهيم", subtitle: "بحد أقصى 3–5 قرارات هذا الأسبوع", has_note: false, note_label: "", placeholder: "اكتب القرار المطلوب...", status_options: ["عاجل", "هذا الأسبوع"], items: [{ text: "", status: "" }] },
+      { type: "checklist", title: "🔄 متابعة قرارات الأسبوع السابق", subtitle: "هل تم تنفيذ ما تم الاتفاق عليه؟", has_note: false, note_label: "", placeholder: "القرار من الأسبوع السابق", status_options: ["✅ تم التنفيذ", "🟡 جاري", "❌ لم ينفّذ"], items: [{ text: "", status: "" }] },
+      { type: "text", title: "🚨 المخاطر والتنبيهات", subtitle: "ما يجب أن يعرفه إبراهيم هذا الأسبوع", has_note: false, note_label: "", blocks: [{ heading: "أبرز المخاطر والتنبيهات", placeholder: "اكتب أبرز المخاطر التي تحتاج انتباه إبراهيم هذا الأسبوع..." }, { heading: "ملاحظات فاطمة", placeholder: "أي ملاحظات إضافية لإبراهيم..." }] },
     ]
   },
-
-  // ============ 5. تقرير الأكاديمية ============
+  // ============ 💰 تقرير Finance & Accounting — محمد عبد الله · يوسف ============
   {
-    name: '🏫 تقرير تشغيل الأكاديمية',
-    description: 'شيري — Academy Operation & Customer Service',
-    visual_theme: 'colorful',
-    icon: '🏫',
+    name: "💰 تقرير Finance & Accounting — محمد عبد الله · يوسف",
+    description: "محمد عبد الله · يوسف",
+    visual_theme: "executive",
+    icon: "💰",
     sections: [
-      { type: 'scorecard', title: '📊 Scorecard الأسبوع', description: 'تقييم الالتزام والمخرجات', items: [
-        { label: 'التقرير مكتمل ومرسل؟', mode: 'yesno', value: '' },
-        { label: 'تم تحقيق المخرجات؟', mode: 'yesno', value: '' },
-        { label: 'حالة الأكاديمية', mode: 'traffic', value: '' },
-      ]},
-      { type: 'checklist', title: '📚 حالة الدورات النشطة', description: 'كل دورة هذا الأسبوع',
-        status_options: ['🟢 منتظمة', '🟡 تحتاج متابعة', '🔴 مشكلة'],
-        items: [{ text: '', status: '' }]
-      },
-      { type: 'metrics', title: '😊 رضا المتدربين والشكاوى', description: '', items: [
-        { label: 'تقييم الرضا (1-10)', value: '', unit: '' },
-        { label: 'عدد الشكاوى', value: '', unit: '' },
-        { label: 'شكاوى تم حلها', value: '', unit: '' },
-      ]},
-      { type: 'text', title: '🗣️ أبرز الشكاوى والمشاكل', description: '', content: '' },
-      { type: 'status', title: '👨‍🏫 مستوى التزام المدربين', description: 'متابعة المدربين',
-        options: [
-          { value: 'green',  label: '🟢 ملتزمون' },
-          { value: 'yellow', label: '🟡 متوسط' },
-          { value: 'red',    label: '🔴 مشكلة' },
-        ],
-        value: '', note: ''
-      },
-      { type: 'text', title: '💡 فرص النمو والتحسين', description: 'Upsell / Referral', content: '' },
-      { type: 'checklist', title: '🔑 قرارات مطلوبة', description: '',
-        status_options: ['عاجل', 'هذا الأسبوع', 'الأسبوع القادم'],
-        items: [{ text: '', status: '' }]
-      },
+      { type: "scorecard", title: "📊 Scorecard الأسبوع", subtitle: "تقييم الالتزام والمخرجات", has_note: false, note_label: "", items: [{ label: "التقرير مكتمل ومرسل؟", mode: "yesno", value: "" }, { label: "تم تحقيق المخرجات؟", mode: "yesno", value: "" }, { label: "حالة الفريق", mode: "traffic", value: "" }] },
+      { type: "metrics", title: "💵 الصورة المالية الأسبوعية", subtitle: "", has_note: false, note_label: "", items: [{ label: "الإيراد المحصل", value: "", unit: "ر.س" }, { label: "الفواتير المستحقة", value: "", unit: "ر.س" }, { label: "الفواتير المتأخرة", value: "", unit: "ر.س" }, { label: "المتوقع تحصيله", value: "", unit: "ر.س" }, { label: "Collection Rate", value: "", unit: "%" }, { label: "الالتزامات المستحقة", value: "", unit: "ر.س" }] },
+      { type: "checklist", title: "⚠️ العملاء المتأخرون في السداد", subtitle: "", has_note: true, note_label: "ملاحظات التدفق النقدي (Cash Flow)", placeholder: "اسم العميل", status_options: ["🟡 متابعة", "🔴 تصعيد"], items: [{ text: "", status: "" }] },
+      { type: "checklist", title: "🔑 قرارات مطلوبة", subtitle: "", has_note: false, note_label: "", placeholder: "اكتب القرار المطلوب...", status_options: ["عاجل", "هذا الأسبوع", "الأسبوع القادم"], items: [{ text: "", status: "" }] },
     ]
   },
-
-  // ============ 6. تقرير Account Management ============
+  // ============ 👤 تقرير HR — محسن ============
   {
-    name: '🤝 تقرير Account Management',
-    description: 'سماح — Account Manager',
-    visual_theme: 'standard',
-    icon: '🤝',
+    name: "👤 تقرير HR — محسن",
+    description: "محسن — Human Resources",
+    visual_theme: "standard",
+    icon: "👤",
     sections: [
-      { type: 'scorecard', title: '📊 Scorecard الأسبوع', description: 'تقييم الالتزام والمخرجات', items: [
-        { label: 'التقرير مكتمل ومرسل؟', mode: 'yesno', value: '' },
-        { label: 'كل العملاء تم التواصل معهم؟', mode: 'yesno', value: '' },
-        { label: 'حالة العملاء العامة', mode: 'traffic', value: '' },
-      ]},
-      { type: 'metrics', title: '💚 صحة العملاء', description: 'Client Health هذا الأسبوع', items: [
-        { label: 'عملاء نشطون', value: '', unit: '' },
-        { label: 'عملاء في خطر', value: '', unit: '' },
-        { label: 'رضا العملاء', value: '', unit: '%' },
-      ]},
-      { type: 'text', title: '🔴 العملاء المعرضون للخطر', description: 'اسم كل عميل وسبب الخطر', content: '' },
-      { type: 'text', title: '⭐ Upsell & Referrals', description: 'فرص هذا الأسبوع', content: '' },
-      { type: 'checklist', title: '🔑 قرارات مطلوبة', description: '',
-        status_options: ['عاجل', 'هذا الأسبوع', 'الأسبوع القادم'],
-        items: [{ text: '', status: '' }]
-      },
+      { type: "scorecard", title: "📊 Scorecard الأسبوع", subtitle: "تقييم الالتزام والمخرجات", has_note: false, note_label: "", items: [{ label: "التقرير مكتمل ومرسل؟", mode: "yesno", value: "" }, { label: "تم تحقيق المخرجات؟", mode: "yesno", value: "" }, { label: "حالة الفريق", mode: "traffic", value: "" }] },
+      { type: "metrics", title: "📋 الحضور والانصراف", subtitle: "", has_note: false, note_label: "", items: [{ label: "أيام الغياب الكلية", value: "", unit: "" }, { label: "حالات تأخير", value: "", unit: "" }, { label: "موظفون تحت الملاحظة", value: "", unit: "" }, { label: "احتياجات التوظيف", value: "", unit: "" }] },
+      { type: "checklist", title: "📋 الموظفون تحت الملاحظة هذا الأسبوع", subtitle: "", has_note: false, note_label: "", placeholder: "اسم الموظف — سبب الملاحظة", status_options: ["🟡 تحذير", "🔴 إنذار رسمي"], items: [{ text: "", status: "" }] },
+      { type: "text", title: "📋 ملاحظات وتوصيات HR", subtitle: "", has_note: false, note_label: "", blocks: [{ heading: "المشاكل الإدارية أو السلوكية", placeholder: "اكتب أي مشاكل سلوكية أو إدارية هذا الأسبوع..." }, { heading: "توصيات HR", placeholder: "اكتب توصياتك لهذا الأسبوع..." }, { heading: "احتياجات التوظيف والوصف الوظيفي المطلوب", placeholder: "اكتب تفاصيل احتياجات التوظيف..." }] },
+      { type: "checklist", title: "🔑 قرارات مطلوبة", subtitle: "", has_note: false, note_label: "", placeholder: "اكتب القرار المطلوب...", status_options: ["عاجل", "هذا الأسبوع", "الأسبوع القادم"], items: [{ text: "", status: "" }] },
     ]
   },
-
-  // ============ 7. تقرير Social Pod 1 ============
+  // ============ 🟦 تقرير Social Pod 1 ============
   {
-    name: '🟦 تقرير Social Pod 1',
-    description: 'بسنت · سمر · محمد إبراهيم · أحمد صبحي',
-    visual_theme: 'colorful',
-    icon: '🟦',
+    name: "🟦 تقرير Social Pod 1",
+    description: "بسنت · سمر · محمد إبراهيم · أحمد صبحي",
+    visual_theme: "standard",
+    icon: "🟦",
     sections: [
-      { type: 'scorecard', title: '📊 Scorecard الأسبوع', description: 'تقييم الالتزام والمخرجات', items: [
-        { label: 'التقرير مكتمل ومرسل؟', mode: 'yesno', value: '' },
-        { label: 'تم تسليم كل الـ Deliverables؟', mode: 'yesno', value: '' },
-        { label: 'حالة الفريق', mode: 'traffic', value: '' },
-      ]},
-      { type: 'checklist', title: '📋 حالة المشاريع', description: 'كل مشروع هذا الأسبوع',
-        status_options: ['🟢 على المسار', '🟡 تأخير بسيط', '🔴 خطر'],
-        items: [{ text: '', status: '' }]
-      },
-      { type: 'text', title: '⚠️ المهام المتأخرة والمشاكل', description: '', content: '' },
-      { type: 'metrics', title: '📈 أداء المحتوى', description: '', items: [
-        { label: 'عدد المنشورات', value: '', unit: '' },
-        { label: 'متوسط Engagement', value: '', unit: '%' },
-        { label: 'عدد المتابعين الجدد', value: '', unit: '' },
-      ]},
-      { type: 'checklist', title: '🔑 قرارات مطلوبة', description: '',
-        status_options: ['عاجل', 'هذا الأسبوع', 'الأسبوع القادم'],
-        items: [{ text: '', status: '' }]
-      },
+      { type: "scorecard", title: "📊 Scorecard الأسبوع", subtitle: "تقييم الالتزام والمخرجات", has_note: false, note_label: "", items: [{ label: "التقرير مكتمل ومرسل؟", mode: "yesno", value: "" }, { label: "تم تحقيق المخرجات؟", mode: "yesno", value: "" }, { label: "حالة الفريق", mode: "traffic", value: "" }] },
+      { type: "checklist", title: "📁 حالة المشاريع", subtitle: "كل مشروع هذا الأسبوع", has_note: false, note_label: "", placeholder: "اسم المشروع / العميل — ما تم تسليمه", status_options: ["🟢 في الموعد", "🟡 متأخر قليلاً", "🔴 متأخر / مشكلة"], items: [{ text: "", status: "" }, { text: "", status: "" }] },
+      { type: "metrics", title: "⚠️ المهام المتأخرة والمشاكل", subtitle: "", has_note: false, note_label: "", items: [{ label: "مهام اكتملت", value: "", unit: "" }, { label: "مهام متأخرة", value: "", unit: "" }, { label: "مشاريع معرضة للخطر", value: "", unit: "" }] },
+      { type: "text", title: "⚠️ تفاصيل التأخير والجودة", subtitle: "", has_note: false, note_label: "", blocks: [{ heading: "أسباب التأخير", placeholder: "اكتب أسباب التأخير إن وجدت..." }, { heading: "ملاحظات جودة التنفيذ (عينة)", placeholder: "اكتب عينة من ملاحظات الجودة هذا الأسبوع..." }, { heading: "مشاكل العملاء", placeholder: "هل يوجد عملاء غير راضين أو شكاوى؟" }] },
+      { type: "checklist", title: "🔑 قرارات مطلوبة", subtitle: "", has_note: false, note_label: "", placeholder: "اكتب القرار المطلوب...", status_options: ["عاجل", "هذا الأسبوع", "الأسبوع القادم"], items: [{ text: "", status: "" }] },
     ]
   },
-
-  // ============ 8. تقرير Social Pod 2 ============
+  // ============ 🟩 تقرير Social Pod 2 ============
   {
-    name: '🟩 تقرير Social Pod 2',
-    description: 'أميرة · إسراء · ندى · أحمد عاطف',
-    visual_theme: 'colorful',
-    icon: '🟩',
+    name: "🟩 تقرير Social Pod 2",
+    description: "أميرة · إسراء · ندى · أحمد عاطف",
+    visual_theme: "standard",
+    icon: "🟩",
     sections: [
-      { type: 'scorecard', title: '📊 Scorecard الأسبوع', description: 'تقييم الالتزام والمخرجات', items: [
-        { label: 'التقرير مكتمل ومرسل؟', mode: 'yesno', value: '' },
-        { label: 'تم تسليم كل الـ Deliverables؟', mode: 'yesno', value: '' },
-        { label: 'حالة الفريق', mode: 'traffic', value: '' },
-      ]},
-      { type: 'checklist', title: '📋 حالة المشاريع', description: 'كل مشروع هذا الأسبوع',
-        status_options: ['🟢 على المسار', '🟡 تأخير بسيط', '🔴 خطر'],
-        items: [{ text: '', status: '' }]
-      },
-      { type: 'text', title: '⚠️ المهام المتأخرة والمشاكل', description: '', content: '' },
-      { type: 'metrics', title: '📈 أداء المحتوى', description: '', items: [
-        { label: 'عدد المنشورات', value: '', unit: '' },
-        { label: 'متوسط Engagement', value: '', unit: '%' },
-        { label: 'عدد المتابعين الجدد', value: '', unit: '' },
-      ]},
-      { type: 'checklist', title: '🔑 قرارات مطلوبة', description: '',
-        status_options: ['عاجل', 'هذا الأسبوع', 'الأسبوع القادم'],
-        items: [{ text: '', status: '' }]
-      },
+      { type: "scorecard", title: "📊 Scorecard الأسبوع", subtitle: "تقييم الالتزام والمخرجات", has_note: false, note_label: "", items: [{ label: "التقرير مكتمل ومرسل؟", mode: "yesno", value: "" }, { label: "تم تحقيق المخرجات؟", mode: "yesno", value: "" }, { label: "حالة الفريق", mode: "traffic", value: "" }] },
+      { type: "checklist", title: "📁 حالة المشاريع", subtitle: "كل مشروع هذا الأسبوع", has_note: false, note_label: "", placeholder: "اسم المشروع / العميل — ما تم تسليمه", status_options: ["🟢 في الموعد", "🟡 متأخر قليلاً", "🔴 متأخر / مشكلة"], items: [{ text: "", status: "" }, { text: "", status: "" }] },
+      { type: "metrics", title: "⚠️ المهام المتأخرة والمشاكل", subtitle: "", has_note: false, note_label: "", items: [{ label: "مهام اكتملت", value: "", unit: "" }, { label: "مهام متأخرة", value: "", unit: "" }, { label: "مشاريع معرضة للخطر", value: "", unit: "" }] },
+      { type: "text", title: "⚠️ تفاصيل التأخير والجودة", subtitle: "", has_note: false, note_label: "", blocks: [{ heading: "أسباب التأخير", placeholder: "اكتب أسباب التأخير إن وجدت..." }, { heading: "ملاحظات جودة التنفيذ (عينة)", placeholder: "اكتب عينة من ملاحظات الجودة هذا الأسبوع..." }, { heading: "مشاكل العملاء", placeholder: "هل يوجد عملاء غير راضين أو شكاوى؟" }] },
+      { type: "checklist", title: "🔑 قرارات مطلوبة", subtitle: "", has_note: false, note_label: "", placeholder: "اكتب القرار المطلوب...", status_options: ["عاجل", "هذا الأسبوع", "الأسبوع القادم"], items: [{ text: "", status: "" }] },
     ]
   },
-
-  // ============ 9. تقرير SEO Team ============
+  // ============ 🔍 تقرير SEO Team ============
   {
-    name: '🔍 تقرير SEO Team',
-    description: 'شيماء · نور · عبد الرحمن',
-    visual_theme: 'analytics',
-    icon: '🔍',
+    name: "🔍 تقرير SEO Team",
+    description: "شيماء · نور · عبد الرحمن",
+    visual_theme: "analytics",
+    icon: "🔍",
     sections: [
-      { type: 'scorecard', title: '📊 Scorecard الأسبوع', description: 'تقييم الالتزام والمخرجات', items: [
-        { label: 'التقرير مكتمل ومرسل؟', mode: 'yesno', value: '' },
-        { label: 'تم تحقيق أهداف الأسبوع؟', mode: 'yesno', value: '' },
-        { label: 'حالة الـ Rankings', mode: 'traffic', value: '' },
-      ]},
-      { type: 'metrics', title: '📊 مؤشرات الأداء العامة', description: '', items: [
-        { label: 'Organic Traffic', value: '', unit: 'زائر' },
-        { label: 'متوسط Position', value: '', unit: '' },
-        { label: 'Click-Through Rate', value: '', unit: '%' },
-        { label: 'Backlinks جديدة', value: '', unit: '' },
-      ]},
-      { type: 'table', title: '🎯 أداء الكلمات المفتاحية', description: '',
-        headers: ['الكلمة', 'الترتيب الحالي', 'الترتيب السابق', 'التغيير'],
-        rows: [['', '', '', '']]
-      },
-      { type: 'text', title: '📝 المحتوى المنشور', description: '', content: '' },
-      { type: 'checklist', title: '🔑 قرارات مطلوبة', description: '',
-        status_options: ['عاجل', 'هذا الأسبوع', 'الأسبوع القادم'],
-        items: [{ text: '', status: '' }]
-      },
+      { type: "scorecard", title: "📊 Scorecard الأسبوع", subtitle: "تقييم الالتزام والمخرجات", has_note: false, note_label: "", items: [{ label: "التقرير مكتمل ومرسل؟", mode: "yesno", value: "" }, { label: "تم تحقيق المخرجات؟", mode: "yesno", value: "" }, { label: "حالة الفريق", mode: "traffic", value: "" }] },
+      { type: "metrics", title: "📈 أداء الكلمات المفتاحية", subtitle: "", has_note: false, note_label: "", items: [{ label: "كلمات تحسّنت", value: "", unit: "" }, { label: "كلمات تراجعت", value: "", unit: "" }, { label: "Organic Traffic", value: "", unit: "" }, { label: "صفحات مُفهرسة", value: "", unit: "" }, { label: "مقالات/صفحات نُفّذت", value: "", unit: "" }, { label: "مشاكل تقنية مفتوحة", value: "", unit: "" }] },
+      { type: "text", title: "📈 تحليل التحسينات والفرص", subtitle: "", has_note: false, note_label: "", blocks: [{ heading: "أبرز التحسينات هذا الأسبوع", placeholder: "اكتب ما تم تحسينه..." }, { heading: "المشاكل التقنية المفتوحة", placeholder: "اكتب المشاكل التقنية التي تحتاج معالجة..." }, { heading: "فرص النمو المقترحة", placeholder: "اكتب فرص المحتوى أو التحسين للأسبوع القادم..." }, { heading: "احتياجات من Web Team أو Content", placeholder: "ما تحتاجه من فرق أخرى..." }] },
+      { type: "checklist", title: "🔑 قرارات مطلوبة", subtitle: "", has_note: false, note_label: "", placeholder: "اكتب القرار المطلوب...", status_options: ["عاجل", "هذا الأسبوع", "الأسبوع القادم"], items: [{ text: "", status: "" }] },
     ]
   },
-
-  // ============ 10. تقرير Web Team ============
+  // ============ 💻 تقرير Web Team ============
   {
-    name: '💻 تقرير Web Team',
-    description: 'أمير · أحمد نصار',
-    visual_theme: 'compact',
-    icon: '💻',
+    name: "💻 تقرير Web Team",
+    description: "أمير · أحمد نصار",
+    visual_theme: "standard",
+    icon: "💻",
     sections: [
-      { type: 'scorecard', title: '📊 Scorecard الأسبوع', description: 'تقييم الالتزام والمخرجات', items: [
-        { label: 'التقرير مكتمل ومرسل؟', mode: 'yesno', value: '' },
-        { label: 'كل المهام تم تسليمها؟', mode: 'yesno', value: '' },
-        { label: 'حالة الموقع', mode: 'traffic', value: '' },
-      ]},
-      { type: 'checklist', title: '🚀 حالة مشاريع الويب', description: '',
-        status_options: ['🟢 منجز', '🟡 قيد العمل', '🔴 متأخر'],
-        items: [{ text: '', status: '' }]
-      },
-      { type: 'text', title: '🐛 المشاكل التقنية والدعم', description: '', content: '' },
-      { type: 'metrics', title: '⚡ أداء الموقع', description: '', items: [
-        { label: 'Page Speed', value: '', unit: '/100' },
-        { label: 'Uptime', value: '', unit: '%' },
-        { label: 'Bug Tickets مفتوحة', value: '', unit: '' },
-      ]},
-      { type: 'checklist', title: '🔑 قرارات مطلوبة', description: '',
-        status_options: ['عاجل', 'هذا الأسبوع', 'الأسبوع القادم'],
-        items: [{ text: '', status: '' }]
-      },
+      { type: "scorecard", title: "📊 Scorecard الأسبوع", subtitle: "تقييم الالتزام والمخرجات", has_note: false, note_label: "", items: [{ label: "التقرير مكتمل ومرسل؟", mode: "yesno", value: "" }, { label: "تم تحقيق المخرجات؟", mode: "yesno", value: "" }, { label: "حالة الفريق", mode: "traffic", value: "" }] },
+      { type: "checklist", title: "🌐 حالة مشاريع الويب", subtitle: "", has_note: false, note_label: "", placeholder: "اسم المشروع / العميل — نسبة الإنجاز", status_options: ["🟢 في الموعد", "🟡 تحتاج متابعة", "🔴 متأخر / مشكلة"], items: [{ text: "", status: "" }] },
+      { type: "metrics", title: "⚙️ المشاكل التقنية والدعم", subtitle: "", has_note: false, note_label: "", items: [{ label: "مشاكل تم حلها", value: "", unit: "" }, { label: "مشاكل مفتوحة", value: "", unit: "" }, { label: "مواقع تحتاج تدخل", value: "", unit: "" }] },
+      { type: "text", title: "⚙️ تفاصيل الدعم والتتبع", subtitle: "", has_note: false, note_label: "", blocks: [{ heading: "تفاصيل المشاكل المفتوحة", placeholder: "اكتب تفاصيل المشاكل التقنية المفتوحة..." }, { heading: "مدى جاهزية التتبع والتحويل للمواقع", placeholder: "هل التتبع مُركّب وشغال على كل المواقع؟" }] },
+      { type: "checklist", title: "🔑 قرارات مطلوبة", subtitle: "", has_note: false, note_label: "", placeholder: "اكتب القرار المطلوب...", status_options: ["عاجل", "هذا الأسبوع", "الأسبوع القادم"], items: [{ text: "", status: "" }] },
     ]
   },
-
-  // ============ 11. Weekly CEO Control Report ============
+  // ============ 📊 تقرير النمو والإيرادات — أحمد عبدالرؤوف ============
   {
-    name: '👑 Weekly CEO Control Report',
-    description: 'فاطمة — Admin Assistant / CEO Control Support',
-    visual_theme: 'executive',
-    icon: '👑',
+    name: "📊 تقرير النمو والإيرادات — أحمد عبدالرؤوف",
+    description: "أحمد عبدالرؤوف — Growth & Revenue Director",
+    visual_theme: "executive",
+    icon: "📊",
     sections: [
-      { type: 'metrics', title: '📊 الصورة العامة لهذا الأسبوع', description: 'لمحة سريعة - أبرز أرقام الأسبوع دفعة واحدة', items: [
-        { label: 'إجمالي الإيرادات', value: '', unit: 'جنيه' },
-        { label: 'صافي الربح', value: '', unit: 'جنيه' },
-        { label: 'عدد العملاء النشطين', value: '', unit: '' },
-        { label: 'معدل تحقيق التارجت', value: '', unit: '%' },
-      ]},
-      { type: 'text', title: '💼 ملخص الإيرادات والنمو', description: 'من أحمد عبدالرؤوف', content: '' },
-      { type: 'text', title: '⚙️ ملخص التنفيذ والجودة', description: 'حالة فرق التنفيذ', content: '' },
-      { type: 'text', title: '🤝 ملخص العملاء', description: 'من سماح — Account Management', content: '' },
-      { type: 'text', title: '📈 ملخص التسويق والأداء', description: 'من محمود القوصي', content: '' },
-      { type: 'text', title: '💰 ملخص المالية', description: 'من محمد عبد الله ويوسف', content: '' },
-      { type: 'text', title: '👤 ملخص HR', description: 'من محسن', content: '' },
-      { type: 'checklist', title: '🔑 القرارات المطلوبة من إبراهيم', description: 'تجميع كل القرارات المطلوبة من الإدارة هذا الأسبوع',
-        status_options: ['عاجل', 'هذا الأسبوع', 'الأسبوع القادم'],
-        items: [{ text: '', status: '' }]
-      },
+      { type: "text", title: "⚡ الملخص التنفيذي — 4 نقاط فقط", subtitle: "", has_note: false, note_label: "", blocks: [{ heading: "أهم إنجاز هذا الأسبوع", placeholder: "اكتب أهم إنجاز في الإيراد أو النمو..." }, { heading: "أكبر خطر أو فجوة", placeholder: "اكتب أكبر خطر على الإيراد هذا الأسبوع..." }, { heading: "خطة سد الفجوة", placeholder: "ماذا ستفعل لسد فجوة التارجت؟" }, { heading: "أهم قرار مطلوب من إبراهيم", placeholder: "القرار الواحد الأهم المطلوب من إبراهيم..." }] },
+      { type: "metrics", title: "💰 مؤشرات الإيراد الأساسية", subtitle: "الأرقام الأهم لهذا الأسبوع", has_note: false, note_label: "", items: [{ label: "الإيراد المحقق", value: "", unit: "" }, { label: "التارجت الشهري", value: "", unit: "" }, { label: "الإيراد المتوقع", value: "", unit: "" }, { label: "الفجوة من التارجت", value: "", unit: "" }, { label: "Pipeline Value", value: "", unit: "" }, { label: "نسبة تحقيق التارجت", value: "", unit: "%" }] },
+      { type: "metrics", title: "📞 ملخص المبيعات", subtitle: "من محمد عبدالقوي — Sales Manager", has_note: false, note_label: "", items: [{ label: "مبيعات B2C", value: "", unit: "ر.س" }, { label: "مبيعات B2B", value: "", unit: "ر.س" }, { label: "إجمالي التسجيلات", value: "", unit: "" }, { label: "Conversion Rate", value: "", unit: "%" }, { label: "عدد الليدز", value: "", unit: "" }, { label: "فرص إغلاق قريبة", value: "", unit: "" }] },
+      { type: "text", title: "📞 ملخص المبيعات — ملاحظات", subtitle: "من محمد عبدالقوي — Sales Manager", has_note: false, note_label: "", blocks: [{ heading: "أهم مشكلة في المبيعات هذا الأسبوع", placeholder: "اكتب أبرز عائق أمام المبيعات..." }, { heading: "أسباب عدم الإغلاق", placeholder: "لماذا لم تُغلق بعض الفرص؟" }] },
+      { type: "metrics", title: "🎯 جودة الليدز والحملات", subtitle: "من محمود القوصي — Growth & Performance", has_note: false, note_label: "", items: [{ label: "جودة الليدز (1-10)", value: "", unit: "" }, { label: "CPL متوسط", value: "", unit: "ر.س" }, { label: "الإنفاق الإعلاني", value: "", unit: "ر.س" }] },
+      { type: "status", title: "🎯 هل الليدز مناسبة للتحويل؟", subtitle: "من محمود القوصي — Growth & Performance", has_note: false, note_label: "", options: [{ value: "green", label: "✅ نعم مناسبة" }, { value: "yellow", label: "🟡 جزئياً" }, { value: "red", label: "❌ تحتاج تحسين" }], value: "", note: "" },
+      { type: "text", title: "🎯 ملاحظات جودة الليدز", subtitle: "من محمود القوصي — Growth & Performance", has_note: false, note_label: "", blocks: [{ heading: "ملاحظات على جودة الليدز", placeholder: "هل العملاء فاهمين العرض؟ هل عندهم قدرة شرائية؟ هل المصدر مؤثر؟" }, { heading: "توصيات لتحسين الاستهداف أو الرسالة", placeholder: "اكتب توصياتك لمحمود وأحمد عبدالفتاح..." }] },
+      { type: "table", title: "🔥 فرص الإغلاق الأسبوع القادم", subtitle: "الفرص المتوقع إغلاقها خلال 7 أيام", has_note: false, note_label: "", headers: ["اسم العميل / الفرصة", "النوع", "القيمة", "احتمالية الإغلاق", "المطلوب لإغلاقها", "المسؤول"], rows: [["", "", "", "", "", ""]] },
+      { type: "text", title: "💡 مقترحات النمو هذا الأسبوع", subtitle: "عروض / منتجات / شراكات / إيفنتات", has_note: false, note_label: "", blocks: [{ heading: "مقترحات عروض أو منتجات جديدة", placeholder: "اكتب أي فكرة لمنتج أو عرض يمكن أن يضيف إيراداً..." }, { heading: "فرص شراكات أو إيفنتات", placeholder: "اكتب أي فرصة شراكة أو إيفنت تستحق المتابعة..." }, { heading: "متابعة التحصيل المرتبط بالإيراد", placeholder: "هل يوجد إيراد مسجل لم يُحصَّل بعد؟ ما المطلوب؟" }] },
+      { type: "text", title: "🚨 مخاطر تحتاج انتباه إبراهيم", subtitle: "Red Flags هذا الأسبوع", has_note: false, note_label: "", blocks: [{ heading: "الخطر", placeholder: "اكتب الخطر..." }, { heading: "السبب", placeholder: "لماذا حدث هذا؟" }, { heading: "الأثر المتوقع", placeholder: "ماذا سيحدث لو لم نتدخل؟" }, { heading: "الإجراء المقترح", placeholder: "ما القرار المطلوب؟" }] },
+      { type: "table", title: "🔑 ملخص القرارات المطلوبة", subtitle: "قرارات تحتاج موافقة أو توجيه من إبراهيم — بحد أقصى 5", has_note: false, note_label: "", headers: ["القرار المطلوب", "لماذا مطلوب الآن؟", "أثر التأخير", "المسؤول بعد القرار", "الموعد النهائي", "الأولوية", "الحالة"], rows: [["", "", "", "", "", "", ""]] },
+      { type: "table", title: "🔄 متابعة قرارات الأسبوع السابق", subtitle: "هل تم تنفيذ ما اتُّفق عليه؟", has_note: false, note_label: "", headers: ["القرار السابق", "المسؤول", "ما تم", "ما لم يتم", "سبب التأخير", "الإجراء التالي", "الحالة"], rows: [["", "", "", "", "", "", ""]] },
     ]
   },
-
-  // ============ 12. تقرير النمو والإيرادات (أحمد عبدالرؤوف) ============
+  // ============ 📞 تقرير خالد الأسبوعي — B2C Sales Team Leader ============
   {
-    name: '📊 Growth & Revenue Weekly Report',
-    description: 'أحمد عبدالرؤوف — Growth & Revenue Director',
-    visual_theme: 'executive',
-    icon: '📊',
+    name: "📞 تقرير خالد الأسبوعي — B2C Sales Team Leader",
+    description: "B2C Sales Team Leader — متابعة أداء فريق المبيعات",
+    visual_theme: "executive",
+    icon: "📞",
     sections: [
-      { type: 'metrics', title: '💎 مؤشرات الإيراد الأساسية', description: 'الأرقام الأهم لهذا الأسبوع', items: [
-        { label: 'الإيرادات هذا الأسبوع', value: '', unit: 'جنيه' },
-        { label: 'الإيرادات الأسبوع السابق', value: '', unit: 'جنيه' },
-        { label: 'نسبة النمو', value: '', unit: '%' },
-        { label: 'متوسط حجم الصفقة', value: '', unit: 'جنيه' },
-      ]},
-      { type: 'text', title: '💼 ملخص المبيعات', description: 'من محمد عبدالقوي — Sales Manager', content: '' },
-      { type: 'text', title: '🎯 جودة الليدز والحملات', description: 'من محمود القوصي — Growth & Performance', content: '' },
-      { type: 'text', title: '🔮 فرص الإغلاق الأسبوع القادم', description: 'الفرص المتوقع إغلاقها خلال 7 أيام', content: '' },
-      { type: 'text', title: '💡 مقترحات النمو هذا الأسبوع', description: 'عروض / منتجات / شراكات / إيفنتات', content: '' },
-      { type: 'text', title: '🚨 مخاطر تحتاج انتباه إبراهيم', description: 'Red Flags هذا الأسبوع', content: '' },
-      { type: 'checklist', title: '⚡ ملخص القرارات المطلوبة', description: '',
-        status_options: ['عاجل', 'هذا الأسبوع', 'الأسبوع القادم'],
-        items: [{ text: '', status: '' }]
-      },
+      { type: "table", title: "👥 أداء الفريق الفردي", subtitle: "", has_note: false, note_label: "", headers: ["الاسم", "ليدز مستلمة", "مكالمات", "متابعات", "تسجيلات", "% التحويل", "جودة المحادثات", "الالتزام بالسكريبت", "الحالة العامة"], rows: [["", "", "", "", "", "", "", "", ""]] },
+      { type: "metrics", title: "📊 مؤشرات الفريق الكلية", subtitle: "", has_note: false, note_label: "", items: [{ label: "إجمالي الليدز المستلمة", value: "", unit: "" }, { label: "إجمالي المكالمات", value: "", unit: "" }, { label: "إجمالي المتابعات", value: "", unit: "" }, { label: "إجمالي التسجيلات", value: "", unit: "" }, { label: "% التحويل", value: "", unit: "" }, { label: "متوسط سرعة الرد", value: "", unit: "" }] },
+      { type: "text", title: "❌ أسباب عدم الشراء", subtitle: "", has_note: false, note_label: "", blocks: [{ heading: "🔍 أكثر أسباب رفض الشراء هذا الأسبوع", placeholder: "مثال: السعر مرتفع، الوقت غير مناسب، يريد التفكير، لم يقتنع بالمحتوى…" }] },
+      { type: "table", title: "💬 الاعتراضات الأكثر تكراراً", subtitle: "", has_note: false, note_label: "", headers: ["نص الاعتراض", "التكرار", "الرد المقترح"], rows: [["", "", ""]] },
+      { type: "text", title: "🎯 جودة المحادثات والسكريبت", subtitle: "", has_note: false, note_label: "", blocks: [{ heading: "✅ أفضل محادثة هذا الأسبوع", placeholder: "من كان المندوب؟ ماذا فعل صح؟ ما النتيجة؟" }, { heading: "⚠️ أضعف محادثة أو موقف", placeholder: "ما المشكلة؟ كيف كان يجب أن يتصرف؟" }, { heading: "📋 مدى التزام الفريق بالسكريبت", placeholder: "هل الفريق ملتزم بالسكريبت؟ من يحتاج تدريب؟ ما النقاط الأكثر انحرافاً؟" }] },
+      { type: "text", title: "🏆 تقييم الفريق", subtitle: "", has_note: false, note_label: "", blocks: [{ heading: "🥇 الأفضل أداءً هذا الأسبوع — السبب", placeholder: "لماذا تميّز؟" }, { heading: "🔴 يحتاج دعم وتطوير — خطة الدعم", placeholder: "ما الخطوات المقررة لتحسين أدائه؟" }] },
+      { type: "metrics", title: "📅 خطة الأسبوع القادم — التارجت", subtitle: "🎯 التارجت المستهدف للأسبوع القادم", has_note: false, note_label: "", items: [{ label: "تسجيلات مستهدفة", value: "", unit: "" }, { label: "مكالمات مستهدفة", value: "", unit: "" }, { label: "% تحويل مستهدف", value: "", unit: "" }] },
+      { type: "text", title: "📅 خطة الأسبوع القادم — خطوات التحسين", subtitle: "", has_note: false, note_label: "", blocks: [{ heading: "📋 خطوات التحسين المقررة", placeholder: "ما الذي ستغيّره أو تحسّنه الأسبوع القادم على مستوى الفريق أو السكريبت؟" }] },
+      { type: "text", title: "📢 ملاحظات للإدارة", subtitle: "", has_note: false, note_label: "", blocks: [{ heading: "💬 قرارات أو دعم تحتاجه من محمد عبدالقوي", placeholder: "هل تحتاج سكريبت جديد؟ تدريب؟ تعديل على توزيع الليدز؟ أي قرار يحتاجه الفريق؟" }] },
     ]
   },
-
-  // ============ 13. تقرير نرمين - Planning & Quality ============
+  // ============ 🔍 تقرير نرمين الأسبوعي — Planning & Quality Governance ============
   {
-    name: '📝 تقرير نرمين الأسبوعي',
-    description: 'نرمين — Planning & Quality Governance',
-    visual_theme: 'analytics',
-    icon: '📝',
+    name: "🔍 تقرير نرمين الأسبوعي — Planning & Quality Governance",
+    description: "Planning & Quality Governance — مسار التنفيذ والجودة",
+    visual_theme: "standard",
+    icon: "🔍",
     sections: [
-      { type: 'metrics', title: '📅 معلومات الأسبوع', description: 'مطلوب', items: [
-        { label: 'رقم الأسبوع', value: '', unit: '' },
-        { label: 'عدد المشاريع المتابَعة', value: '', unit: '' },
-        { label: 'عدد الأفراد المتابَعين', value: '', unit: '' },
-      ]},
-      { type: 'metrics', title: '📊 مؤشرات الجودة والأداء', description: 'مطلوب', items: [
-        { label: 'متوسط جودة التسليمات', value: '', unit: '/10' },
-        { label: 'نسبة المشاريع في الموعد', value: '', unit: '%' },
-        { label: 'عدد المراجعات هذا الأسبوع', value: '', unit: '' },
-        { label: 'معدل الالتزام بالـ SOPs', value: '', unit: '%' },
-      ]},
-      { type: 'checklist', title: '🗂️ حالة المشاريع', description: 'مطلوب — كل مشروع وحالته',
-        status_options: ['🟢 على المسار', '🟡 تأخير بسيط', '🔴 خطر', '✅ مكتمل'],
-        items: [{ text: '', status: '' }]
-      },
-      { type: 'text', title: '🎯 التخطيط', description: 'مطلوب — خطة الأسبوع القادم وأولوياته', content: '' },
-      { type: 'text', title: '🔍 الجودة', description: 'مطلوب — ملاحظات على جودة العمل', content: '' },
-      { type: 'text', title: '🚨 المخاطر', description: 'اختياري — المخاطر المفتوحة', content: '' },
-      { type: 'checklist', title: '⚡ القرارات المطلوبة من الإدارة', description: 'اختياري',
-        status_options: ['عاجل', 'هذا الأسبوع', 'الأسبوع القادم'],
-        items: [{ text: '', status: '' }]
-      },
-      { type: 'text', title: '💬 ملاحظات ختامية', description: '', content: '' },
+      { type: "metrics", title: "📊 مؤشرات الجودة والأداء", subtitle: "", has_note: false, note_label: "", items: [{ label: "% الالتزام بالخطة", value: "", unit: "" }, { label: "عدد المشاريع الحمراء", value: "", unit: "" }, { label: "جودة المخرجات", value: "", unit: "" }, { label: "سرعة رصد المشاكل", value: "", unit: "" }, { label: "رضا العملاء", value: "", unit: "" }, { label: "مهام مسلّمة في موعدها", value: "", unit: "" }] },
+      { type: "table", title: "🗂️ حالة المشاريع", subtitle: "", has_note: false, note_label: "", headers: ["اسم المشروع / العميل", "الفريق المسؤول", "% الإنجاز", "الحالة", "الملاحظة"], rows: [["", "", "", "", ""]] },
+      { type: "text", title: "🎯 التخطيط", subtitle: "", has_note: false, note_label: "", blocks: [{ heading: "📌 ما تم تخطيطه هذا الأسبوع", placeholder: "اكتبي الخطط والمبادرات التي وُضعت هذا الأسبوع…" }, { heading: "📅 خطة الأسبوع القادم", placeholder: "ما الخطط والمبادرات المقررة للأسبوع القادم؟" }, { heading: "🔄 تحديثات على معايير الجودة", placeholder: "هل تم تعديل أي معيار جودة؟ إضافة معيار جديد؟ تغيير في التوقعات؟" }] },
+      { type: "text", title: "🔍 الجودة", subtitle: "", has_note: false, note_label: "", blocks: [{ heading: "✅ أفضل مخرجات الأسبوع جودةً", placeholder: "أكثر 2-3 مخرجات أعجبتك في الأسبوع هذا من ناحية الجودة…" }, { heading: "⚠️ مخرجات بحاجة لتحسين", placeholder: "مخرجات لم ترقَ للمستوى المطلوب وماذا تقترحين لتحسينها…" }, { heading: "🔁 أنماط متكررة في مشاكل الجودة", placeholder: "هل هناك مشكلة جودة تتكرر عبر فرق أو مشاريع متعددة؟" }] },
+      { type: "table", title: "🚨 المخاطر", subtitle: "", has_note: false, note_label: "", headers: ["وصف الخطر", "الجهة المعنية", "مستوى الخطورة"], rows: [["", "", ""]] },
+      { type: "text", title: "⚡ القرارات المطلوبة من الإدارة", subtitle: "", has_note: false, note_label: "", blocks: [{ heading: "📢 قرارات أو توجيهات تحتاجها من إبراهيم", placeholder: "ما القرارات أو التوجيهات التي تحتاجها من الإدارة هذا الأسبوع؟" }] },
+      { type: "text", title: "💬 ملاحظات ختامية", subtitle: "", has_note: false, note_label: "", blocks: [{ heading: "🗒️ أي ملاحظات أو تعليقات إضافية", placeholder: "أي شيء آخر تودي إيصاله لإبراهيم أو للفريق هذا الأسبوع…" }] },
+    ]
+  },
+  // ============ 📈 تقرير النمو والأداء التسويقي — أحمد عبدالفتاح ============
+  {
+    name: "📈 تقرير النمو والأداء التسويقي — أحمد عبدالفتاح",
+    description: "أحمد عبدالفتاح — Media Buyer",
+    visual_theme: "analytics",
+    icon: "📈",
+    sections: [
+      { type: "scorecard", title: "📊 Scorecard الأسبوع", subtitle: "تقييم الالتزام والمخرجات", has_note: false, note_label: "", items: [{ label: "التقرير مكتمل ومرسل؟", mode: "yesno", value: "" }, { label: "تم تحقيق المخرجات؟", mode: "yesno", value: "" }, { label: "حالة الفريق", mode: "traffic", value: "" }] },
+      { type: "metrics", title: "📈 أداء الحملات", subtitle: "نتائج هذا الأسبوع", has_note: false, note_label: "", items: [{ label: "CPL متوسط", value: "", unit: "ر.س" }, { label: "CPC متوسط", value: "", unit: "ر.س" }, { label: "CTR", value: "", unit: "%" }, { label: "إجمالي الليدز", value: "", unit: "" }, { label: "جودة الليدز (1-10)", value: "", unit: "" }, { label: "الإنفاق الإعلاني", value: "", unit: "ر.س" }] },
+      { type: "text", title: "💬 الرسائل والمحتوى", subtitle: "تقييم أداء الرسائل هذا الأسبوع", has_note: false, note_label: "", blocks: [{ heading: "أفضل رسالة / إعلان هذا الأسبوع", placeholder: "اكتب الرسالة الأفضل أداءً وسبب نجاحها..." }, { heading: "أضعف رسالة / إعلان هذا الأسبوع", placeholder: "اكتب الرسالة الأضعف أداءً وسبب ضعفها..." }, { heading: "ملاحظات على المحتوى والفانل", placeholder: "هل يوجد ضعف في الفانل؟ أين يتسرب الليد؟" }] },
+      { type: "text", title: "🧪 الاختبارات والتحسينات", subtitle: "هذا الأسبوع والأسبوع القادم", has_note: false, note_label: "", blocks: [{ heading: "الاختبارات التي تمت هذا الأسبوع", placeholder: "ما الذي اختبرناه؟ وما النتيجة؟" }, { heading: "الاختبارات المخطط لها الأسبوع القادم", placeholder: "ما الذي سنختبره الأسبوع القادم؟" }, { heading: "توصيات التحسين", placeholder: "اكتب توصياتك لتحسين الأداء..." }] },
+      { type: "checklist", title: "🔑 قرارات مطلوبة", subtitle: "ما تحتاجه من الإدارة هذا الأسبوع", has_note: false, note_label: "", placeholder: "اكتب القرار المطلوب...", status_options: ["عاجل", "هذا الأسبوع", "الأسبوع القادم"], items: [{ text: "", status: "" }] },
     ]
   },
 ];
 
 // ============ خريطة ربط الموظفين بالقوالب الجديدة ============
+// المفتاح = الإيميل، القيمة = اسم القالب الذي يستخدمه هذا الموظف
 const TEMPLATE_USER_MAP = {
-  'sales@reports.com':   '📋 تقرير المبيعات الأسبوعي',
-  'growth@reports.com':  '📈 تقرير النمو والأداء التسويقي',
-  'finance@reports.com': '💰 تقرير Finance & Accounting',
-  'hr@reports.com':      '👤 تقرير HR',
-  'academy@reports.com': '🏫 تقرير تشغيل الأكاديمية',
-  'account@reports.com': '🤝 تقرير Account Management',
-  'pod1@reports.com':    '🟦 تقرير Social Pod 1',
-  'pod2@reports.com':    '🟩 تقرير Social Pod 2',
-  'seo@reports.com':     '🔍 تقرير SEO Team',
-  'web@reports.com':     '💻 تقرير Web Team',
-  'fatima@reports.com':  '👑 Weekly CEO Control Report',
-  'ahmed@reports.com':   '📊 Growth & Revenue Weekly Report',
-  'narmin@reports.com':  '📝 تقرير نرمين الأسبوعي',
+  // Growth / Performance
+  'mahmoudelkousy93@gmail.com':          '📈 تقرير النمو والأداء التسويقي — محمود القوصي',
+  'growth@reports.com':                  '📈 تقرير النمو والأداء التسويقي — محمود القوصي',
+  'ahmedmuhamedabdelfattah2@gmail.com':  '📈 تقرير النمو والأداء التسويقي — أحمد عبدالفتاح',
+  // Revenue & Sales
+  'Ahraoufa@gmail.com':                  '📊 تقرير النمو والإيرادات — أحمد عبدالرؤوف',
+  'ahmed@reports.com':                   '📊 تقرير النمو والإيرادات — أحمد عبدالرؤوف',
+  'khalidmajdi1998@gmail.com':           '📞 تقرير خالد الأسبوعي — B2C Sales Team Leader',
+  'sales@reports.com':                   '📞 تقرير خالد الأسبوعي — B2C Sales Team Leader',
+  // CEO control
+  'foulamohamed111@gmail.com':           '📋 Weekly CEO Control Report — فاطمة',
+  'fatima@reports.com':                  '📋 Weekly CEO Control Report — فاطمة',
+  // Finance
+  'mohamedaboatwa2014@gmail.com':        '💰 تقرير Finance & Accounting — محمد عبد الله · يوسف',
+  'yousefgoh132@gmail.com':              '💰 تقرير Finance & Accounting — محمد عبد الله · يوسف',
+  'finance@reports.com':                 '💰 تقرير Finance & Accounting — محمد عبد الله · يوسف',
+  // HR
+  'Mmagdy2828@gmail.com':                '👤 تقرير HR — محسن',
+  'hr@reports.com':                      '👤 تقرير HR — محسن',
+  // Account Management
+  'Samahabouelmagd5@gmail.com':          '🤝 تقرير Account Management — سماح',
+  'account@reports.com':                 '🤝 تقرير Account Management — سماح',
+  // Academy
+  'Shirehanelkady@gmail.com':            '🏫 تقرير تشغيل الأكاديمية — شيري',
+  'academy@reports.com':                 '🏫 تقرير تشغيل الأكاديمية — شيري',
+  // SEO Team
+  'shaimaaeid4@gmail.com':               '🔍 تقرير SEO Team',
+  'wwwnoorragb2019@gmail.com':           '🔍 تقرير SEO Team',
+  'abdelrahmanhamdyseo@gmail.com':       '🔍 تقرير SEO Team',
+  'seo@reports.com':                     '🔍 تقرير SEO Team',
+  // Web Team
+  'amir.adel.mohamed.eid@gmail.com':     '💻 تقرير Web Team',
+  'Ahmed.neasser@gmail.com':             '💻 تقرير Web Team',
+  'web@reports.com':                     '💻 تقرير Web Team',
+  // Social Pod 1 (بسنت · محمد إبراهيم · أحمد صبحي)
+  'Basantmohamed40@gmail.com':           '🟦 تقرير Social Pod 1',
+  'mohamed.ibrahem.1610@gmail.com':      '🟦 تقرير Social Pod 1',
+  'a.sobhy1997@gmail.com':               '🟦 تقرير Social Pod 1',
+  'pod1@reports.com':                    '🟦 تقرير Social Pod 1',
+  // Social Pod 2 (أميرة · إسراء · ندى · أحمد عاطف)
+  'Amira.abdefattah1996@gmail.com':      '🟩 تقرير Social Pod 2',
+  'esraahosafy@gmail.com':               '🟩 تقرير Social Pod 2',
+  'nadak6094@gmail.com':                 '🟩 تقرير Social Pod 2',
+  'Ahmed.atef.motian@gmail.com':         '🟩 تقرير Social Pod 2',
+  'pod2@reports.com':                    '🟩 تقرير Social Pod 2',
+  // Planning & Quality
+  'narmin@reports.com':                  '🔍 تقرير نرمين الأسبوعي — Planning & Quality Governance',
 };
 
 // ── Migrations: ensure new fields exist on existing records ───────────────────
@@ -558,15 +408,18 @@ if (!existingTeams.length) {
   });
 }
 
-// Force re-seed templates لما TEMPLATES_VERSION يتغير (يحذف القوالب القديمة فقط)
+// Force re-seed templates لما TEMPLATES_VERSION يتغير (يحذف القوالب والتقارير القديمة)
 const storedTplVersion = db.get('_meta.templates_version').value();
 if (storedTplVersion !== TEMPLATES_VERSION) {
   // فك ارتباط الموظفين بأي قالب قديم قبل المسح
   db.get('users').filter({ role: 'employee' }).each(u => { u.template_id = null; }).write();
   db.set('templates', []).write();
   db.set('_nextId.templates', 1).write();
+  // مسح كل التقارير الموجودة وإعادة العداد للصفر
+  db.set('reports', []).write();
+  db.set('_nextId.reports', 1).write();
   db.set('_meta.templates_version', TEMPLATES_VERSION).write();
-  console.log('🔄 Templates version changed → wiping old templates, re-seeding fresh 13');
+  console.log('🔄 Templates version changed → wiped old templates + reports, re-seeding fresh');
 }
 
 for (const tpl of TEMPLATE_SEEDS) {
@@ -599,9 +452,12 @@ for (const [email, templateName] of Object.entries(TEMPLATE_USER_MAP)) {
 }
 
 // ── Middleware ────────────────────────────────────────────────────────────────
+// Trust the reverse proxy (cPanel/Passenger/Nginx) — must be first for req.protocol + secure cookies
+app.set('trust proxy', 1);
+
 // Force HTTPS redirect
 app.use((req, res, next) => {
-  if (req.header('x-forwarded-proto') !== 'https' && req.header('host')?.includes('marketingexperts.com.sa')) {
+  if (req.protocol !== 'https' && req.header('host')?.includes('marketingexperts.com.sa')) {
     return res.redirect(301, `https://${req.header('host')}${req.originalUrl}`);
   }
   next();
@@ -617,9 +473,6 @@ app.get('/favicon.ico', (req, res) => {
   if (fs.existsSync(icoPath)) return res.sendFile(icoPath);
   res.redirect(302, '/favicon.svg');
 });
-
-// Trust the reverse proxy (cPanel/Passenger/Nginx) — needed for secure cookies + req.ip
-app.set('trust proxy', 1);
 
 // Persistent session store via SQLite (auto-creates data/sessions.sqlite)
 let sessionStore;
@@ -778,6 +631,26 @@ app.delete('/api/admin/users/:id', requireAdmin, (req, res) => {
 
 // Helper: compute completion % by comparing report sections to the base template
 function computeCompletionPct(report, template) {
+  // Multi-project mode: average completion across all projects
+  if (Array.isArray(report.projects) && report.projects.length) {
+    const tmplSections = template && Array.isArray(template.sections) ? template.sections.filter(s => s && s.type) : [];
+    const projectPcts = report.projects.map(p => {
+      const projSections = (p.sections || []).filter(s => s && s.type);
+      if (!projSections.length) return 0;
+      if (tmplSections.length) {
+        let filled = 0;
+        tmplSections.forEach((ts, idx) => {
+          const rs = projSections.find(s => s.title === ts.title) || projSections[idx];
+          if (rs && sectionHasContent(rs)) filled++;
+        });
+        return Math.round((filled / tmplSections.length) * 100);
+      }
+      const filled = projSections.filter(s => sectionHasContent(s)).length;
+      return Math.round((filled / projSections.length) * 100);
+    });
+    if (!projectPcts.length) return 0;
+    return Math.round(projectPcts.reduce((a, b) => a + b, 0) / projectPcts.length);
+  }
   const reportSections = (report.sections || []).filter(s => s && s.type);
   const tmplSections = template && Array.isArray(template.sections) ? template.sections.filter(s => s && s.type) : [];
 
@@ -818,7 +691,11 @@ function computeCompletionPct(report, template) {
 function sectionHasContent(s) {
   if (!s || !s.type) return false;
   switch (s.type) {
-    case 'text':      return !!(s.content && String(s.content).trim());
+    case 'text':
+      if (Array.isArray(s.blocks) && s.blocks.length) {
+        return s.blocks.some(b => ((b && (b.heading || b.text)) || '').toString().trim());
+      }
+      return !!(s.content && String(s.content).trim());
     case 'list':      return Array.isArray(s.items) && s.items.some(i => (i && (i.text || i.content || '').toString().trim()));
     case 'metrics':   return Array.isArray(s.items) && s.items.some(i => i && i.value !== undefined && i.value !== null && String(i.value).trim() !== '');
     case 'scorecard': return Array.isArray(s.items) && s.items.some(i => i && (i.answer || i.value));
@@ -852,6 +729,9 @@ app.get('/api/admin/reports', requireAdmin, (req, res) => {
       }
       const tmpl = u && u.template_id ? allTemplates.find(t => t.id === u.template_id) : null;
       const completion_pct = computeCompletionPct(r, tmpl);
+      const commentsArr = Array.isArray(r.comments) ? r.comments : [];
+      // Count unread admin replies = comments from employees that admin hasn't seen
+      const unreadEmpComments = commentsArr.filter(c => c.by_role === 'employee' && !c.seen_by_admin).length;
       return {
         ...r,
         user_name: u?.name || '—',
@@ -860,7 +740,11 @@ app.get('/api/admin/reports', requireAdmin, (req, res) => {
         leader_name,
         completion_pct,
         is_team_report: !!r.is_team_report,
-        child_count: Array.isArray(r.child_reports) ? r.child_reports.length : 0
+        child_count: Array.isArray(r.child_reports) ? r.child_reports.length : 0,
+        is_multi_project: Array.isArray(r.projects) && r.projects.length > 0,
+        project_count: Array.isArray(r.projects) ? r.projects.length : 0,
+        comments_count: commentsArr.length,
+        unread_emp_comments: unreadEmpComments
       };
     })
     .sort((a, b) => b.submitted_at.localeCompare(a.submitted_at));
@@ -914,7 +798,7 @@ app.get('/api/admin/reports/:id', requireAdmin, (req, res) => {
 
 app.put('/api/admin/reports/:id', requireAdmin, (req, res) => {
   const id = parseInt(req.params.id);
-  const { title, week, sections, content } = req.body;
+  const { title, week, sections, content, projects } = req.body;
 
   const report = db.get('reports').find({ id }).value();
   if (!report) return res.status(404).json({ error: 'التقرير مش موجود' });
@@ -922,6 +806,7 @@ app.put('/api/admin/reports/:id', requireAdmin, (req, res) => {
   // احفظ النسخة القديمة في versions (max 5)
   const oldVersion = {
     sections: report.sections || [],
+    projects: report.projects || [],
     title: report.title,
     week: report.week,
     saved_at: new Date().toISOString(),
@@ -939,6 +824,7 @@ app.put('/api/admin/reports/:id', requireAdmin, (req, res) => {
     last_edited_at: new Date().toISOString(),
     versions
   };
+  if (Array.isArray(projects)) update.projects = projects;
 
   if (content) {
     const dir = path.join(__dirname, '../public/reports/submitted');
@@ -991,20 +877,83 @@ app.post('/api/admin/reports/:id/restore/:versionIdx', requireAdmin, (req, res) 
 });
 
 // ── Inline Comments (Dev 3) ───────────────────────────────────────────────────
+// Unified comment endpoint — both admin and employee (the report owner) can post
+app.post('/api/reports/:id/comment', requireLogin, (req, res) => {
+  const id = parseInt(req.params.id);
+  const { section_idx, text, parent_id } = req.body;
+  if (!text || !text.trim()) return res.status(400).json({ error: 'النص فاضي' });
+
+  const report = db.get('reports').find({ id }).value();
+  if (!report) return res.status(404).json({ error: 'مش موجود' });
+
+  // Authorization: admin can comment on any; employee only on their own
+  if (req.session.user.role !== 'admin' && report.user_id !== req.session.user.id) {
+    return res.status(403).json({ error: 'غير مسموح' });
+  }
+
+  const comments = report.comments || [];
+  let normalizedIdx = null;
+  if (section_idx != null && section_idx !== '') {
+    if (typeof section_idx === 'number') normalizedIdx = section_idx;
+    else if (typeof section_idx === 'string' && /^\d+$/.test(section_idx)) normalizedIdx = parseInt(section_idx);
+    else normalizedIdx = section_idx;
+  }
+  const comment = {
+    id: Date.now(),
+    section_idx: normalizedIdx,
+    text: text.trim(),
+    by: req.session.user.name,
+    by_role: req.session.user.role,
+    parent_id: parent_id ? parseInt(parent_id) : null,
+    created_at: new Date().toISOString(),
+    seen: false
+  };
+  comments.push(comment);
+  db.get('reports').find({ id }).assign({ comments }).write();
+
+  // Notify the relevant party
+  if (req.session.user.role === 'admin') {
+    addNotif(report.user_id, `الأدمن أضاف تعليق على تقرير: ${report.title}`);
+    (async () => {
+      const user = db.get('users').find({ id: report.user_id }).value();
+      if (user && emailService) {
+        const emailTemplate = emailService.adminCommentTemplate(req.session.user.name, text.trim());
+        await emailService.sendEmail(user.email, emailTemplate.subject, emailTemplate.html);
+      }
+    })().catch(err => console.error('Email error:', err));
+  } else {
+    // Employee replied — notify all admins
+    db.get('users').filter({ role: 'admin' }).value().forEach(admin => {
+      addNotif(admin.id, `${req.session.user.name} رد على تعليق فى تقريره: ${report.title}`);
+    });
+  }
+
+  res.json({ success: true, comment });
+});
+
+// Legacy admin-only endpoint — still works, points to the new logic
 app.post('/api/admin/reports/:id/comment', requireAdmin, (req, res) => {
   const id = parseInt(req.params.id);
-  const { section_idx, text } = req.body;
+  const { section_idx, text, parent_id } = req.body;
   if (!text || !text.trim()) return res.status(400).json({ error: 'النص فاضي' });
 
   const report = db.get('reports').find({ id }).value();
   if (!report) return res.status(404).json({ error: 'مش موجود' });
 
   const comments = report.comments || [];
+  let normalizedIdx = null;
+  if (section_idx != null && section_idx !== '') {
+    if (typeof section_idx === 'number') normalizedIdx = section_idx;
+    else if (typeof section_idx === 'string' && /^\d+$/.test(section_idx)) normalizedIdx = parseInt(section_idx);
+    else normalizedIdx = section_idx;
+  }
   const comment = {
     id: Date.now(),
-    section_idx: section_idx == null ? null : parseInt(section_idx),
+    section_idx: normalizedIdx,
     text: text.trim(),
     by: req.session.user.name,
+    by_role: 'admin',
+    parent_id: parent_id ? parseInt(parent_id) : null,
     created_at: new Date().toISOString(),
     seen: false
   };
@@ -1012,6 +961,15 @@ app.post('/api/admin/reports/:id/comment', requireAdmin, (req, res) => {
   db.get('reports').find({ id }).assign({ comments }).write();
 
   addNotif(report.user_id, `الأدمن أضاف تعليق على تقرير: ${report.title}`);
+
+  (async () => {
+    const user = db.get('users').find({ id: report.user_id }).value();
+    if (user && emailService) {
+      const emailTemplate = emailService.adminCommentTemplate(req.session.user.name, text.trim());
+      await emailService.sendEmail(user.email, emailTemplate.subject, emailTemplate.html);
+    }
+  })().catch(err => console.error('Email error:', err));
+
   res.json({ success: true, comment });
 });
 
@@ -1074,7 +1032,7 @@ app.get('/api/admin/templates/:id', requireAdmin, (req, res) => {
 
 app.put('/api/admin/templates/:id', requireAdmin, (req, res) => {
   const id = parseInt(req.params.id);
-  const { name, description, sections, visual_theme, instructions } = req.body;
+  const { name, description, sections, visual_theme, instructions, multi_project } = req.body;
   if (!name || !sections) return res.status(400).json({ error: 'بيانات ناقصة' });
   const update = {
     name,
@@ -1084,6 +1042,7 @@ app.put('/api/admin/templates/:id', requireAdmin, (req, res) => {
   };
   if (visual_theme) update.visual_theme = visual_theme;
   if (instructions !== undefined) update.instructions = instructions;
+  if (multi_project !== undefined) update.multi_project = !!multi_project;
   db.get('templates').find({ id }).assign(update).write();
   res.json({ success: true });
 });
@@ -2192,9 +2151,131 @@ app.get('/api/admin/team-progress', requireAdmin, (req, res) => {
   res.json({ teams });
 });
 
+// ── Helpers for report comparison ─────────────────────────────────────────────
+function extractMetricsFromReport(report) {
+  const m = {};
+  const collectFromSections = (secs) => {
+    (secs || []).forEach(s => {
+      if (s && s.type === 'metrics' && Array.isArray(s.items)) {
+        s.items.forEach(it => {
+          if (it.value && !isNaN(parseFloat(it.value)) && it.label) {
+            const key = `${s.title || 'Metrics'}::${it.label}`;
+            m[key] = (m[key] || 0) + parseFloat(it.value);
+          }
+        });
+      }
+    });
+  };
+  // Both top-level sections AND project sections (sum across projects)
+  collectFromSections(report.sections);
+  if (Array.isArray(report.projects)) {
+    report.projects.forEach(p => collectFromSections(p.sections));
+  }
+  return m;
+}
+
+function buildComparison(report, prevReport) {
+  if (!prevReport) return {};
+  const cur = extractMetricsFromReport(report);
+  const prv = extractMetricsFromReport(prevReport);
+  const comparison = {};
+  Object.keys(cur).forEach(k => {
+    const c = cur[k];
+    const p = prv[k] || 0;
+    const label = k.includes('::') ? k.split('::')[1] : k;
+    comparison[label] = {
+      current: c, previous: p, diff: +(c - p).toFixed(2),
+      trend: c > p ? 'up' : c < p ? 'down' : 'same',
+      change: p ? Math.round(((c - p) / p) * 100) : 0
+    };
+  });
+  return comparison;
+}
+
+function getUserPreviousReports(userId, currentReportId, limit = 6) {
+  return db.get('reports')
+    .filter(r => r.user_id === userId && r.status === 'submitted' && !r.seeded && r.id !== currentReportId)
+    .value()
+    .sort((a, b) => (b.submitted_at || '').localeCompare(a.submitted_at || ''))
+    .slice(0, limit)
+    .map(r => ({
+      id: r.id,
+      title: r.title,
+      week: r.week,
+      submitted_at: r.submitted_at,
+      edited_by_admin: !!r.edited_by_admin,
+      comments_count: (r.comments || []).length
+    }));
+}
+
 // ── Report View Full Data (Imp 4) ─────────────────────────────────────────────
 app.get('/admin/report/:id', requireAdmin, (req, res) => {
   res.sendFile(path.join(__dirname, '../views/report-view.html'));
+});
+
+// Employee-facing report viewer (read-only). Same UI, ownership-checked.
+app.get('/employee/report/:id', requireLogin, (req, res) => {
+  const id = parseInt(req.params.id);
+  const report = db.get('reports').find({ id }).value();
+  if (!report) return res.status(404).send('التقرير مش موجود');
+  // Employees can only view their own reports; admins can view any
+  if (req.session.user.role !== 'admin' && report.user_id !== req.session.user.id) {
+    return res.status(403).send('مش مسموحلك تشوف هذا التقرير');
+  }
+  res.sendFile(path.join(__dirname, '../views/report-view.html'));
+});
+
+// Employee-accessible full data endpoint — same payload but ownership-checked
+app.get('/api/employee/reports/:id/full', requireLogin, (req, res) => {
+  const id = parseInt(req.params.id);
+  const report = db.get('reports').find({ id }).value();
+  if (!report) return res.status(404).json({ error: 'مش موجود' });
+  if (req.session.user.role !== 'admin' && report.user_id !== req.session.user.id) {
+    return res.status(403).json({ error: 'غير مسموح' });
+  }
+  // Mark all admin comments as seen by the employee
+  if (Array.isArray(report.comments)) {
+    let updated = false;
+    report.comments.forEach(c => { if (!c.seen) { c.seen = true; updated = true; } });
+    if (updated) db.get('reports').find({ id }).assign({ comments: report.comments }).write();
+  }
+  // Reuse the same logic as admin /full endpoint
+  const user = db.get('users').find({ id: report.user_id }).value();
+  const template = user?.template_id ? db.get('templates').find({ id: user.template_id }).value() : null;
+  let sections = report.sections || [];
+  if ((!sections || !sections.length) && report.filename) {
+    try {
+      const fp = path.join(__dirname, '../public/reports/submitted', report.filename);
+      if (fs.existsSync(fp)) {
+        const html = fs.readFileSync(fp, 'utf8');
+        const m = html.match(/<script type="application\/json" id="__rpt__">([\s\S]*?)<\/script>/);
+        if (m) sections = JSON.parse(m[1]);
+      }
+    } catch (e) {}
+  }
+  // Find previous report for this user (for comparison and links)
+  const prevReports = db.get('reports')
+    .filter(r => r.user_id === report.user_id && r.status === 'submitted' && !r.seeded && r.id !== id)
+    .value()
+    .sort((a, b) => (b.submitted_at || '').localeCompare(a.submitted_at || ''));
+  const prev = prevReports[0];
+  const comparison = buildComparison({ ...report, sections }, prev || null);
+
+  res.json({
+    report: { ...report, sections },
+    user: user ? { id: user.id, name: user.name, email: user.email } : null,
+    template: template ? { id: template.id, name: template.name, visual_theme: template.visual_theme } : null,
+    comparison,
+    previousReportId: prev?.id || null,
+    previousReportTitle: prev?.title || null,
+    previousReportWeek: prev?.week || null,
+    previousReports: getUserPreviousReports(report.user_id, id, 6),
+    versionsCount: (report.versions || []).length,
+    commentsCount: (report.comments || []).length,
+    is_team_report: !!report.is_team_report,
+    child_reports: [],
+    viewer_role: req.session.user.role
+  });
 });
 
 app.get('/api/admin/reports/:id/full', requireAdmin, (req, res) => {
@@ -2218,36 +2299,13 @@ app.get('/api/admin/reports/:id/full', requireAdmin, (req, res) => {
     } catch (e) { /* ignore */ }
   }
 
-  // المقارنة مع التقرير السابق
+  // المقارنة مع التقرير السابق — uses unified helpers (handles multi-project too)
   const prevReports = db.get('reports')
     .filter(r => r.user_id === user?.id && r.status === 'submitted' && !r.seeded && r.id !== id)
     .value()
     .sort((a, b) => (b.submitted_at || '').localeCompare(a.submitted_at || ''));
   const prev = prevReports[0];
-
-  const extractMetrics = (r) => {
-    const m = {};
-    (r.sections || []).forEach(s => {
-      if (s.type === 'metrics' && Array.isArray(s.items)) {
-        s.items.forEach(it => {
-          if (it.value && !isNaN(parseFloat(it.value)) && it.label) m[it.label] = parseFloat(it.value);
-        });
-      }
-    });
-    return m;
-  };
-
-  const cur = extractMetrics({ ...report, sections });
-  const prv = prev ? extractMetrics({ ...prev, sections: prev.sections || [] }) : {};
-  const comparison = {};
-  Object.keys(cur).forEach(k => {
-    const c = cur[k], p = prv[k] || 0;
-    comparison[k] = {
-      current: c, previous: p, diff: c - p,
-      trend: c > p ? 'up' : c < p ? 'down' : 'same',
-      change: p ? Math.round(((c - p) / p) * 100) : 0
-    };
-  });
+  const comparison = buildComparison({ ...report, sections }, prev || null);
 
   res.json({
     report: { ...report, sections },
@@ -2255,6 +2313,9 @@ app.get('/api/admin/reports/:id/full', requireAdmin, (req, res) => {
     template: template ? { id: template.id, name: template.name, visual_theme: template.visual_theme } : null,
     comparison,
     previousReportId: prev?.id || null,
+    previousReportTitle: prev?.title || null,
+    previousReportWeek: prev?.week || null,
+    previousReports: user ? getUserPreviousReports(user.id, id, 6) : [],
     versionsCount: (report.versions || []).length,
     commentsCount: (report.comments || []).length,
     is_team_report: !!report.is_team_report,
@@ -2267,7 +2328,8 @@ app.get('/api/admin/reports/:id/full', requireAdmin, (req, res) => {
             full_sections: live?.sections || c.sections_snapshot || []
           };
         })
-      : []
+      : [],
+    viewer_role: 'admin'
   });
 });
 
@@ -2421,24 +2483,41 @@ app.get('/api/employee/week-history', requireLogin, (req, res) => {
     .filter(r => r.user_id === userId && r.status === 'submitted' && !r.seeded)
     .value();
 
+  // Group reports by week — could be multiple reports per week
   const submittedMap = new Map();
-  reports.forEach(r => submittedMap.set(r.week, r));
+  reports.forEach(r => {
+    if (!submittedMap.has(r.week)) submittedMap.set(r.week, []);
+    submittedMap.get(r.week).push(r);
+  });
 
   const now = new Date();
   const year = now.getFullYear();
   const start = new Date(year, 0, 1);
   const currentWeekNum = Math.ceil(((now - start) / 86400000 + start.getDay() + 1) / 7);
 
+  // Determine the display range — include all weeks the user submitted for
+  let minWn = currentWeekNum - 7;
+  let maxWn = currentWeekNum + 1;
+  // Extract week numbers from existing reports' week strings
+  reports.forEach(r => {
+    const m = (r.week || '').match(/الأسبوع\s+(\d+)\s*-\s*(\d+)/);
+    if (m && parseInt(m[2]) === year) {
+      const wn = parseInt(m[1]);
+      if (wn < minWn) minWn = wn;
+      if (wn > maxWn) maxWn = wn;
+    }
+  });
+  if (minWn < 1) minWn = 1;
+
   const weeks = [];
-  for (let i = -7; i <= 1; i++) {
-    const wn = currentWeekNum + i;
-    if (wn < 1) continue;
+  for (let wn = minWn; wn <= maxWn; wn++) {
     const label = `الأسبوع ${wn} - ${year}`;
+    const list = submittedMap.get(label) || [];
+    const found = list[0] || null;
     let status;
-    const found = submittedMap.get(label);
-    if (i === 0) status = found ? 'done' : 'current';
-    else if (i > 0) status = 'pending';
-    else if (found) status = 'done';
+    if (list.length > 0) status = 'done';
+    else if (wn === currentWeekNum) status = 'current';
+    else if (wn > currentWeekNum) status = 'pending';
     else status = 'late';
 
     weeks.push({
@@ -2446,7 +2525,8 @@ app.get('/api/employee/week-history', requireLogin, (req, res) => {
       week_string: label,
       status,
       report_id: found?.id || null,
-      filename: found?.filename || null
+      filename: found?.filename || null,
+      reports_count: list.length
     });
   }
   res.json({ weeks });
@@ -2487,7 +2567,7 @@ app.get('/api/employee/template', requireLogin, (req, res) => {
 });
 
 app.post('/api/employee/draft', requireLogin, (req, res) => {
-  const { title, week, content, draft_id, sections } = req.body;
+  const { title, week, content, draft_id, sections, projects } = req.body;
   const userId = req.session.user.id;
 
   if (!content) return res.status(400).json({ error: 'المحتوى فاضي' });
@@ -2505,6 +2585,7 @@ app.post('/api/employee/draft', requireLogin, (req, res) => {
         updated_at: new Date().toISOString()
       };
       if (Array.isArray(sections)) update.sections = sections;
+      if (Array.isArray(projects)) update.projects = projects;
       db.get('reports').find({ id: parseInt(draft_id) }).assign(update).write();
       return res.json({ success: true, draft_id: existing.id, message: 'تم الحفظ' });
     }
@@ -2524,6 +2605,7 @@ app.post('/api/employee/draft', requireLogin, (req, res) => {
     filename,
     content,
     sections: Array.isArray(sections) ? sections : [],
+    projects: Array.isArray(projects) ? projects : [],
     week: week || getCurrentWeek(),
     submitted_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
@@ -2552,6 +2634,7 @@ app.post('/api/employee/send/:id', requireLogin, (req, res) => {
     week: req.body.week || report.week
   };
   if (Array.isArray(req.body.sections)) update.sections = req.body.sections;
+  if (Array.isArray(req.body.projects)) update.projects = req.body.projects;
   db.get('reports').find({ id }).assign(update).write();
 
   addNotif(userId, `${req.session.user.name} أرسل تقرير جديد: ${req.body.title || report.title}`);
@@ -2596,14 +2679,33 @@ app.post('/api/employee/submit', requireLogin, upload.single('report'), (req, re
   if (!req.file) return res.status(400).json({ error: 'لازم ترفع ملف HTML' });
   const { title, week } = req.body;
   const userId = req.session.user.id;
+  const user = db.get('users').find({ id: userId }).value();
+  const reportWeek = week || getCurrentWeek();
+
   db.get('reports').push({
     id: nextId('reports'), user_id: userId,
     title: title || req.file.originalname,
     filename: req.file.filename,
-    week: week || getCurrentWeek(),
+    week: reportWeek,
     submitted_at: new Date().toISOString(), status: 'submitted'
   }).write();
+
   addNotif(userId, `${req.session.user.name} رفع تقرير جديد: ${title || req.file.originalname}`);
+
+  // إرسال إيميلات
+  (async () => {
+    // للموظف: تأكيد الاستقبال
+    const userTemplate = emailService.reportSubmittedTemplate(user.name, reportWeek);
+    await emailService.sendEmail(user.email, userTemplate.subject, userTemplate.html);
+
+    // للمدير: إخطار بتقرير جديد
+    const admin = db.get('users').find({ role: 'admin' }).value();
+    if (admin) {
+      const adminTemplate = emailService.newReportSubmittedToAdminTemplate(user.name, reportWeek);
+      await emailService.sendEmail(admin.email, adminTemplate.subject, adminTemplate.html);
+    }
+  })().catch(err => console.error('Email error:', err));
+
   res.json({ success: true });
 });
 

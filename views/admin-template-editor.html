@@ -63,8 +63,29 @@ body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--gra
 .ic-btn.del:hover { background: #fee2e2; border-color: #dc2626; color: #dc2626; }
 .section-body { padding: 16px; }
 
+/* Subtitle row (under main title) */
+.section-subtitle-row { padding: 8px 16px 0 16px; background: var(--bg); border-bottom: 1.5px solid var(--border); }
+.section-subtitle-in { width: 100%; border: 1px dashed var(--border); background: transparent; font-family: 'Cairo', sans-serif; font-size: 12px; font-weight: 600; color: var(--gray); outline: none; padding: 6px 10px; border-radius: 6px; transition: all .15s; }
+.section-subtitle-in:focus { border-color: var(--orange); border-style: solid; background: #fff; }
+.section-subtitle-in::placeholder { color: var(--gray-light); font-weight: 400; }
+
+/* Note toggle (after section body) */
+.note-config { padding: 12px 16px; background: rgba(255,107,43,0.04); border-top: 1px dashed var(--border); }
+.note-config-toggle { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: var(--navy); cursor: pointer; user-select: none; }
+.note-config-toggle input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--orange); cursor: pointer; flex-shrink: 0; }
+.note-label-input { width: 100%; margin-top: 8px; padding: 7px 11px; border: 1.5px solid var(--border); border-radius: 7px; font-family: 'Cairo', sans-serif; font-size: 12.5px; color: var(--gray); background: #fff; outline: none; }
+.note-label-input:focus { border-color: var(--orange); }
+
 /* Text */
 .tx-area { width: 100%; min-height: 70px; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 13px; color: var(--gray); background: var(--bg); outline: none; resize: vertical; direction: rtl; line-height: 1.8; }
+
+/* Multi-block scaffold */
+.text-blocks { display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px; }
+.text-block { display: flex; flex-direction: column; gap: 6px; padding: 10px; border: 1px dashed var(--border); border-radius: 10px; background: rgba(29,47,95,0.02); }
+.text-block-head { display: flex; align-items: center; gap: 8px; }
+.text-block-heading { flex: 1; padding: 7px 11px; border: 1.5px solid var(--border); border-radius: 7px; font-family: 'Cairo', sans-serif; font-size: 12.5px; font-weight: 700; color: var(--navy); background: #fff; outline: none; }
+.text-block-heading::placeholder { color: var(--gray-light); font-weight: 500; }
+.text-block-heading:focus { border-color: var(--orange); }
 .tx-area:focus { border-color: var(--navy); background: #fff; }
 .tx-hint { font-size: 11px; color: var(--gray-light); margin-top: 6px; }
 
@@ -75,12 +96,22 @@ body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--gra
 .list-in { flex: 1; padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 13px; background: var(--bg); outline: none; }
 .list-in:focus { border-color: var(--navy); background: #fff; }
 
-/* Metrics */
-.metrics-editor { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; margin-bottom: 10px; }
-.metric-ec { background: var(--bg); border: 1.5px solid var(--border); border-radius: 10px; padding: 12px; position: relative; }
-.metric-ec label { display: block; font-size: 10px; font-weight: 700; color: var(--navy); margin-bottom: 3px; }
-.metric-ec input { width: 100%; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; font-family: 'Cairo', sans-serif; font-size: 12px; background: #fff; outline: none; margin-bottom: 6px; }
-.del-mc { position: absolute; top: 6px; left: 6px; width: 20px; height: 20px; border: 1px solid #dc2626; border-radius: 4px; background: #fff; color: #dc2626; cursor: pointer; font-size: 11px; display: flex; align-items: center; justify-content: center; }
+/* Metrics — KPI card style preview */
+.metrics-editor { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; margin-bottom: 10px; }
+.metric-ec { background: var(--white); border: 1.5px solid var(--border); border-radius: 12px; padding: 16px 14px; position: relative; text-align: center; box-shadow: var(--shadow); transition: border-color .15s, box-shadow .15s; }
+.metric-ec:focus-within { border-color: var(--navy); box-shadow: var(--shadow-md); }
+.metric-ec .m-label { width: 100%; border: 1px dashed transparent; background: transparent; font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 700; color: var(--gray); text-align: center; outline: none; padding: 4px 6px; border-radius: 6px; margin-bottom: 8px; transition: border-color .15s, background .15s; }
+.metric-ec .m-label:hover { border-color: var(--border); }
+.metric-ec .m-label:focus { border-color: var(--orange); border-style: solid; background: var(--bg); }
+.metric-ec .m-value { width: 100%; border: 1px dashed transparent; background: transparent; font-family: 'Cairo', sans-serif; font-size: 26px; font-weight: 900; color: var(--navy); text-align: center; outline: none; padding: 2px 6px; border-radius: 6px; margin-bottom: 4px; line-height: 1.1; transition: border-color .15s, background .15s; }
+.metric-ec .m-value:hover { border-color: var(--border); }
+.metric-ec .m-value:focus { border-color: var(--orange); border-style: solid; background: var(--bg); }
+.metric-ec .m-value::placeholder { color: var(--gray-light); font-weight: 900; }
+.metric-ec .m-unit { width: 100%; border: 1px dashed transparent; background: transparent; font-family: 'Cairo', sans-serif; font-size: 11px; font-weight: 600; color: var(--gray-light); text-align: center; outline: none; padding: 2px 6px; border-radius: 6px; transition: border-color .15s, background .15s; }
+.metric-ec .m-unit:hover { border-color: var(--border); }
+.metric-ec .m-unit:focus { border-color: var(--orange); border-style: solid; background: var(--bg); color: var(--gray); }
+.del-mc { position: absolute; top: 6px; left: 6px; width: 22px; height: 22px; border: 1px solid #dc2626; border-radius: 5px; background: #fff; color: #dc2626; cursor: pointer; font-size: 11px; display: flex; align-items: center; justify-content: center; z-index: 1; }
+.del-mc:hover { background: #dc2626; color: #fff; }
 
 /* Table */
 .tbl-wrap { overflow-x: auto; margin-bottom: 10px; }
@@ -190,6 +221,16 @@ body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--gra
       <label style="margin-bottom:6px;display:block;font-size:12px;font-weight:700;color:var(--navy)">تعليمات للموظف (تظهر في أعلى نموذج الملء)</label>
       <textarea id="tplInstructions" placeholder="اكتب هنا أي تعليمات أو توضيحات للموظف عند ملء هذا القالب..." rows="2"></textarea>
     </div>
+    <div class="fg" style="margin-top:12px;padding:12px;background:rgba(255,107,43,0.06);border:1.5px dashed rgba(255,107,43,0.4);border-radius:10px">
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:0">
+        <input type="checkbox" id="tplMultiProject" style="width:18px;height:18px;accent-color:var(--orange);cursor:pointer;flex-shrink:0">
+        <span style="font-size:13px;font-weight:800;color:var(--navy)">🗂️ السماح بعدة مشاريع لنفس التقرير</span>
+      </label>
+      <p style="font-size:11px;color:var(--gray);margin-top:6px;margin-right:28px;line-height:1.6">
+        لما تفعّلها، الموظف هيقدر يضيف عدة مشاريع/عملاء لنفس التقرير، وكل مشروع له بياناته الخاصة لكل قسم.
+        مفيد لفرق الإكسيكيوشن اللى بتشتغل على عدة عملاء (Web, SEO, Account, Pods).
+      </p>
+    </div>
   </div>
 
   <!-- الأقسام -->
@@ -262,6 +303,7 @@ async function loadTemplate(id) {
   document.getElementById('tplDesc').value = t.description || '';
   document.getElementById('tplInstructions').value = t.instructions || '';
   document.getElementById('tplTheme').value = t.visual_theme || 'standard';
+  document.getElementById('tplMultiProject').checked = !!t.multi_project;
   document.getElementById('pageTitle').textContent = 'تعديل القالب';
   // أضف id محلي لكل section عشان buttons التعديل (حذف/تحريك/إضافة) تعمل
   sections = (t.sections || []).filter(s => s && typeof s === 'object' && s.type).map(s => ({ ...s, id: s.id || uid() }));
@@ -289,6 +331,29 @@ function render() {
 function renderCard(s, i) {
   const upBtn   = i > 0 ? `<button class="ic-btn" onclick="moveSection('${s.id}',-1)">↑</button>` : '';
   const downBtn = i < sections.length-1 ? `<button class="ic-btn" onclick="moveSection('${s.id}',1)">↓</button>` : '';
+
+  const subtitleRow = `
+    <div class="section-subtitle-row">
+      <input class="section-subtitle-in" value="${esc(s.subtitle || '')}"
+        placeholder="عنوان فرعي صغير (اختياري) — يظهر تحت العنوان الأساسي"
+        oninput="onSubtitleChange('${s.id}', this.value)">
+    </div>`;
+
+  const defaultNoteLabel = `ملاحظة على ${s.title || 'القسم'}`;
+  const noteRow = `
+    <div class="note-config">
+      <label class="note-config-toggle">
+        <input type="checkbox" ${s.has_note ? 'checked' : ''}
+          onchange="onToggleNote('${s.id}', this.checked)">
+        <span>📝 إضافة حقل ملاحظة في نهاية القسم</span>
+      </label>
+      ${s.has_note ? `
+        <input class="note-label-input" value="${esc(s.note_label || '')}"
+          placeholder="${esc(defaultNoteLabel)}"
+          oninput="onNoteLabelChange('${s.id}', this.value)">
+      ` : ''}
+    </div>`;
+
   return `
     <div class="section-card">
       <div class="section-head">
@@ -300,16 +365,38 @@ function renderCard(s, i) {
           <button class="ic-btn del" onclick="deleteSection('${s.id}')">✕</button>
         </div>
       </div>
+      ${subtitleRow}
       <div class="section-body">${renderBody(s)}</div>
+      ${noteRow}
     </div>`;
 }
 
 function renderBody(s) {
   if (s.type === 'text') {
+    // Scaffold blocks the admin pre-defines (employee fills text under each)
+    if (!Array.isArray(s.blocks)) s.blocks = [];
+    const blocksHTML = s.blocks.map((b, i) => `
+      <div class="text-block">
+        <div class="text-block-head">
+          <input class="text-block-heading" placeholder="عنوان فرعى للفقرة (مثلاً: الإنجازات، التحديات...)"
+                 value="${esc(b.heading || '')}"
+                 oninput="onTplBlockChange('${s.id}', ${i}, 'heading', this.value)">
+          <button class="ic-btn del" onclick="removeTplBlock('${s.id}', ${i})" title="حذف الفقرة">✕</button>
+        </div>
+        <input class="list-in" placeholder="نص توضيحى/placeholder للموظف (اختيارى)"
+               value="${esc(b.placeholder || '')}"
+               oninput="onTplBlockChange('${s.id}', ${i}, 'placeholder', this.value)" style="margin-top:4px">
+      </div>
+    `).join('');
     return `
-      <textarea class="tx-area" placeholder="نص توضيحي / مثال للموظف (اختياري)"
-        oninput="onPlaceholderChange('${s.id}', this.value)">${esc(s.placeholder || '')}</textarea>
-      <p class="tx-hint">💡 هذا النص سيظهر كـ placeholder للموظف عند الملء</p>`;
+      <p class="tx-hint" style="margin-bottom:8px">📝 الموظف هيكتب نص تحت كل فقرة (يقدر يضيف فقرات تانية بنفسه لو عنده الصلاحية).</p>
+      <div class="text-blocks">${blocksHTML}</div>
+      <button class="add-btn" onclick="addTplBlock('${s.id}')">+ إضافة فقرة فرعية</button>
+      <details style="margin-top:10px">
+        <summary style="font-size:11px;color:var(--gray-light);cursor:pointer">⚙️ إعدادات قديمة (placeholder عام)</summary>
+        <textarea class="tx-area" placeholder="نص توضيحى عام (لو مش بتستخدم الفقرات الفرعية)"
+          oninput="onPlaceholderChange('${s.id}', this.value)" style="margin-top:6px">${esc(s.placeholder || '')}</textarea>
+      </details>`;
   }
   if (s.type === 'list') {
     const rows = (s.items || []).map((item, i) => `
@@ -325,15 +412,12 @@ function renderBody(s) {
   if (s.type === 'metrics') {
     const cards = (s.items || []).map((m, i) => `
       <div class="metric-ec">
-        <button class="del-mc" onclick="removeMetric('${s.id}', ${i})">✕</button>
-        <label>البيان</label>
-        <input value="${esc(m.label||'')}" placeholder="مثال: المبيعات"
+        <button class="del-mc" onclick="removeMetric('${s.id}', ${i})" title="حذف">✕</button>
+        <input class="m-label" value="${esc(m.label||'')}" placeholder="اسم البيان"
           oninput="onMetricChange('${s.id}', ${i}, 'label', this.value)">
-        <label>القيمة الافتراضية</label>
-        <input value="${esc(m.value||'')}" placeholder="اتركه فارغاً"
+        <input class="m-value" value="${esc(m.value||'')}" placeholder="0"
           oninput="onMetricChange('${s.id}', ${i}, 'value', this.value)">
-        <label>الوحدة</label>
-        <input value="${esc(m.unit||'')}" placeholder="جنيه، %"
+        <input class="m-unit" value="${esc(m.unit||'')}" placeholder="ر.س"
           oninput="onMetricChange('${s.id}', ${i}, 'unit', this.value)">
       </div>`).join('');
     return `<div class="metrics-editor">${cards}</div>
@@ -420,7 +504,33 @@ function renderBody(s) {
 
 // ── Mutations (no re-render) ───────────────────────────────────────────────────
 function onTitleChange(id, v)           { getS(id).title = v; }
+function onSubtitleChange(id, v)        { getS(id).subtitle = v; }
+function onNoteLabelChange(id, v)       { getS(id).note_label = v; }
+function onToggleNote(id, checked) {
+  const s = getS(id);
+  s.has_note = !!checked;
+  if (checked && !s.note_label) s.note_label = ''; // empty → falls back to "ملاحظة على {title}"
+  render();
+}
 function onPlaceholderChange(id, v)     { getS(id).placeholder = v; }
+function onTplBlockChange(id, i, field, v) {
+  const s = getS(id);
+  if (!Array.isArray(s.blocks)) s.blocks = [];
+  if (!s.blocks[i]) s.blocks[i] = { heading: '', placeholder: '' };
+  s.blocks[i][field] = v;
+}
+function addTplBlock(id) {
+  const s = getS(id);
+  if (!Array.isArray(s.blocks)) s.blocks = [];
+  s.blocks.push({ heading: '', placeholder: '' });
+  render();
+}
+function removeTplBlock(id, i) {
+  const s = getS(id);
+  if (!Array.isArray(s.blocks)) return;
+  s.blocks.splice(i, 1);
+  render();
+}
 function onItemChange(id, i, v)         { getS(id).items[i] = v; }
 function onMetricChange(id, i, f, v)    { getS(id).items[i][f] = v; }
 function onHeaderChange(id, i, v)       { getS(id).headers[i] = v; }
@@ -466,7 +576,7 @@ function deleteSection(id) {
 
 function addSection(type) {
   const defs = {
-    text:      { placeholder: '' },
+    text:      { placeholder: '', blocks: [{ heading: '', placeholder: '' }] },
     list:      { items: [''] },
     metrics:   { items: [{ label: '', value: '', unit: '' }] },
     table:     { headers: ['العمود 1', 'العمود 2'], rows: [['', '']] },
@@ -497,6 +607,7 @@ async function saveTemplate() {
     description: document.getElementById('tplDesc').value.trim(),
     instructions: document.getElementById('tplInstructions').value.trim(),
     visual_theme: document.getElementById('tplTheme').value || 'standard',
+    multi_project: document.getElementById('tplMultiProject').checked,
     sections: cleanSections
   };
 
@@ -529,9 +640,32 @@ function preview() {
 }
 
 function generatePreviewHTML(name) {
-  const sHTML = sections.map(s => {
-    if (s.type === 'text')
+  const enhanceSection = (s, html) => {
+    if (!html) return html;
+    let out = html;
+    if (s.subtitle) {
+      const subEl = `<div class="rs-sub-tpl">${esc(s.subtitle)}</div>`;
+      out = out.replace(/<\/h2>/, '</h2>' + subEl);
+    }
+    if (s.has_note) {
+      const label = s.note_label || `ملاحظة على ${s.title || 'القسم'}`;
+      const noteEl = `<div class="rs-note-tpl"><div class="rs-note-l">${esc(label)}</div><div class="fill-box" style="min-height:50px">— الموظف يكتب ملاحظته هنا —</div></div>`;
+      out = out.replace(/<\/section>(?!.*<\/section>)/s, noteEl + '</section>');
+    }
+    return out;
+  };
+  const sHTML = sections.map(s => enhanceSection(s, (() => {
+    if (s.type === 'text') {
+      if (Array.isArray(s.blocks) && s.blocks.length) {
+        const inner = s.blocks.map(b => {
+          const h = b.heading ? `<h3 class="rs-sub" style="font-size:14px;color:var(--navy);font-weight:800;margin-top:10px">${esc(b.heading)}</h3>` : '';
+          const p = `<div class="fill-box" style="font-style:italic;color:var(--gray-light)">${esc(b.placeholder || 'اكتب هنا...')}</div>`;
+          return h + p;
+        }).join('');
+        return `<section class="rs"><h2>${esc(s.title)}</h2>${inner}</section>`;
+      }
       return `<section class="rs"><h2>${esc(s.title)}</h2><div class="fill-box">${esc(s.placeholder || 'اكتب هنا...')}</div></section>`;
+    }
     if (s.type === 'list')
       return `<section class="rs"><h2>${esc(s.title)}</h2><ul>${(s.items||['']).map(i => `<li class="fill-item">${esc(i) || '...'}</li>`).join('')}</ul></section>`;
     if (s.type === 'metrics')
@@ -564,7 +698,7 @@ function generatePreviewHTML(name) {
       return `<section class="rs"><h2>${esc(s.title)}</h2><p style="font-size:11px;color:#9CA3AF;margin-bottom:6px">الحالات: ${opts.map(esc).join(' · ')}</p><div class="tw"><table><thead><tr><th>العنصر</th><th style="text-align:center">الحالة</th></tr></thead><tbody>${rows}</tbody></table></div></section>`;
     }
     return '';
-  }).join('');
+  })())).join('');
   return `<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>معاينة: ${esc(name)}</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
 <style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Cairo',sans-serif;background:#F4F6FA;padding:28px 16px;direction:rtl;color:#4B5563}
@@ -573,6 +707,9 @@ function generatePreviewHTML(name) {
 .rh .badge{background:rgba(255,255,255,.2);padding:3px 12px;border-radius:20px;font-size:11px;font-weight:700;display:inline-block}
 .rs{padding:20px 28px;border-bottom:1.5px solid #E5E7EB}.rs:last-child{border-bottom:none}
 h2{font-size:14px;font-weight:900;color:#1D2F5F;margin-bottom:12px;padding-bottom:6px;border-bottom:2.5px solid #FF6B2B;display:inline-block}
+.rs-sub-tpl{display:block;font-size:12px;color:#6B7280;font-weight:600;margin:-4px 0 12px 0;line-height:1.6}
+.rs-note-tpl{margin-top:14px;padding-top:12px;border-top:1px dashed #E5E7EB}
+.rs-note-l{font-size:12px;font-weight:700;color:#1D2F5F;margin-bottom:6px}
 .fill-box{background:#F4F6FA;border:1.5px dashed #E5E7EB;border-radius:8px;padding:12px;font-size:13px;color:#9CA3AF;min-height:60px}
 .fill-item{font-size:13px;line-height:1.9;color:#9CA3AF;margin-bottom:4px}
 ul{padding-right:18px}.mr{display:flex;flex-wrap:wrap;gap:10px}
